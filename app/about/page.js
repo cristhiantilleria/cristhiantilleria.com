@@ -1,6 +1,5 @@
 import PageWrapper from '@/components/pagewrapper';
 import fs from 'fs';
-import Image from 'next/image';
 import Link from 'next/link';
 import path from 'path';
 import { getPlaiceholder } from 'plaiceholder';
@@ -20,7 +19,7 @@ export default async function About() {
   return (
     <PageWrapper className={styles.about}>
       <section className={styles.about__column} grid-col="1">
-        <div className={styles.about__headshot}>
+        {/* <div className={styles.about__headshot}>
           <Image
             src="/assets/cristhiantilleria.jpg"
             alt="Cristhian Tilleria"
@@ -30,7 +29,7 @@ export default async function About() {
             placeholder="blur"
             blurDataURL={blurData}
           />
-        </div>
+        </div> */}
         <div className={styles.about__socials}>
           <Link target="blank" href="mailto:cristhiantilleria@gmail.com">
             <BsArrowRight />
