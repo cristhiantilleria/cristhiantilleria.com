@@ -26,7 +26,42 @@
   "redirects": [
     {
       "source": "/about",
-      "destination": "/design/about/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/design",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/design/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/photography",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/photography/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/fermenters",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/1984-bookcover",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/projects/bit-market",
+      "destination": "/",
       "permanent": true
     },
     {

@@ -181,6 +181,8 @@
       if (lb.classList.contains('open') && e.key === 'Escape') lb.classList.remove('open');
     });
 
+    if (location.hash === '#design') setMode('design');
+
     render();
   </script>
 </body>
