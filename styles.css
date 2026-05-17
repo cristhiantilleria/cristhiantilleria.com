@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -146,15 +144,71 @@ img { display: block; max-width: 100%; }
   min-width: 0;
   overflow: hidden;
 }
-.hero .diptych .panel img {
+.hero .diptych .slide-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero .diptych .slide-layer {
+  position: absolute;
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
-  transition: opacity 0.25s ease;
+  object-position: center;
+  opacity: 0;
+  transform: scale(0.992) translateX(0);
+  transition:
+    opacity 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  pointer-events: none;
 }
-.hero .diptych.fading .panel img { opacity: 0.3; }
+.hero .diptych .slide-layer.is-active {
+  opacity: 1;
+  transform: scale(1) translateX(0);
+  z-index: 1;
+}
+.hero .diptych .slide-layer.is-leaving {
+  opacity: 0;
+  transform: scale(0.988) translateX(0);
+}
+.hero .diptych.dir-next .slide-layer.is-leaving {
+  transform: scale(0.988) translateX(-14px);
+}
+.hero .diptych.dir-next .slide-layer.is-entering {
+  transform: scale(1) translateX(0);
+}
+.hero .diptych.dir-prev .slide-layer.is-leaving {
+  transform: scale(0.988) translateX(14px);
+}
+.hero .diptych.dir-prev .slide-layer.is-entering {
+  transform: scale(1) translateX(0);
+}
+.hero .diptych.dir-next .slide-layer.is-entering {
+  opacity: 0;
+  transform: scale(0.992) translateX(18px);
+}
+.hero .diptych.dir-prev .slide-layer.is-entering {
+  opacity: 0;
+  transform: scale(0.992) translateX(-18px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero .diptych .slide-layer {
+    transition: opacity 0.2s ease;
+    animation: none !important;
+  }
+  .hero .diptych .slide-layer.is-leaving,
+  .hero .diptych.dir-next .slide-layer.is-leaving,
+  .hero .diptych.dir-prev .slide-layer.is-leaving {
+    transform: none;
+  }
+}
 
 /* Hero caption (design mode only) */
 .hero .hero-caption {
@@ -366,13 +420,42 @@ img { display: block; max-width: 100%; }
     justify-content: center;
   }
 
-  .hero .diptych .panel img {
+  .hero .diptych .slide-stack {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero .diptych .slide-layer {
+    position: absolute;
     width: 100%;
     height: auto;
     max-height: calc(100dvh - 9.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     object-fit: contain;
     object-position: center;
-    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%) scale(0.992);
+  }
+
+  .hero .diptych .slide-layer.is-active {
+    transform: translateX(-50%) scale(1);
+  }
+
+  .hero .diptych.dir-next .slide-layer.is-leaving {
+    transform: translateX(calc(-50% - 14px)) scale(0.988);
+  }
+
+  .hero .diptych.dir-prev .slide-layer.is-leaving {
+    transform: translateX(calc(-50% + 14px)) scale(0.988);
+  }
+
+  .hero .diptych.dir-next .slide-layer.is-entering {
+    opacity: 0;
+    transform: translateX(calc(-50% + 18px)) scale(0.992);
+  }
+
+  .hero .diptych.dir-prev .slide-layer.is-entering {
+    opacity: 0;
+    transform: translateX(calc(-50% - 18px)) scale(0.992);
   }
 
   .hero .hero-caption {
