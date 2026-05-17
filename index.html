@@ -22,6 +22,7 @@
     <nav class="links">
       <button type="button" data-mode="photo" class="active">photography</button>
       <button type="button" data-mode="design">design</button>
+      <button type="button" data-mode="about">about</button>
     </nav>
     <div class="brand brand-right">Tilleria</div>
   </header>
@@ -43,6 +44,14 @@
         </div>
       </div>
       <div class="hero-caption" id="hero-caption"></div>
+      <article class="about-view" id="about-view" aria-hidden="true">
+        <p>
+          Cristhian Tilleria is a New York based designer, developer, and photographer.
+          His practice moves between brand identity, interface design, and photographs of the
+          people and places that share the city with him. For inquiries, write to
+          <a href="mailto:cristhiantilleria@gmail.com">cristhiantilleria@gmail.com</a>.
+        </p>
+      </article>
     </div>
     <div class="side right">Tilleria</div>
   </section>
@@ -191,7 +200,9 @@
       document.querySelectorAll('.topnav .links button').forEach((b) => {
         b.classList.toggle('active', b.dataset.mode === mode);
       });
-      render();
+      hero.classList.toggle('mode-about', mode === 'about');
+      document.getElementById('about-view').setAttribute('aria-hidden', mode === 'about' ? 'false' : 'true');
+      if (mode !== 'about') render();
     }
 
     document.querySelectorAll('.topnav .links button[data-mode]').forEach((btn) => {
