@@ -11,8 +11,10 @@
   <link rel="stylesheet" href="styles.css" />
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
   <header class="topnav" id="topnav">
@@ -54,7 +56,12 @@
     <span class="right"><a href="mailto:cristhiantilleria@gmail.com">Contact</a></span>
   </footer>
 
-  <div class="lightbox" id="lb"><img alt="" /></div>
+  <div class="lightbox" id="lb">
+    <button type="button" class="lb-nav lb-prev" aria-label="Previous">←</button>
+    <img alt="" />
+    <button type="button" class="lb-nav lb-next" aria-label="Next">→</button>
+    <button type="button" class="lb-close" aria-label="Close">close</button>
+  </div>
 
   <script>
     const photoSlides = [
@@ -89,6 +96,7 @@
     let zone = 'center';
     let activeLayer = 0;
     let transitioning = false;
+    let currentItemSrc = null;
     const imageCache = new Map();
 
     function slides() { return mode === 'design' ? designSlides : photoSlides; }
@@ -128,7 +136,7 @@
       if (transitioning) return;
       const item = slides()[idx];
       const currentEl = slideLayers[activeLayer];
-      if (currentEl.src.includes(item.src.split('/').pop())) {
+      if (currentItemSrc === item.src) {
         renderCaption(item);
         prefetchAdjacent();
         return;
@@ -161,6 +169,7 @@
       currentEl.classList.remove('is-leaving');
       nextEl.classList.remove('is-entering');
       activeLayer = nextLayer;
+      currentItemSrc = item.src;
       renderCaption(item);
       prefetchAdjacent();
       transitioning = false;
@@ -171,6 +180,7 @@
       mode = next;
       idx = 0;
       transitioning = false;
+      currentItemSrc = null;
       imageCache.clear();
       slideLayers.forEach((el) => {
         el.classList.remove('is-active', 'is-entering', 'is-leaving');
@@ -194,15 +204,39 @@
       render(dir);
     }
 
+    let lbIdx = 0;
+    function showLb(i) {
+      lbIdx = (i + photoSlides.length) % photoSlides.length;
+      const item = photoSlides[lbIdx];
+      lb.classList.add('swap');
+      preload(item.src).then(() => {
+        lbImg.src = item.src;
+        requestAnimationFrame(() => lb.classList.remove('swap'));
+        // warm neighbors
+        preload(photoSlides[(lbIdx + 1) % photoSlides.length].src);
+        preload(photoSlides[(lbIdx - 1 + photoSlides.length) % photoSlides.length].src);
+      });
+    }
+    function lbNav(dir) {
+      if (!lb.classList.contains('open')) return;
+      showLb(lbIdx + dir);
+    }
+    function closeLb() {
+      if (lbIdx !== idx) {
+        idx = lbIdx;
+        render(0);
+      }
+      lb.classList.remove('open');
+    }
+
     function openCurrent() {
       const item = slides()[idx];
       if (mode === 'design') {
         window.location.href = item.href;
       } else {
-        preload(item.src).then(() => {
-          lbImg.src = item.src;
-          lb.classList.add('open');
-        });
+        lbIdx = idx;
+        lb.classList.add('open');
+        showLb(idx);
       }
     }
 
@@ -250,9 +284,37 @@
       else openCurrent();
     });
 
-    lb.addEventListener('click', () => lb.classList.remove('open'));
+    // Lightbox controls
+    lb.querySelector('.lb-prev').addEventListener('click', (e) => { e.stopPropagation(); lbNav(-1); });
+    lb.querySelector('.lb-next').addEventListener('click', (e) => { e.stopPropagation(); lbNav(1); });
+    lb.querySelector('.lb-close').addEventListener('click', (e) => { e.stopPropagation(); closeLb(); });
+    lbImg.addEventListener('click', (e) => e.stopPropagation()); // clicking image does nothing
+    lb.addEventListener('click', closeLb); // background closes
+
     document.addEventListener('keydown', (e) => {
-      if (lb.classList.contains('open') && e.key === 'Escape') lb.classList.remove('open');
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape')      closeLb();
+      else if (e.key === 'ArrowLeft')  lbNav(-1);
+      else if (e.key === 'ArrowRight') lbNav(1);
+    });
+
+    // Touch swipe inside lightbox
+    let lbTouchX = 0;
+    let lbSwipe = false;
+    lb.addEventListener('touchstart', (e) => {
+      lbTouchX = e.touches[0].clientX;
+      lbSwipe = false;
+    }, { passive: true });
+    lb.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].clientX - lbTouchX;
+      if (Math.abs(dx) > 30) lbSwipe = true;
+    }, { passive: true });
+    lb.addEventListener('touchend', (e) => {
+      if (lbSwipe) {
+        const dx = e.changedTouches[0].clientX - lbTouchX;
+        lbNav(dx < 0 ? 1 : -1);
+        e.preventDefault();
+      }
     });
 
     if (location.hash === '#design') setMode('design');
@@ -260,6 +322,8 @@
     (async () => {
       const first = slides()[0];
       slideLayers[0].src = first.src;
+      slideLayers[0].classList.add('is-active');
+      currentItemSrc = first.src;
       if (slideLayers[0].decode) await slideLayers[0].decode();
       renderCaption(first);
       prefetchAdjacent();
