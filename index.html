@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cristhian Tilleria</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topnav" id="topnav">
+    <div class="brand brand-left">Cristhian</div>
+    <nav class="links">
+      <button type="button" data-mode="photo" class="active">photography</button>
+      <button type="button" data-mode="design">design</button>
+    </nav>
+    <div class="brand brand-right">Tilleria</div>
+  </header>
+
+  <section class="hero" id="hero" name="top">
+    <div class="side left">Cristhian</div>
+    <div class="frame">
+      <div class="diptych" id="diptych">
+        <div class="panel"><img alt="" /></div>
+        <div class="swipe-hint" id="swipe-hint" aria-hidden="true">
+          <span class="line"></span>
+          <span class="label">swipe</span>
+          <span class="line"></span>
+        </div>
+      </div>
+      <div class="hero-caption" id="hero-caption"></div>
+    </div>
+    <div class="side right">Tilleria</div>
+  </section>
+
+  <footer class="footstrip">
+    <span class="left"><a href="https://www.instagram.com/pipephoto_/" target="_blank" rel="noopener">Instagram</a></span>
+    <span class="center credits">
+      <span class="short">Credits</span>
+      <span class="full">Created by Cristhian Tilleria</span>
+    </span>
+    <span class="right"><a href="mailto:cristhiantilleria@gmail.com">Contact</a></span>
+  </footer>
+
+  <div class="lightbox" id="lb"><img alt="" /></div>
+
+  <script>
+    const photoSlides = [
+      { src: 'photography/images/01.jpg' },
+      { src: 'photography/images/02.jpg' },
+      { src: 'photography/images/03.jpg' },
+      { src: 'photography/images/04.jpg' },
+      { src: 'photography/images/05.jpg' },
+      { src: 'photography/images/06.jpg' },
+      { src: 'photography/images/07.jpg' },
+      { src: 'photography/images/08.jpg' },
+      { src: 'photography/images/09.jpg' },
+      { src: 'photography/images/10.jpg' },
+      { src: 'photography/images/11.jpg' },
+      { src: 'photography/images/12.jpg' },
+    ];
+    const designSlides = [
+      { src: 'design/assets/level-up/image-2.webp',         name: 'Level Up',        type: 'Brand Identity',    href: 'design/projects/level-up/' },
+      { src: 'design/assets/sound-sculptors/image-1.webp',  name: 'Sound Sculptors', type: 'Brand Identity',    href: 'design/projects/sound-sculptors/' },
+      { src: 'design/assets/arthive/image-1.webp',          name: 'ArtHive',         type: 'Corporate Identity', href: 'design/projects/art-hive/' },
+    ];
+
+    const hero    = document.getElementById('hero');
+    const diptych = document.getElementById('diptych');
+    const slideImg = diptych.querySelector('.panel img');
+    const captionEl = document.getElementById('hero-caption');
+
+    let mode = 'photo';
+    let idx = 0;
+    let zone = 'center';
+
+    function slides() { return mode === 'design' ? designSlides : photoSlides; }
+
+    function renderCaption(item) {
+      if (mode !== 'design') {
+        captionEl.innerHTML = '';
+        hero.classList.remove('show-caption');
+        return;
+      }
+      captionEl.innerHTML =
+        `<span class="tag">Design — ${item.type}</span>` +
+        `<a href="${item.href}">${item.name} ↗</a>`;
+      hero.classList.add('show-caption');
+    }
+
+    function render() {
+      diptych.classList.add('fading');
+      setTimeout(() => {
+        const item = slides()[idx];
+        slideImg.src = item.src;
+        renderCaption(item);
+        diptych.classList.remove('fading');
+      }, 180);
+    }
+
+    function setMode(next) {
+      if (mode === next) return;
+      mode = next;
+      idx = 0;
+      document.querySelectorAll('.topnav .links button').forEach((b) => {
+        b.classList.toggle('active', b.dataset.mode === mode);
+      });
+      render();
+    }
+
+    document.querySelectorAll('.topnav .links button[data-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => setMode(btn.dataset.mode));
+    });
+
+    function go(dir) {
+      const list = slides();
+      idx = (idx + dir + list.length) % list.length;
+      render();
+    }
+
+    function openCurrent() {
+      const list = slides();
+      const item = list[idx];
+      if (mode === 'design') {
+        window.location.href = item.href;
+      } else {
+        const lbEl = document.getElementById('lb');
+        lbEl.querySelector('img').src = item.src;
+        lbEl.classList.add('open');
+      }
+    }
+
+    // Mobile swipe hint — auto-hide and dismiss on first swipe
+    const swipeHint = document.getElementById('swipe-hint');
+    function dismissHint() { if (swipeHint) swipeHint.classList.add('dismissed'); }
+    setTimeout(dismissHint, 3500);
+
+    // Touch swipe
+    let touchStartX = 0;
+    let swipe = false;
+    diptych.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      swipe = false;
+    }, { passive: true });
+    diptych.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 30) swipe = true;
+    }, { passive: true });
+    diptych.addEventListener('touchend', (e) => {
+      if (swipe) {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        go(dx < 0 ? 1 : -1);
+        dismissHint();
+      }
+    });
+
+    function updateZone(e) {
+      const r = diptych.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      if (x < r.width * 0.33) zone = 'left';
+      else if (x > r.width * 0.67) zone = 'right';
+      else zone = 'center';
+      diptych.classList.toggle('zone-left',  zone === 'left');
+      diptych.classList.toggle('zone-right', zone === 'right');
+    }
+    diptych.addEventListener('mousemove', updateZone);
+    diptych.addEventListener('mouseleave', () => {
+      diptych.classList.remove('zone-left', 'zone-right');
+      zone = 'center';
+    });
+
+    diptych.addEventListener('click', () => {
+      if (swipe) { swipe = false; return; } // swallow swipe-triggered clicks
+      if (zone === 'left')       go(-1);
+      else if (zone === 'right') go(1);
+      else                       openCurrent();
+    });
+
+    const lb = document.getElementById('lb');
+    lb.addEventListener('click', () => lb.classList.remove('open'));
+    document.addEventListener('keydown', (e) => {
+      if (lb.classList.contains('open') && e.key === 'Escape') lb.classList.remove('open');
+    });
+
+    render();
+  </script>
+</body>
+</html>

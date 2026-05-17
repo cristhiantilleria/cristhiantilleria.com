@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtHive — Cristhian Tilleria</title>
+  <link rel="stylesheet" href="../../project.css" />
+</head>
+<body>
+  <header class="bar">
+    <div class="brand left"><a href="../../../">Cristhian</a></div>
+    <nav class="links">
+      <a href="../../../#design">Index</a>
+      <a href="../level-up/">Next</a>
+      <a href="mailto:cristhiantilleria@gmail.com">Contact</a>
+    </nav>
+    <div class="brand right"><a href="../../../">Tilleria</a></div>
+  </header>
+
+  <main class="layout">
+    <aside class="rail left">
+      <div class="tag">— Design</div>
+      <div class="desc">
+        AH 06 ArtHive — A hotel concept for urban travelers seeking affordable accommodations that prioritize experiences and appreciate good design. Cozy, memorable, infused with a touch of creativity.
+      </div>
+      <details>
+        <summary>Services</summary>
+        <div class="body">
+          <ul>
+            <li>Concept Work</li>
+            <li>Corporate Identity</li>
+            <li>Logo Design</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>Approach</summary>
+        <div class="body">Identity as hospitality — warm geometry, soft tones, signage that whispers rather than shouts.</div>
+      </details>
+      <details>
+        <summary>Year</summary>
+        <div class="body">2023</div>
+      </details>
+    </aside>
+
+    <section class="media">
+      <div class="panel"><img src="../../assets/arthive/image.webp" alt="" /></div>
+      <div class="panel"><img src="../../assets/arthive/image-2.webp" alt="" /></div>
+      <div class="panel"><img src="../../assets/arthive/image-3.webp" alt="" /></div>
+      <div class="panel"><img src="../../assets/arthive/image-1.webp" alt="" /></div>
+    </section>
+
+    <aside class="rail right">
+      <div class="code">AH 06</div>
+      <h1>ArtHive — Urban Hotel Corporate Identity</h1>
+      <div class="price">Corporate Identity</div>
+      <select class="select">
+        <option>View · Full Project</option>
+        <option>View · Logo</option>
+        <option>View · Signage</option>
+      </select>
+      <button class="cta" type="button">Open Gallery</button>
+    </aside>
+
+    <div class="pager">
+      <a href="../../../#design">← Index</a>
+      <a href="../level-up/">Next: Level Up →</a>
+    </div>
+  </main>
+
+  <script src="../../project.js"></script>
+  <script>
+    document.querySelector('.cta').addEventListener('click', () => {
+      document.querySelector('.media img').click();
+    });
+  </script>
+</body>
+</html>
