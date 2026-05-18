@@ -343,6 +343,49 @@ img { display: block; max-width: 100%; }
 }
 .hero .hero-caption a:hover { opacity: 0.55; }
 
+/* ---------- Loading entry animation ---------- */
+/* Brand labels and image start collapsed; html.is-loading is removed by JS
+   after the first image is ready, letting CSS animate everything into place. */
+
+/* Smooth transitions back to natural state */
+.hero .side,
+.topnav .brand {
+  transition: transform 1.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.hero .diptych,
+.hero .hero-caption,
+.swipe-hint,
+.topnav .links,
+.footstrip {
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.85s;
+}
+
+/* While loading: push the hero side labels toward viewport center, hide the rest */
+html.is-loading .hero .side.left {
+  transform: translateX(calc(50vw - 100% - 2.5rem - 0.4rem));
+}
+html.is-loading .hero .side.right {
+  transform: translateX(calc(-50vw + 100% + 2.5rem + 0.4rem));
+}
+html.is-loading .hero .diptych,
+html.is-loading .hero .hero-caption,
+html.is-loading .swipe-hint,
+html.is-loading .topnav .links,
+html.is-loading .footstrip {
+  opacity: 0;
+}
+
+/* Mobile: the brand lives in the navbar — animate those instead */
+@media (max-width: 720px) {
+  html.is-loading .topnav .brand-left {
+    transform: translateX(calc(50vw - 100% - 1rem - 0.4rem));
+  }
+  html.is-loading .topnav .brand-right {
+    transform: translateX(calc(-50vw + 100% + 1rem + 0.4rem));
+  }
+}
+
 /* ---------- Lightbox ---------- */
 .lightbox {
   position: fixed;

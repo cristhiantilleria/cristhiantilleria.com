@@ -12,6 +12,15 @@
   <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    // Mark the document as "loading" only on the first visit of this browser session.
+    // sessionStorage means a fresh tab/window replays the intro; reloads or in-tab nav skip.
+    try {
+      if (!sessionStorage.getItem('ct.intro.shown')) {
+        document.documentElement.classList.add('is-loading');
+      }
+    } catch (_) {
+      document.documentElement.classList.add('is-loading');
+    }
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -330,12 +339,31 @@
 
     if (location.hash === '#design') setMode('design');
 
+    // ----- Loading entry animation -----
+    const wasLoading = document.documentElement.classList.contains('is-loading');
+    function finishLoading() {
+      document.documentElement.classList.remove('is-loading');
+      try { sessionStorage.setItem('ct.intro.shown', '1'); } catch (_) {}
+    }
+    if (wasLoading) {
+      // Hard fallback so the page can never be stuck in the loading state
+      const loadingSafety = setTimeout(finishLoading, 4500);
+      // Wait for the first hero image, capped at 1.5s so a slow image can't stall the intro
+      Promise.race([
+        preload(slides()[0].src).catch(() => null),
+        new Promise((r) => setTimeout(r, 1500)),
+      ]).then(() => {
+        clearTimeout(loadingSafety);
+        setTimeout(finishLoading, 600);
+      });
+    }
+
     (async () => {
       const first = slides()[0];
       slideLayers[0].src = first.src;
       slideLayers[0].classList.add('is-active');
       currentItemSrc = first.src;
-      if (slideLayers[0].decode) await slideLayers[0].decode();
+      try { if (slideLayers[0].decode) await slideLayers[0].decode(); } catch (_) {}
       renderCaption(first);
       prefetchAdjacent();
       photoSlides.forEach((s) => preload(s.src));
