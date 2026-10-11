@@ -674,7 +674,7 @@
           </fieldset>
           <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="2" placeholder="What are you building, and when do you need it?"></textarea></label>
           <div class="cta-row fade" style="--d:400">
-            <button class="btn mono" type="submit" data-magnetic><span data-sweep>Request a discovery call</span><span class="btn__arrow" aria-hidden="true"></span></button>
+            <button class="btn mono" type="submit" data-magnetic><span data-sweep>Submit</span><span class="btn__arrow" aria-hidden="true"></span></button>
             <span class="mono muted" role="status" data-status>Opens your email app with everything filled in</span>
           </div>
         </form>
@@ -1167,9 +1167,9 @@
       function say(msg) { status.dataset.t = msg; type(status, false); }
       if (!name) { say('Please add your name'); form.elements.name.focus(); return; }
       if (!/^\S+@\S+\.\S+$/.test(email)) { say('Please add a valid email'); form.elements.email.focus(); return; }
-      var text = 'Hi Cristhian,\n\nI would like to book a discovery call.\n\nName: ' + name + '\nEmail: ' + email +
+      var text = 'Hi Cristhian,\n\nName: ' + name + '\nEmail: ' + email +
         '\nNeed: ' + d.get('need') + '\nBudget: ' + d.get('budget') + '\n\n' + (d.get('message') || '');
-      location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Discovery call — ' + name) + '&body=' + encodeURIComponent(text);
+      location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Project enquiry — ' + name) + '&body=' + encodeURIComponent(text);
       say('Opening your email app…');
     });
   }
