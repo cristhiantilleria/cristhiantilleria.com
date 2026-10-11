@@ -134,6 +134,12 @@
   .in .sq::after { animation: ghost 1.2s ease-out both; animation-delay: calc(var(--l, 0) * 180ms); }
   @keyframes ghost { 0% { opacity: 1; transform: scaleY(-.34); } 60% { opacity: .9; } 100% { opacity: 0; transform: scaleY(-.02); } }
 
+  /* long statements: each line rises out of its own mask, one after another */
+  .ln { display: block; overflow: hidden; padding: .08em .04em .17em; margin: -.08em -.04em -.17em; }
+  .ln > span { display: block; transform: translateY(112%); transition: transform 1.35s var(--ease-out); transition-delay: calc(var(--l, 0) * 110ms); will-change: transform; }
+  .in .ln > span { transform: none; }
+  .is-leaving .ln > span { transform: translateY(-112%); transition: transform .65s var(--ease-in-out); transition-delay: 0s; }
+
   [data-type] { visibility: hidden; }
   [data-type].typed { visibility: visible; }
   .blk { background: currentColor; }
@@ -492,7 +498,7 @@
   @media (prefers-reduced-motion: reduce) {
     .loader { animation: loader-fade .4s linear .6s forwards; }
     .loader__line > span, .name .char, .name.play .char { animation: none; transform: none; opacity: 1; }
-    .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
+    .ln > span, .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
     @keyframes loader-fade { to { opacity: 0; visibility: hidden; } }
@@ -614,7 +620,7 @@
 <!--@portrait-->
         <dl class="facts" data-reveal>
           <div class="fade" style="--d:0"><dt class="mono">Based in</dt><dd>New York, US<br>Working worldwide</dd></div>
-          <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>Web design<br>Frontend development<br>Motion &amp; interaction</dd></div>
+          <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>Branding<br>Web development<br>Motion &amp; interaction</dd></div>
           <div class="fade" style="--d:240"><dt class="mono">Status</dt><dd><span class="avail"><span class="dot"></span><!--@status--></span></dd></div>
         </dl>
         <div class="cta-row fade" data-reveal>
@@ -649,9 +655,9 @@
           <fieldset class="fade" style="--d:160">
             <legend class="mono">03 — What do you need?</legend>
             <div class="chips mono">
-              <label class="chip"><input type="radio" name="need" value="Web design"><span>Web design</span></label>
-              <label class="chip"><input type="radio" name="need" value="Frontend build"><span>Frontend build</span></label>
-              <label class="chip"><input type="radio" name="need" value="Design + build" checked><span>Design + build</span></label>
+              <label class="chip"><input type="radio" name="need" value="Branding"><span>Branding</span></label>
+              <label class="chip"><input type="radio" name="need" value="Web development" checked><span>Web development</span></label>
+              <label class="chip"><input type="radio" name="need" value="Motion &amp; interaction"><span>Motion &amp; interaction</span></label>
               <label class="chip"><input type="radio" name="need" value="Shopify store"><span>Shopify store</span></label>
               <label class="chip"><input type="radio" name="need" value="Something else"><span>Something else</span></label>
             </div>
@@ -790,7 +796,7 @@
     });
     el.innerHTML = lines.map(function (l, n) {
       var t = esc(l.join(' ')).replace(/"/g, '&quot;');
-      return '<span class="sq" aria-hidden="true" data-text="' + t + '" style="--l:' + n + '"><span>' + t + '</span></span>';
+      return '<span class="ln" aria-hidden="true" style="--l:' + n + '"><span>' + t + '</span></span>';
     }).join('');
   }
 
@@ -1110,12 +1116,12 @@
     waterOn = active;
     if (active) requestAnimationFrame(flow);
   }
-  function bindWater(scope) { $$('.name, .h2, .statement, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
+  function bindWater(scope) { $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
   bindWater(document);
   addEventListener('resize', function () { waters.forEach(function (w) { w.fs = 0; }); });
   touchWater = touch._water;
   function ripple(scope, strength) {
-    $$('.name, .h2, .statement', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
+    $$('.name, .h2', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
   }
   if (current === 'index') setTimeout(ripple, 2850, views.index.querySelector('.hero'), .18);
 
