@@ -24,7 +24,14 @@ content:
       - { name: cover, label: Cover image, type: image }
       - { name: link, label: Live site URL, type: string }
       - { name: summary, label: Summary (one or two sentences), type: text }
-      - { name: body, label: Case study, type: rich-text }
+      - { name: approach, label: Approach (short paragraph), type: text }
+      - name: gallery
+        label: Gallery (the first five also play in the home page cover reel)
+        type: image
+        options:
+          multiple:
+            max: 30
+      - { name: body, label: Extra case study text (optional), type: rich-text }
 
   - name: visuals
     label: Visuals

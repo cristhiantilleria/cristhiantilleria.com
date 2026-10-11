@@ -356,9 +356,6 @@
   body[data-view="contact"] .touch, body[data-view="contact"] .footer__cta { display: none; }
 
   /* ---------- case study pages ---------- */
-  .case__title { grid-column: 1 / -1; }
-  .case__cover { grid-column: 1 / -1; border: var(--bw) solid var(--ink); }
-  .case__cover .media { aspect-ratio: 16 / 8; max-height: calc(100svh - var(--page-top) - var(--row) * 3 - clamp(40px, 6.4vw, 132px) - 40px); }
   .case__lead { grid-column: 1 / 8; font-weight: 700; font-size: clamp(22px, 2.55vw, 52px); line-height: 1.04; letter-spacing: -.045em; }
   .case__body { grid-column: 7 / -1; font-size: clamp(16px, 1.3vw, 23px); line-height: 1.4; letter-spacing: -.015em; }
   .case__body > * + * { margin-top: 1em; }
@@ -366,9 +363,56 @@
   .case__body img { display: block; width: 100%; height: auto; border: var(--bw) solid var(--ink); margin-block: 1.6em; }
   .case__body a { text-decoration: underline; text-decoration-thickness: var(--bw); text-underline-offset: 4px; }
   .case__body ul, .case__body ol { padding-left: 1.2em; list-style: revert; }
-  .case .facts { margin-top: 0; }
 
-  .case__cover .art { filter: none; }
+  /* ---------- cover reels on the home page ---------- */
+  .reel__f { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.1); filter: grayscale(1) contrast(1.06); transition: transform 6s linear, filter .8s; }
+  .reel__f.is-on { opacity: 1; z-index: 1; transform: scale(1); }
+  .reel__f.is-in { opacity: 1; z-index: 2; transform: scale(1); animation: reel-in 1.4s var(--ease-in-out) both; }
+  @keyframes reel-in { from { clip-path: var(--from, inset(0 0 0 100%)); } to { clip-path: inset(0); } }
+  .work:hover .reel__f { filter: none; }
+  .reel__ui { position: absolute; left: 0; bottom: 0; z-index: 3; padding: .55em .8em; background: var(--ink); color: var(--bg); font-weight: 700; }
+  .reel__ui b { font-weight: 700; }
+  .reel__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 4px; }
+  .reel__bar i { display: block; height: 100%; background: var(--ink); transform-origin: 0 50%; animation: reel-bar 3.4s linear infinite; }
+  @keyframes reel-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ---------- project pages ---------- */
+  .cs__first { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; gap: var(--row); padding: var(--page-top) var(--pad) clamp(12px, 1.2vw, 24px); }
+  .cs__title { font-size: clamp(48px, min(calc(185vw / var(--chars)), 17.4vw, 30vh), 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; white-space: nowrap; }
+  .cs__cover { flex: 1; min-height: 160px; position: relative; border: var(--bw) solid var(--ink); }
+  .cs__cover .media { position: absolute; inset: 0; aspect-ratio: auto; }
+  .cs__cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); transition: transform 2.6s var(--ease-out); }
+  .cs__cover.in img { transform: scale(1); }
+  .cs__intro { padding-top: clamp(50px, 6vw, 120px); row-gap: var(--row); }
+  .cs__lead { grid-column: 1 / 8; font-weight: 700; font-size: clamp(24px, 3.2vw, 64px); line-height: 1; letter-spacing: -.05em; }
+  .cs__side { grid-column: 9 / -1; display: grid; gap: 1.2em; align-content: start; justify-items: start; }
+  .cs__side > p:not(.mono) { font-size: clamp(15px, 1.25vw, 22px); line-height: 1.3; letter-spacing: -.02em; }
+  .cs__facts { width: 100%; border-top: var(--bw) solid var(--ink); margin-top: .6em; }
+  .cs__facts div { display: flex; justify-content: space-between; gap: 2em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
+  .cs__facts dd { text-align: right; }
+  .gallery { padding-top: clamp(50px, 6vw, 120px); gap: calc(var(--gap) * 2); align-items: start; }
+  .shot { grid-column: span 6; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); cursor: zoom-in; transition: opacity 1.5s var(--ease-out), transform .7s var(--ease-out), box-shadow .7s var(--ease-out); }
+  .shot.in:hover { transform: translate(-5px, -5px); box-shadow: 7px 7px 0 var(--ink); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { display: flex; justify-content: space-between; padding: 8px 10px; border-top: var(--bw) solid var(--ink); }
+  .shot--full { grid-column: 1 / -1; }
+  .shot--mid { grid-column: 3 / 11; }
+  .shot--wide { grid-column: span 8; }
+  .shot--narrow { grid-column: span 4; }
+  .cs__end { padding: clamp(60px, 7vw, 140px) var(--pad) 0; display: grid; gap: var(--row); }
+  .nextlink { display: block; border: var(--bw) solid var(--ink); padding: clamp(12px, 1.2vw, 22px); overflow: hidden; transition: background-color .45s, color .45s; }
+  .nextlink:hover { background: var(--ink); color: var(--bg); }
+  .nextlink .mono { display: flex; justify-content: space-between; margin-bottom: clamp(20px, 3vw, 60px); }
+  .nextlink b { display: block; font-size: clamp(40px, min(calc(170vw / (var(--chars) + 2)), 15vw), 320px); line-height: .9; letter-spacing: -.07em; white-space: nowrap; }
+
+  /* ---------- image viewer ---------- */
+  .lb { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr auto; background: rgba(7, 7, 7, .97); color: #f4f2ec; opacity: 0; visibility: hidden; transition: opacity .45s, visibility .45s; }
+  .lb.on { opacity: 1; visibility: visible; }
+  .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); }
+  .lb__stage { position: relative; min-height: 0; margin: 0 var(--pad); cursor: zoom-out; }
+  .lb__stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  .lb button { padding: .6em .9em; border: var(--bw) solid currentColor; font-weight: 700; transition: background-color .3s, color .3s; }
+  .lb button:hover { background: #f4f2ec; color: #070707; }
 
   /* ---------- visuals page ---------- */
   .visuals__title { grid-column: 1 / -1; font-size: clamp(64px, min(17.4vw, 34vh), 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; }
@@ -400,7 +444,8 @@
     .bar__a { margin-left: auto; }
     .work { grid-column: 1 / -1; }
     .work--wide .media { aspect-ratio: 4 / 3; }
-    .case__lead, .case__body { grid-column: 1 / -1; }
+    .case__lead, .case__body, .cs__lead, .cs__side, .shot, .shot--mid, .shot--wide, .shot--narrow { grid-column: 1 / -1; }
+    .gallery { row-gap: 16px; }
     .works { row-gap: 16px; }
     .svc .bullet { grid-column: 1 / 3; }
     .svc__t { grid-column: 3 / -1; }
@@ -447,6 +492,12 @@
   </div>
 
   <div class="cursor-tag mono" aria-hidden="true"></div>
+
+  <div class="lb mono" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+    <div class="lb__row"><span class="lb__title"></span><button type="button" data-lb="close">Close ✕</button></div>
+    <div class="lb__stage" data-lb="close"><img alt=""></div>
+    <div class="lb__row"><button type="button" data-lb="prev">← Prev</button><span class="lb__count"></span><button type="button" data-lb="next">Next →</button></div>
+  </div>
 
   <header class="header mono fade">
     <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span class="logo">CT</span><span data-sweep>New York</span><span class="clock clock--head"></span></a>
@@ -1095,8 +1146,78 @@
     });
   }
 
+  /* ---------- cover reels: each project card loops through its own images ---------- */
+  var REEL_FROM = ['inset(0 0 0 100%)', 'inset(100% 0 0 0)', 'inset(0 100% 0 0)', 'inset(0 0 100% 0)'];
+  var reelIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { en.target._seen = en.isIntersecting; });
+  }, { threshold: .35 });
+  function bindReels(scope) {
+    $$('[data-reel]', scope).forEach(function (r) {
+      var frames = $$('.reel__f', r);
+      if (r._reel || frames.length < 2 || reduce) return;
+      r._reel = true;
+      reelIO.observe(r);
+      var i = 0, turn = 0, moving = false, count = $('.reel__n', r);
+      setInterval(function () {
+        if (moving || !r._seen || document.hidden || r.closest('[hidden]')) return;
+        var j = (i + 1) % frames.length, next = frames[j];
+        moving = true;
+        function swap() {
+          next.style.setProperty('--from', REEL_FROM[turn++ % REEL_FROM.length]);
+          next.classList.add('is-in');
+          count.textContent = ('0' + (j + 1)).slice(-2);
+          setTimeout(function () {
+            frames[i].classList.remove('is-on');
+            next.classList.remove('is-in');
+            next.classList.add('is-on');
+            i = j; moving = false;
+          }, 1450);
+        }
+        if (next.dataset.src) {          // frames after the first load only when the reel reaches them
+          next.src = next.dataset.src;
+          next.removeAttribute('data-src');
+          (next.decode ? next.decode() : Promise.resolve()).then(swap, function () { moving = false; });
+        } else swap();
+      }, 3400);
+    });
+  }
+
+  /* ---------- image viewer for project galleries ---------- */
+  var lb = $('.lb'), lbImg = $('.lb__stage img'), lbSet = [], lbAt = 0;
+  function lbShow(n) {
+    lbAt = (n + lbSet.length) % lbSet.length;
+    lbImg.src = lbSet[lbAt].dataset.full;
+    lbImg.alt = $('img', lbSet[lbAt]).alt;
+    $('.lb__count').textContent = ('0' + (lbAt + 1)).slice(-2) + ' / ' + ('0' + lbSet.length).slice(-2);
+  }
+  function lbToggle(open) {
+    lb.classList.toggle('on', open);
+    lb.setAttribute('aria-hidden', String(!open));
+    if (lenis) open ? lenis.stop() : lenis.start();
+    if (open) $('[data-lb="close"]', lb).focus(); else lbImg.removeAttribute('src');
+  }
+  document.addEventListener('click', function (e) {
+    var shot = e.target.closest('.shot');
+    if (shot) {
+      lbSet = $$('.shot', shot.closest('.gallery'));
+      $('.lb__title').textContent = shot.closest('.view').dataset.title.split(' — ')[0];
+      lbShow(lbSet.indexOf(shot));
+      lbToggle(true);
+      return;
+    }
+    var act = e.target.closest('[data-lb]');
+    if (!act) return;
+    if (act.dataset.lb === 'close') lbToggle(false); else lbShow(lbAt + (act.dataset.lb === 'next' ? 1 : -1));
+  });
+  addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('on')) return;
+    if (e.key === 'Escape') lbToggle(false);
+    if (e.key === 'ArrowRight') lbShow(lbAt + 1);
+    if (e.key === 'ArrowLeft') lbShow(lbAt - 1);
+  });
+
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); }
+  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindReels(scope); }
   initView(document);
 </script>
 </body>

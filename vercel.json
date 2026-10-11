@@ -52,5 +52,23 @@
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "images": {
+    "sizes": [
+      640,
+      1080,
+      1600,
+      2400
+    ],
+    "formats": [
+      "image/avif",
+      "image/webp"
+    ],
+    "minimumCacheTTL": 2678400,
+    "localPatterns": [
+      {
+        "pathname": "/media/**"
+      }
+    ]
+  }
 }
