@@ -303,6 +303,12 @@
   .page { padding-top: clamp(110px, 10vw, 210px); padding-bottom: clamp(90px, 10vw, 200px); min-height: 100vh; row-gap: clamp(28px, 3vw, 56px); align-content: start; }
   .page__kicker { grid-column: 1 / -1; }
   .statement { grid-column: 1 / 12; font-weight: 700; font-size: clamp(30px, 5.2vw, 108px); line-height: .98; letter-spacing: -.055em; }
+  .has-portrait .statement { grid-column: 1 / 9; font-size: clamp(30px, 4.3vw, 90px); }
+  .portrait { grid-column: 9 / -1; align-self: start; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); }
+  .portrait .media { aspect-ratio: 4 / 5; }
+  .portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); transition: transform 2.4s var(--ease-out); }
+  .portrait.in img { transform: scale(1); }
+  .portrait figcaption { display: flex; justify-content: space-between; gap: 1em; padding: clamp(8px, .8vw, 14px); border-top: var(--bw) solid var(--ink); }
   .facts { grid-column: 1 / -1; margin-top: clamp(40px, 5vw, 100px); display: grid; grid-template-columns: repeat(3, 1fr); border: var(--bw) solid var(--ink); }
   .facts > div { padding: clamp(14px, 1.4vw, 26px); min-height: clamp(150px, 13vw, 260px); display: flex; flex-direction: column; justify-content: space-between; gap: 2em; }
   .facts > div + div { border-left: var(--bw) solid var(--ink); }
@@ -403,7 +409,8 @@
     .steps { grid-template-columns: 1fr; }
     .step { min-height: 0; }
     .step + .step { border-left: 0; border-top: var(--bw) solid var(--ink); }
-    .statement { grid-column: 1 / -1; }
+    .statement, .has-portrait .statement, .portrait { grid-column: 1 / -1; }
+    .has-portrait .statement { font-size: clamp(30px, 8.6vw, 60px); }
     .facts { grid-template-columns: 1fr; }
     .facts > div + div { border-left: 0; border-top: var(--bw) solid var(--ink); }
     .facts > div { min-height: 0; }
@@ -526,9 +533,10 @@
 
     <!-- ================= ABOUT ================= -->
     <div class="view" data-view="about" data-title="About — Cristhian Tilleria" tabindex="-1" hidden>
-      <section class="page grid">
+      <section class="page grid<!--@portrait-class-->">
         <p class="page__kicker mono" data-reveal><span data-type>About — Frontend developer &amp; web designer, New York</span></p>
         <h1 class="statement" data-reveal data-wait="350" data-lines><!--@statement--></h1>
+<!--@portrait-->
         <dl class="facts" data-reveal>
           <div class="fade" style="--d:0"><dt class="mono">Based in</dt><dd>New York, US<br>Working worldwide</dd></div>
           <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>Web design<br>Frontend development<br>Motion &amp; interaction</dd></div>

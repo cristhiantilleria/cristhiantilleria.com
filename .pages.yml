@@ -53,6 +53,7 @@ content:
       - { name: status, label: Availability status, type: string }
       - { name: intro, label: Hero intro line, type: text }
       - { name: statement, label: About statement, type: text }
+      - { name: portrait, label: About portrait, type: image }
       - { name: ticker, label: Ticker phrases, type: string, list: true }
       - name: services
         label: Services

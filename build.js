@@ -68,7 +68,16 @@ const visuals = visualItems.map((v, i) => `          <figure class="visual fade"
             <figcaption><span class="bullet">${i + 1}</span><b>${esc(v.title || '')}</b><span class="mono">${esc(v.kind || '')}</span></figcaption>
           </figure>`).join('\n');
 
+const portrait = site.portrait
+  ? `        <figure class="portrait" data-reveal data-wait="500">
+          <div class="media"><img src="${esc(encodeURI(site.portrait))}" alt="Portrait of Cristhian Tilleria" width="1024" height="1024"></div>
+          <figcaption class="mono"><span>Cristhian Tilleria</span><span>New York</span></figcaption>
+        </figure>`
+  : '';
+
 const slots = {
+  portrait,
+  'portrait-class': site.portrait ? ' has-portrait' : '',
   'visual-count': pad(visualItems.length),
   'visuals-intro': esc(visualsData.intro),
   visuals,
