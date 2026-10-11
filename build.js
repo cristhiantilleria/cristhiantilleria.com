@@ -34,7 +34,7 @@ projects.forEach((p) => {
 // A project without a cover image falls back to one of the three abstract placeholders.
 const cover = (p, i) => {
   const still = p.cover ? img(p.cover, i === 0 ? 1600 : 1080) : '';
-  if (p.video) return `<div class="media"><video class="art art--vid" src="${esc(encodeURI(p.video))}"${still ? ` poster="${esc(still)}"` : ''} muted loop playsinline preload="none" data-autoplay></video></div>`;
+  if (p.video) return `<div class="media"><video class="art art--vid" src="${esc(encodeURI(p.video))}"${still ? ` poster="${esc(still)}"` : ''} muted loop playsinline preload="metadata" data-autoplay></video></div>`;
   return `<div class="media">${p.cover
     ? `<div class="art art--img" style="background-image:url('${esc(still)}')"></div>`
     : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
