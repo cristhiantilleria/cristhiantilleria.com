@@ -48,6 +48,8 @@ content:
     path: content/site.json
     format: json
     fields:
+      - { name: url, label: Site address, type: string }
+      - { name: description, label: Search description (home page), type: text }
       - { name: email, label: Contact email, type: string }
       - { name: bookingUrl, label: Calendar booking link, type: string }
       - { name: status, label: Availability status, type: string }

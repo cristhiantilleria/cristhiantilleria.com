@@ -49,11 +49,8 @@
       "source": "/projects/(.*)",
       "destination": "/",
       "permanent": false
-    },
-    {
-      "source": "/about",
-      "destination": "/",
-      "permanent": false
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }
