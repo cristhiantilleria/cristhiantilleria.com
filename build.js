@@ -105,8 +105,8 @@ const socials = site.socials || [];
 const half = Math.ceil(socials.length / 2);
 
 const visualItems = (visualsData.items || []).filter((v) => v.image);
-const visuals = visualItems.map((v, i) => `          <figure class="visual fade" data-reveal style="--d:${(i % 3) * 120}">
-            <img src="${esc(img(v.image, 1080))}" alt="${esc(v.title || '')}" loading="lazy">
+const visuals = visualItems.map((v, i) => `          <figure class="visual" data-full="${esc(img(v.image, 2400))}">
+            <img src="${esc(img(v.image, 640))}" alt="${esc(v.title || '')}" loading="lazy">
             <figcaption><span class="bullet">${i + 1}</span><b>${esc(v.title || '')}</b><span class="mono">${esc(v.kind || '')}</span></figcaption>
           </figure>`).join('\n');
 
@@ -142,6 +142,8 @@ const slots = {
   portrait,
   'portrait-class': site.portrait ? ' has-portrait' : '',
   'visual-count': pad(visualItems.length),
+  'visual-count-short': String(visualItems.length),
+  'visuals-title': 'Visuals',
   'visuals-intro': esc(visualsData.intro),
   visuals,
   'socials-hero': socials.slice(0, 3).map((s) => '            ' + social(s)).join('\n'),

@@ -410,14 +410,25 @@
 
   /* ---------- visuals page ---------- */
   .visuals__title { grid-column: 1 / -1; font-size: clamp(64px, min(17.4vw, 34vh), 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; }
-  .visuals { grid-column: 1 / -1; columns: 3; column-gap: calc(var(--gap) * 2); margin-top: clamp(20px, 2.5vw, 50px); }
-  .visual { break-inside: avoid; margin: 0 0 calc(var(--gap) * 2); border: var(--bw) solid var(--ink); background: var(--bg); }
+  .vz { position: relative; height: 100vh; height: 100svh; overflow: hidden; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .vz.is-drag { cursor: grabbing; }
+  .vz__canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s var(--ease-out); }
+  .vz.in .vz__canvas { opacity: 1; }
+  .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; will-change: transform; transition: box-shadow .5s var(--ease-out); }
+  .vz__canvas .visual:hover { box-shadow: 8px 8px 0 var(--ink); z-index: 2; }
+  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; }
+  .vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(10px, 1.2vw, 20px); z-index: 5; pointer-events: none; box-shadow: 0 0 0 var(--bw) var(--bg); }
+  .vz__bar .mono { margin-left: 0; }
+  .vz__bar .vz__intro { margin-left: auto; opacity: .7; }
+  body[data-view="visuals"] .footer { display: none; }
+  /* over the canvas the header gets a solid strip so it stays readable on top of photos */
+  body[data-view="visuals"] .header { mix-blend-mode: normal; color: var(--ink); background: var(--bg); border-bottom: var(--bw) solid var(--ink); --blk-ink: var(--bg); }
+  body[data-view="visuals"] .header .logo, body[data-view="visuals"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
+  .visual { border: var(--bw) solid var(--ink); background: var(--bg); }
   .visual img { display: block; width: 100%; height: auto; }
   .visual figcaption { display: flex; align-items: center; gap: .8em; padding: clamp(8px, .8vw, 14px); border-top: var(--bw) solid var(--ink); }
   .visual b { font-size: clamp(15px, 1.25vw, 22px); letter-spacing: -.04em; line-height: 1; }
   .visual .mono { margin-left: auto; }
-  @media (max-width: 1100px) { .visuals { columns: 2; } }
-  @media (max-width: 760px) { .visuals { columns: 1; } .visual { margin-bottom: 16px; } }
 
   /* ---------- cursor tag ---------- */
   .cursor-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: .6em .8em; background: var(--bg); color: var(--ink); border: var(--bw) solid var(--ink); font-weight: 700; opacity: 0; scale: .6; transition: opacity .4s, scale .55s var(--ease-out), transform .28s ease-out; }
@@ -666,16 +677,15 @@
     </div>
     <!-- ================= VISUALS ================= -->
     <div class="view" data-view="visuals" data-title="Visuals — Cristhian Tilleria" tabindex="-1" hidden>
-      <section class="page grid">
-        <p class="page__kicker mono" data-reveal><span data-type>Visuals — <!--@visual-count--> pieces</span></p>
-        <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="Visuals"><span>Visuals</span></span></h1>
-        <p class="case__lead fade" data-reveal><!--@visuals-intro--></p>
-        <div class="visuals">
+      <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
+        <div class="vz__canvas"></div>
+        <div class="vz__src" hidden>
 <!--@visuals-->
         </div>
-        <div class="cta-row fade" data-reveal>
-          <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Book a free discovery call</span><span class="btn__arrow" aria-hidden="true"></span></a>
-          <a class="link mono" href="/" data-sweep>Back to the work</a>
+        <div class="bar vz__bar" data-reveal data-wait="900">
+          <span class="bullet"><!--@visual-count-short--></span><h1><!--@visuals-title--></h1>
+          <span class="mono vz__intro"><!--@visuals-intro--></span>
+          <span class="mono">Drag, scroll or use the arrow keys</span><span class="bar__a" aria-hidden="true">✥</span>
         </div>
       </section>
     </div>
@@ -1201,8 +1211,130 @@
     if (e.key === 'ArrowLeft') lbShow(lbAt - 1);
   });
 
+  /* ---------- visuals: an endless canvas you can drag in any direction ---------- */
+  function bindCanvas(scope) {
+    var vz = $('.vz', scope);
+    if (!vz || vz._bound) return;
+    vz._bound = true;
+    var stage = $('.vz__canvas', vz), src = $$('.vz__src .visual', vz);
+    if (!src.length) return;
+    var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, drag = null, travelled = 0, touched = 0, lastT = 0, relayout = 0, laid = '';
+    function mod(a, n) { return ((a % n) + n) % n; }
+
+    // Columns of tiles repeat the pieces; each column is tall enough to wrap without a visible gap.
+    function layout() {
+      var vw = vz.clientWidth, vh = vz.clientHeight;
+      G = Math.max(12, vw * .016);
+      CW = vw < 761 ? (vw - G) / 1.7 : Math.max(210, (vw - G * 4) / 4.35);
+      if (!vw || !vh) return;                       // the view is hidden; tick() lays out once it shows
+      laid = vw + 'x' + vh;
+      var n = Math.ceil((vw + CW + G) / (CW + G)) + 1;
+      PW = n * (CW + G);
+      stage.textContent = '';
+      cols = [];
+      var probe = src[0].cloneNode(true);            // measure the real caption height
+      probe.style.width = CW + 'px';
+      stage.appendChild(probe);
+      var cap = $('figcaption', probe).offsetHeight || 44;
+      stage.removeChild(probe);
+      for (var c = 0; c < n; c++) {
+        var col = { x: c * (CW + G), off: (c % 2 ? CW * .55 : 0) + (c % 3) * CW * .21, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
+        while (y < vh + tallest + G || col.items.length < 3) {
+          var s = src[k++ % src.length], h = CW * (s._ratio || 1.5) + cap;
+          var el = s.cloneNode(true);
+          el._source = s;
+          el.style.width = CW + 'px';
+          var im = $('img', el);
+          im.loading = 'eager';
+          im.addEventListener('load', measured);
+          stage.appendChild(el);
+          col.items.push({ el: el, y: y, h: h });
+          tallest = Math.max(tallest, h);
+          y += h + G;
+        }
+        col.h = y;
+        cols.push(col);
+      }
+      draw();
+    }
+    // Real image proportions arrive as images load; lay out again once if any differ from the guess.
+    function measured(e) {
+      var im = e.target, s = im.parentNode._source, r = im.naturalHeight / im.naturalWidth;
+      if (!r || (s._ratio && Math.abs(s._ratio - r) < .02)) return;
+      var guessed = s._ratio || 1.5;
+      s._ratio = r;
+      if (Math.abs(guessed - r) > .02) { clearTimeout(relayout); relayout = setTimeout(layout, 120); }
+    }
+    function draw() {
+      cols.forEach(function (col) {
+        var x = mod(col.x + ox + CW + G, PW) - CW - G;
+        col.items.forEach(function (it) {
+          var y = mod(it.y + oy + col.off + it.h, col.h) - it.h;
+          it.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+        });
+      });
+    }
+    function tick(now) {
+      requestAnimationFrame(tick);
+      if (!vz.offsetParent) { lastT = now; return; }
+      if (laid !== vz.clientWidth + 'x' + vz.clientHeight) layout();
+      var dt = Math.min(50, now - (lastT || now)) / 16.7;
+      lastT = now;
+      if (drag) return;
+      var coasting = Math.abs(vx) > .05 || Math.abs(vy) > .05;
+      if (coasting) { ox += vx * dt; oy += vy * dt; vx *= Math.pow(.94, dt); vy *= Math.pow(.94, dt); }
+      else if (!reduce && now - touched > 2600 && !lb.classList.contains('on')) oy -= .28 * dt;   // slow idle drift
+      else return;
+      draw();
+    }
+    vz.addEventListener('pointerdown', function (e) {
+      if (e.button) return;
+      drag = { x: e.clientX, y: e.clientY, ox: ox, oy: oy, px: e.clientX, py: e.clientY };
+      travelled = 0; vx = vy = 0; touched = performance.now();
+      vz.setPointerCapture(e.pointerId);
+      vz.classList.add('is-drag');
+    });
+    vz.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      ox = drag.ox + e.clientX - drag.x; oy = drag.oy + e.clientY - drag.y;
+      vx = e.clientX - drag.px; vy = e.clientY - drag.py;
+      travelled += Math.abs(vx) + Math.abs(vy);
+      drag.px = e.clientX; drag.py = e.clientY; touched = performance.now();
+      draw();
+    });
+    function release(e) {
+      if (!drag) return;
+      drag = null;
+      vz.classList.remove('is-drag');
+      if (travelled > 6 || e.type !== 'pointerup') return;
+      vx = vy = 0;
+      var hit = document.elementFromPoint(e.clientX, e.clientY), tile = hit && hit.closest('.vz__canvas .visual');
+      if (!tile) return;
+      lbSet = src;                                   // open the piece in the image viewer
+      $('.lb__title').textContent = 'Visuals';
+      lbShow(src.indexOf(tile._source));
+      lbToggle(true);
+    }
+    vz.addEventListener('pointerup', release);
+    vz.addEventListener('pointercancel', release);
+    vz.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      ox -= e.deltaX; oy -= e.deltaY; vx = vy = 0; touched = performance.now();
+      draw();
+    }, { passive: false });
+    addEventListener('keydown', function (e) {
+      if (!vz.offsetParent || lb.classList.contains('on')) return;
+      var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
+      if (!k) return;
+      e.preventDefault();
+      vx = k[0] * 26; vy = k[1] * 26; touched = performance.now();
+    });
+    layout();
+    requestAnimationFrame(tick);
+  }
+
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); }
+  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
   initView(document);
 </script>
 </body>
