@@ -402,7 +402,10 @@
   /* ---------- image viewer ---------- */
   .lb { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr auto; background: rgba(7, 7, 7, .97); color: #f4f2ec; opacity: 0; visibility: hidden; transition: opacity .45s, visibility .45s; }
   .lb.on { opacity: 1; visibility: visible; }
-  .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); }
+  .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); opacity: 0; transform: translateY(10px); transition: opacity .5s, transform .7s var(--ease-out); }
+  .lb.on .lb__row { opacity: 1; transform: none; transition-delay: .45s; }
+  .lb__title { font-family: "Inter Tight", sans-serif; text-transform: none; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
+  .lb__stage img { will-change: transform; }
   .lb__stage { position: relative; min-height: 0; margin: 0 var(--pad); cursor: zoom-out; }
   .lb__stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .lb button { padding: .6em .9em; border: var(--bw) solid currentColor; font-weight: 700; transition: background-color .3s, color .3s; }
@@ -414,9 +417,11 @@
   .vz.is-drag { cursor: grabbing; }
   .vz__canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s var(--ease-out); }
   .vz.in .vz__canvas { opacity: 1; }
-  .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; will-change: transform; transition: box-shadow .5s var(--ease-out); }
-  .vz__canvas .visual:hover { box-shadow: 8px 8px 0 var(--ink); z-index: 2; }
-  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; }
+  .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; border: 0; background: none; overflow: hidden; will-change: transform; }
+  .vz__canvas .visual figcaption { display: none; }
+  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out), filter .6s; }
+  .vz__canvas .visual:hover img { transform: scale(1.04); }
+  .vz.is-drag .visual img { transform: none; }
   .vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(10px, 1.2vw, 20px); z-index: 5; pointer-events: none; box-shadow: 0 0 0 var(--bw) var(--bg); }
   .vz__bar .mono { margin-left: 0; }
   .vz__bar .vz__intro { margin-left: auto; opacity: .7; }
@@ -436,17 +441,13 @@
 
   /* ---------- full-screen sections (desktop) ---------- */
   @media (min-width: 761px) {
-    .section, .screen, .footer { min-height: 100vh; min-height: 100svh; }
+    .section, .footer { min-height: 100vh; min-height: 100svh; }
     .section { padding-top: var(--page-top); padding-bottom: clamp(14px, 1.6vw, 30px); grid-template-rows: auto 1fr; }
     .works { min-height: 0; grid-template-rows: none; padding-bottom: clamp(40px, 5vw, 100px); }
     .svc-list { display: flex; flex-direction: column; }
     .svc-list li { flex: 1; display: flex; }
     .svc { flex: 1; align-content: center; }
-    .screen { display: flex; flex-direction: column; }
-    .screen .ticker { margin-top: 0; }
-    .screen .section { flex: 1; min-height: 0; grid-template-rows: auto; align-content: center; }
-    #process { grid-template-rows: auto 1fr auto; }
-    .step { min-height: 0; }
+    .screen .section, #process { min-height: 0; grid-template-rows: none; padding-bottom: clamp(40px, 5vw, 100px); }
     .footer { margin-top: 0; padding-top: var(--page-top); align-content: space-between; }
     body[data-view="contact"] .footer { min-height: 0; }
   }
@@ -1178,18 +1179,46 @@
   function bindVideos(scope) { $$('video[data-autoplay]', scope).forEach(function (v) { if (!v._seen) { v._seen = true; videoIO.observe(v); } }); }
 
   /* ---------- image viewer for project galleries ---------- */
-  var lb = $('.lb'), lbImg = $('.lb__stage img'), lbSet = [], lbAt = 0;
+  var lb = $('.lb'), lbImg = $('.lb__stage img'), lbSet = [], lbAt = 0, lbFrom = null;
   function lbShow(n) {
     lbAt = (n + lbSet.length) % lbSet.length;
-    lbImg.src = lbSet[lbAt].dataset.full;
-    lbImg.alt = $('img', lbSet[lbAt]).alt;
+    var el = lbSet[lbAt], small = $('img', el), full = el.dataset.full;
+    lbImg.src = small.getAttribute('src');          // already loaded, so it shows at once
+    lbImg.alt = small.alt;
+    if (full && full !== lbImg.getAttribute('src')) {
+      var hi = new Image();
+      hi.onload = function () { if (lbSet[lbAt] === el && lb.classList.contains('on')) lbImg.src = full; };
+      hi.src = full;
+    }
+    var name = $('figcaption b', el), kind = $('figcaption .mono', el);
+    if (name) $('.lb__title').textContent = name.textContent + (kind && kind.textContent ? ' — ' + kind.textContent : '');
     $('.lb__count').textContent = ('0' + (lbAt + 1)).slice(-2) + ' / ' + ('0' + lbSet.length).slice(-2);
   }
-  function lbToggle(open) {
+  // Transform that makes the viewer image sit exactly over a tile on the page.
+  function lbOver(tile) {
+    var r = tile.getBoundingClientRect(), s = $('.lb__stage').getBoundingClientRect();
+    var w = Math.min(s.width, s.height * r.width / r.height);
+    return 'translate(' + (r.left + r.width / 2 - s.left - s.width / 2).toFixed(1) + 'px,' + (r.top + r.height / 2 - s.top - s.height / 2).toFixed(1) + 'px) scale(' + (r.width / w).toFixed(4) + ')';
+  }
+  function lbToggle(open, from) {
+    if (open) {
+      lbFrom = from || null;
+      if (lbFrom && !reduce) {                      // grow out of the clicked tile
+        lbImg.style.transition = 'none';
+        lbImg.style.transform = lbOver(lbFrom);
+        void lbImg.offsetWidth;
+        lbImg.style.transition = 'transform .9s var(--ease-out)';
+        lbImg.style.transform = '';
+      }
+    } else if (lbFrom && lbFrom.isConnected && lbFrom._source === lbSet[lbAt] && !reduce) {
+      lbImg.style.transition = 'transform .6s var(--ease-in-out)';   // shrink back into its tile
+      lbImg.style.transform = lbOver(lbFrom);
+    }
     lb.classList.toggle('on', open);
     lb.setAttribute('aria-hidden', String(!open));
     if (lenis) open ? lenis.stop() : lenis.start();
-    if (open) $('[data-lb="close"]', lb).focus(); else lbImg.removeAttribute('src');
+    if (open) $('[data-lb="close"]', lb).focus();
+    else setTimeout(function () { if (!lb.classList.contains('on')) { lbImg.removeAttribute('src'); lbImg.style.transition = 'none'; lbImg.style.transform = ''; } }, 650);
   }
   document.addEventListener('click', function (e) {
     var shot = e.target.closest('.shot');
@@ -1232,11 +1261,7 @@
       PW = n * (CW + G);
       stage.textContent = '';
       cols = [];
-      var probe = src[0].cloneNode(true);            // measure the real caption height
-      probe.style.width = CW + 'px';
-      stage.appendChild(probe);
-      var cap = $('figcaption', probe).offsetHeight || 44;
-      stage.removeChild(probe);
+      var cap = 0;                                   // tiles are the image alone
       for (var c = 0; c < n; c++) {
         var col = { x: c * (CW + G), off: (c % 2 ? CW * .55 : 0) + (c % 3) * CW * .21, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
         while (y < vh + tallest + G || col.items.length < 3) {
@@ -1310,10 +1335,9 @@
       vx = vy = 0;
       var hit = document.elementFromPoint(e.clientX, e.clientY), tile = hit && hit.closest('.vz__canvas .visual');
       if (!tile) return;
-      lbSet = src;                                   // open the piece in the image viewer
-      $('.lb__title').textContent = 'Visuals';
+      lbSet = src;                                   // open the piece: it grows out of its tile and its details appear
       lbShow(src.indexOf(tile._source));
-      lbToggle(true);
+      lbToggle(true, tile);
     }
     vz.addEventListener('pointerup', release);
     vz.addEventListener('pointercancel', release);
