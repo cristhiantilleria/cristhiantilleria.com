@@ -39,9 +39,16 @@ const cover = (p, i) => {
     ? `<div class="art art--img" style="background-image:url('${esc(still)}')"></div>`
     : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
 };
-const cards = projects.map((p, i) => `        <a class="work" href="/work/${p.slug}" data-reveal data-cursor="View project">
-          ${cover(p, i).replace('<div class="media">', `<div class="media"><span class="work__tag mono">${esc(p.type)}</span>`)}
-          <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="work__more mono">View more <i aria-hidden="true">↗</i></span></span>
+const cards = projects.map((p, i) => `        <a class="work${i % 2 ? ' work--flip' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
+          <div class="work__frame">${cover(p, 0)}</div>
+          <div class="work__info">
+            <span class="mono muted">Project ${letter(i)} — ${pad(i + 1, 2)}/${pad(projects.length, 2)}</span>
+            <b class="work__title">${esc(p.title)}</b>
+            <dl class="work__facts mono">
+              ${[['Type', p.type], ['Year', p.year]].filter((f) => f[1]).map((f) => `<div><dt class="muted">${f[0]}</dt><dd>${esc(f[1])}</dd></div>`).join('')}
+            </dl>
+            <span class="work__more mono">View more<i aria-hidden="true">↗</i></span>
+          </div>
         </a>`).join('\n');
 
 /* ---------- project pages ---------- */
