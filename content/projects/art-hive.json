@@ -5,15 +5,16 @@
   "role": "Concept work, corporate identity, logo design",
   "order": 3,
   "published": true,
-  "cover": "/media/projects/art-hive/image.webp",
-  "video": "/media/projects/art-hive/reel.mp4",
+  "cover": "/media/projects/art-hive/image-1.webp",
   "link": "",
+  "blurb": "A warm identity for a hotel concept made for urban travelers who value experience and good design.",
   "summary": "A hotel concept for urban travelers seeking affordable accommodations that prioritize experiences and appreciate good design. Cozy, memorable, infused with a touch of creativity.",
   "approach": "Identity as hospitality — warm geometry, soft tones, signage that whispers rather than shouts.",
   "gallery": [
+    "/media/projects/art-hive/image.webp",
     "/media/projects/art-hive/image-2.webp",
-    "/media/projects/art-hive/image-3.webp",
-    "/media/projects/art-hive/image-1.webp"
+    "/media/projects/art-hive/image-3.webp"
   ],
-  "body": ""
+  "body": "",
+  "video": ""
 }

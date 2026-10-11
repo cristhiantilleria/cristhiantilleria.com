@@ -225,8 +225,10 @@
   .art { position: absolute; inset: 0; transform: scale(1.15); filter: grayscale(1) contrast(1.1); transition: transform 2.4s var(--ease-out), filter .8s; }
   .in .art { transform: scale(1); }
   .work:hover .art { transform: scale(1.05); filter: none; }
-  .work__cap { display: flex; align-items: center; gap: 1vw; padding: clamp(10px, 1vw, 18px); border-top: var(--bw) solid var(--ink); transition: background-color .4s, color .4s; }
-  .work:hover .work__cap { background: var(--ink); color: var(--bg); }
+  .work__info { display: block; border-top: var(--bw) solid var(--ink); transition: background-color .4s, color .4s; }
+  .work:hover .work__info { background: var(--ink); color: var(--bg); }
+  .work__cap { display: flex; align-items: center; gap: 1vw; padding: clamp(10px, 1vw, 18px); }
+  .work__desc { display: block; max-width: 52ch; padding: 0 clamp(10px, 1vw, 18px) clamp(12px, 1.2vw, 22px); font-size: clamp(14px, 1.1vw, 19px); line-height: 1.3; letter-spacing: -.015em; }
   .work:hover .work__cap .bullet { background: var(--bg); color: var(--ink); }
   .work__cap b { font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
   .work__cap .mono { margin-left: auto; }

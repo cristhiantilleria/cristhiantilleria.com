@@ -41,7 +41,10 @@ const cover = (p, i) => {
 };
 const cards = projects.map((p, i) => `        <a class="work${i === 0 ? ' work--wide' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
           ${cover(p, i)}
-          <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="mono">${esc(p.type)}</span></span>
+          <span class="work__info">
+            <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="mono">${esc(p.type)}</span></span>
+            ${p.blurb ? `<span class="work__desc">${esc(p.blurb)}</span>` : ''}
+          </span>
         </a>`).join('\n');
 
 /* ---------- project pages ---------- */
