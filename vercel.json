@@ -1,73 +1,44 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": null,
-  "installCommand": null,
-  "outputDirectory": ".",
-  "trailingSlash": true,
+  "installCommand": "echo 'no dependencies'",
+  "buildCommand": "node build.js",
+  "outputDirectory": "dist",
   "headers": [
-    {
-      "source": "/(.*)\\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|mp4|pdf)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     }
   ],
   "redirects": [
     {
+      "source": "/design/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/photography/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/projects/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/about",
       "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/design",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/design/",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/photography",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/photography/",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/projects/fermenters",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/projects/1984-bookcover",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/projects/bit-market",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/projects/:slug",
-      "destination": "/design/projects/:slug/",
-      "permanent": true
+      "permanent": false
     }
   ]
 }

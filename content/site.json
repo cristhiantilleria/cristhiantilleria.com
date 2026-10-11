@@ -1,0 +1,59 @@
+{
+  "email": "hello@cristhiantilleria.com",
+  "bookingUrl": "",
+  "status": "Taking new projects",
+  "intro": "Hey, I'm Cristhian. I design and build websites people actually remember.",
+  "statement": "I design and build websites that are fast, clear and a little bit memorable. One person from first sketch to final deploy, so nothing gets lost between design and code.",
+  "ticker": [
+    "Taking new projects",
+    "Let's build something good",
+    "New York → Worldwide",
+    "No pitch, just a chat"
+  ],
+  "services": [
+    {
+      "title": "Web design",
+      "description": "Layout, type and visual direction for marketing sites, portfolios and landing pages."
+    },
+    {
+      "title": "Frontend development",
+      "description": "Responsive, accessible, fast-loading builds in clean HTML, CSS and JavaScript."
+    },
+    {
+      "title": "Motion & interaction",
+      "description": "Page transitions, scroll effects and micro-interactions that make a site feel alive."
+    },
+    {
+      "title": "The whole thing",
+      "description": "One person from first sketch to final deploy, so nothing gets lost in the handoff."
+    }
+  ],
+  "steps": [
+    {
+      "tag": "Free · 30 min",
+      "title": "Discovery call",
+      "description": "We talk through your goals, timeline and budget. No pitch, no pressure."
+    },
+    {
+      "tag": "Within days",
+      "title": "Proposal",
+      "description": "You get a clear scope, a timeline and a fixed quote before anything starts."
+    },
+    {
+      "tag": "In the open",
+      "title": "Design & build",
+      "description": "Regular check-ins and live previews, so there are no surprises at the end."
+    },
+    {
+      "tag": "And after",
+      "title": "Launch & care",
+      "description": "I ship it, test it on real devices and stay around for tweaks after launch."
+    }
+  ],
+  "socials": [
+    {
+      "label": "Instagram",
+      "url": "https://www.instagram.com/pipephoto_/"
+    }
+  ]
+}
