@@ -30,20 +30,13 @@ projects.forEach((p) => {
   p.initials = p.title.split(/\s+|(?=[A-Z])/).filter(Boolean).map((w) => w[0]).join('').slice(0, 3).toUpperCase();
 });
 
-/* ---------- home page: project cards with a looping cover reel ---------- */
-const reel = (p, i) => {
-  const frames = [...new Set([p.cover, ...p.gallery].filter(Boolean))].slice(0, 6);
-  if (!frames.length) return `<div class="media"><div class="art art-${(i % 3) + 1}"></div></div>`;
-  const w = i === 0 ? 1600 : 1080;
-  return `<div class="media reel" data-reel>
-            ${frames.map((f, n) => n === 0
-    ? `<img class="reel__f is-on" src="${esc(img(f, w))}" alt="" loading="lazy">`
-    : `<img class="reel__f" data-src="${esc(img(f, w))}" alt="">`).join('\n            ')}
-            ${frames.length > 1 ? `<span class="reel__ui mono" aria-hidden="true"><b class="reel__n">01</b>/${pad(frames.length, 2)}</span><span class="reel__bar" aria-hidden="true"><i></i></span>` : ''}
-          </div>`;
-};
+/* ---------- home page: project cards ---------- */
+// A project without a cover image falls back to one of the three abstract placeholders.
+const cover = (p, i) => `<div class="media">${p.cover
+  ? `<div class="art art--img" style="background-image:url('${esc(img(p.cover, i === 0 ? 1600 : 1080))}')"></div>`
+  : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
 const cards = projects.map((p, i) => `        <a class="work${i === 0 ? ' work--wide' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
-          ${reel(p, i)}
+          ${cover(p, i)}
           <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="mono">${esc(p.type)}</span></span>
         </a>`).join('\n');
 
