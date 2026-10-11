@@ -16,6 +16,8 @@
     --black: #070707;
     --bw: 2px;
     --pad: 3.2vw;
+    --page-top: clamp(84px, min(10vw, 14vh), 210px);   /* space under the fixed header */
+    --row: clamp(18px, min(3vw, 3.6vh), 56px);
     --gap: 1.1vw;
     --ease-out: cubic-bezier(.16, 1, .3, 1);
     --ease-in-out: cubic-bezier(.76, 0, .24, 1);
@@ -143,7 +145,7 @@
 
   .btn {
     display: inline-flex; align-items: center; gap: 1.2em;
-    padding: 1.15em 1.2em 1.15em 1.4em;
+    padding: clamp(.8em, 1.7vh, 1.15em) 1.2em clamp(.8em, 1.7vh, 1.15em) 1.4em;
     border: var(--bw) solid var(--ink);
     background: var(--ink); color: var(--bg); --blk-ink: var(--ink);
     font-weight: 700;
@@ -189,8 +191,8 @@
   .section { padding-top: clamp(70px, 8vw, 170px); row-gap: clamp(22px, 2.4vw, 44px); }
 
   /* ---------- hero ---------- */
-  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: clamp(84px, 7.4vw, 150px) 0 clamp(8px, .8vw, 16px); }
-  .hero__hey { grid-column: 1 / 6; font-weight: 700; font-size: clamp(22px, 2.55vw, 52px); line-height: 1.02; letter-spacing: -.045em; }
+  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: clamp(72px, min(7.4vw, 11vh), 150px) 0 clamp(8px, .8vw, 16px); }
+  .hero__hey { grid-column: 1 / 6; font-weight: 700; font-size: clamp(20px, min(2.55vw, 4.6vh), 52px); line-height: 1.02; letter-spacing: -.045em; }
   .hero__role { grid-column: 7 / 10; display: grid; gap: clamp(18px, 1.8vw, 32px); align-content: start; justify-items: start; }
   .role { font-weight: 600; font-size: clamp(15px, 1.15vw, 21px); line-height: 1.18; letter-spacing: -.03em; }
   .hero__meta { grid-column: 10 / -1; border-top: var(--bw) solid var(--ink); }
@@ -203,7 +205,7 @@
   .hero__foot.in > * { opacity: 1; }
   .hero__social { display: flex; gap: clamp(14px, 2.2vw, 36px); }
   .name, .h2, .statement, .touch { touch-action: pan-y; }
-  .name { padding-inline: var(--pad); font-weight: 700; font-size: min(17.4vw, 33vh); line-height: .84; letter-spacing: -.07em; white-space: nowrap; }
+  .name { padding-inline: var(--pad); font-weight: 700; font-size: min(17.4vw, 30vh); line-height: .84; letter-spacing: -.07em; white-space: nowrap; }
   .name__line { display: block; overflow: hidden; padding: .06em .04em .2em; margin: -.06em -.04em -.2em; }
   .name__line:nth-child(2) { text-align: right; }
   .name .char { display: inline-block; transform: translateY(125%); will-change: transform; }
@@ -300,12 +302,12 @@
   .cta-row { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 14px 28px; }
 
   /* ---------- about page ---------- */
-  .page { padding-top: clamp(110px, 10vw, 210px); padding-bottom: clamp(90px, 10vw, 200px); min-height: 100vh; row-gap: clamp(28px, 3vw, 56px); align-content: start; }
+  .page { padding-top: var(--page-top); padding-bottom: clamp(90px, 10vw, 200px); min-height: 100vh; row-gap: var(--row); align-content: start; }
   .page__kicker { grid-column: 1 / -1; }
-  .statement { grid-column: 1 / 12; font-weight: 700; font-size: clamp(30px, 5.2vw, 108px); line-height: .98; letter-spacing: -.055em; }
-  .has-portrait .statement { grid-column: 1 / 9; font-size: clamp(30px, 4.3vw, 90px); }
+  .statement { grid-column: 1 / 12; font-weight: 700; font-size: clamp(30px, min(5.2vw, 9.5vh), 108px); line-height: .98; letter-spacing: -.055em; }
+  .has-portrait .statement { grid-column: 1 / 9; font-size: clamp(30px, min(4.3vw, 8.2vh), 90px); }
   .portrait { grid-column: 9 / -1; align-self: start; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); }
-  .portrait .media { aspect-ratio: 4 / 5; }
+  .portrait .media { aspect-ratio: 4 / 5; max-height: calc(100svh - var(--page-top) - var(--row) - 96px); }
   .portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); transition: transform 2.4s var(--ease-out); }
   .portrait.in img { transform: scale(1); }
   .portrait figcaption { display: flex; justify-content: space-between; gap: 1em; padding: clamp(8px, .8vw, 14px); border-top: var(--bw) solid var(--ink); }
@@ -315,27 +317,27 @@
   .facts dd { font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); line-height: 1.05; letter-spacing: -.045em; }
 
   /* ---------- contact page ---------- */
-  .contact__title { grid-column: 1 / -1; }
-  .contact__aside { grid-column: 1 / 5; margin-top: clamp(20px, 2.5vw, 50px); display: grid; gap: clamp(26px, 2.6vw, 44px); align-content: start; justify-items: start; }
-  .contact__aside p.lead { font-weight: 600; font-size: clamp(17px, 1.5vw, 28px); line-height: 1.15; letter-spacing: -.035em; max-width: 22ch; }
+  .contact__title { grid-column: 1 / -1; font-size: clamp(36px, min(6.4vw, 9vh), 132px); }
+  .contact__aside { grid-column: 1 / 5; margin-top: clamp(4px, min(2.5vw, 2vh), 50px); display: grid; gap: clamp(14px, min(2.6vw, 2.8vh), 44px); align-content: start; justify-items: start; }
+  .contact__aside p.lead { font-weight: 600; font-size: clamp(16px, min(1.5vw, 2.6vh), 28px); line-height: 1.15; letter-spacing: -.035em; max-width: 22ch; }
   .checks { width: 100%; max-width: 36ch; border-top: var(--bw) solid var(--ink); }
   .checks li { display: flex; align-items: center; gap: 1em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
   .checks .bullet { font-size: 1.15em; }
   .copy { text-align: left; }
-  .copy b { display: block; font-family: "Inter Tight", sans-serif; font-weight: 700; text-transform: none; color: var(--ink); font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; margin-top: .3em; }
+  .copy b { display: block; font-family: "Inter Tight", sans-serif; font-weight: 700; text-transform: none; color: var(--ink); font-size: clamp(17px, min(1.9vw, 3.1vh), 36px); letter-spacing: -.045em; margin-top: .3em; }
 
-  .form { grid-column: 6 / -1; margin-top: clamp(20px, 2.5vw, 50px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(26px, 2.6vw, 44px) calc(var(--gap) * 2); align-content: start; }
+  .form { grid-column: 6 / -1; margin-top: clamp(4px, min(2.5vw, 2vh), 50px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, min(2.6vw, 2.6vh), 44px) calc(var(--gap) * 2); align-content: start; }
   .field { position: relative; display: block; }
   .field--wide { grid-column: 1 / -1; }
-  .field > span, .form legend { display: block; margin-bottom: .7em; }
-  .field input, .field textarea { width: 100%; padding: .3em 0 .45em; font-weight: 600; font-size: clamp(18px, 1.9vw, 34px); letter-spacing: -.04em; border-bottom: var(--bw) solid var(--ink); outline: 0; resize: none; }
+  .field > span, .form legend { display: block; margin-bottom: .5em; }
+  .field input, .field textarea { width: 100%; padding: .2em 0 .35em; font-weight: 600; font-size: clamp(17px, min(1.9vw, 3.1vh), 34px); letter-spacing: -.04em; border-bottom: var(--bw) solid var(--ink); outline: 0; resize: none; }
   .field::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .9s var(--ease-out); }
   .field:focus-within::after { transform: scaleX(1); }
   .field ::placeholder { color: var(--muted); opacity: .6; }
   .form fieldset { grid-column: 1 / -1; border: 0; min-width: 0; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .chip span { display: block; padding: .85em 1.1em; border: var(--bw) solid var(--ink); font-weight: 700; cursor: pointer; transition: background-color .35s, color .35s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
+  .chip span { display: block; padding: clamp(.5em, 1.1vh, .85em) 1.1em; border: var(--bw) solid var(--ink); font-weight: 700; cursor: pointer; transition: background-color .35s, color .35s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
   .chip:hover span { transform: translate(-3px, -3px); box-shadow: 4px 4px 0 var(--ink); }
   .chip input:checked + span { background: var(--ink); color: var(--bg); }
   .chip input:focus-visible + span { outline: var(--bw) dashed var(--ink); outline-offset: 3px; }
@@ -357,7 +359,7 @@
   /* ---------- case study pages ---------- */
   .case__title { grid-column: 1 / -1; }
   .case__cover { grid-column: 1 / -1; border: var(--bw) solid var(--ink); }
-  .case__cover .media { aspect-ratio: 16 / 8; }
+  .case__cover .media { aspect-ratio: 16 / 8; max-height: calc(100svh - var(--page-top) - var(--row) * 3 - clamp(40px, 6.4vw, 132px) - 40px); }
   .case__lead { grid-column: 1 / 8; font-weight: 700; font-size: clamp(22px, 2.55vw, 52px); line-height: 1.04; letter-spacing: -.045em; }
   .case__body { grid-column: 7 / -1; font-size: clamp(16px, 1.3vw, 23px); line-height: 1.4; letter-spacing: -.015em; }
   .case__body > * + * { margin-top: 1em; }
@@ -370,7 +372,7 @@
   .case__cover .art { filter: none; }
 
   /* ---------- visuals page ---------- */
-  .visuals__title { grid-column: 1 / -1; font-size: clamp(64px, 17.4vw, 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; }
+  .visuals__title { grid-column: 1 / -1; font-size: clamp(64px, min(17.4vw, 34vh), 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; }
   .visuals { grid-column: 1 / -1; columns: 3; column-gap: calc(var(--gap) * 2); margin-top: clamp(20px, 2.5vw, 50px); }
   .visual { break-inside: avoid; margin: 0 0 calc(var(--gap) * 2); border: var(--bw) solid var(--ink); background: var(--bg); }
   .visual img { display: block; width: 100%; height: auto; }
@@ -591,7 +593,7 @@
               <label class="chip"><input type="radio" name="budget" value="Not sure yet" checked><span>Not sure yet</span></label>
             </div>
           </fieldset>
-          <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="3" placeholder="What are you building, and when do you need it?"></textarea></label>
+          <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="2" placeholder="What are you building, and when do you need it?"></textarea></label>
           <div class="cta-row fade" style="--d:400">
             <button class="btn mono" type="submit" data-magnetic><span data-sweep>Request a discovery call</span><span class="btn__arrow" aria-hidden="true"></span></button>
             <span class="mono muted" role="status" data-status>Opens your email app with everything filled in</span>
