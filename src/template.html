@@ -364,18 +364,6 @@
   .case__body a { text-decoration: underline; text-decoration-thickness: var(--bw); text-underline-offset: 4px; }
   .case__body ul, .case__body ol { padding-left: 1.2em; list-style: revert; }
 
-  /* ---------- cover reels on the home page ---------- */
-  .reel__f { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.1); filter: grayscale(1) contrast(1.06); transition: transform 6s linear, filter .8s; }
-  .reel__f.is-on { opacity: 1; z-index: 1; transform: scale(1); }
-  .reel__f.is-in { opacity: 1; z-index: 2; transform: scale(1); animation: reel-in 1.4s var(--ease-in-out) both; }
-  @keyframes reel-in { from { clip-path: var(--from, inset(0 0 0 100%)); } to { clip-path: inset(0); } }
-  .work:hover .reel__f { filter: none; }
-  .reel__ui { position: absolute; left: 0; bottom: 0; z-index: 3; padding: .55em .8em; background: var(--ink); color: var(--bg); font-weight: 700; }
-  .reel__ui b { font-weight: 700; }
-  .reel__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 4px; }
-  .reel__bar i { display: block; height: 100%; background: var(--ink); transform-origin: 0 50%; animation: reel-bar 3.4s linear infinite; }
-  @keyframes reel-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
   /* ---------- project pages ---------- */
   .cs__first { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; gap: var(--row); padding: var(--page-top) var(--pad) clamp(12px, 1.2vw, 24px); }
   .cs__title { font-size: clamp(48px, min(calc(185vw / var(--chars)), 17.4vw, 30vh), 360px); line-height: .84; letter-spacing: -.07em; margin-left: -.03em; white-space: nowrap; }
@@ -1146,42 +1134,6 @@
     });
   }
 
-  /* ---------- cover reels: each project card loops through its own images ---------- */
-  var REEL_FROM = ['inset(0 0 0 100%)', 'inset(100% 0 0 0)', 'inset(0 100% 0 0)', 'inset(0 0 100% 0)'];
-  var reelIO = new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) { en.target._seen = en.isIntersecting; });
-  }, { threshold: .35 });
-  function bindReels(scope) {
-    $$('[data-reel]', scope).forEach(function (r) {
-      var frames = $$('.reel__f', r);
-      if (r._reel || frames.length < 2 || reduce) return;
-      r._reel = true;
-      reelIO.observe(r);
-      var i = 0, turn = 0, moving = false, count = $('.reel__n', r);
-      setInterval(function () {
-        if (moving || !r._seen || document.hidden || r.closest('[hidden]')) return;
-        var j = (i + 1) % frames.length, next = frames[j];
-        moving = true;
-        function swap() {
-          next.style.setProperty('--from', REEL_FROM[turn++ % REEL_FROM.length]);
-          next.classList.add('is-in');
-          count.textContent = ('0' + (j + 1)).slice(-2);
-          setTimeout(function () {
-            frames[i].classList.remove('is-on');
-            next.classList.remove('is-in');
-            next.classList.add('is-on');
-            i = j; moving = false;
-          }, 1450);
-        }
-        if (next.dataset.src) {          // frames after the first load only when the reel reaches them
-          next.src = next.dataset.src;
-          next.removeAttribute('data-src');
-          (next.decode ? next.decode() : Promise.resolve()).then(swap, function () { moving = false; });
-        } else swap();
-      }, 3400);
-    });
-  }
-
   /* ---------- image viewer for project galleries ---------- */
   var lb = $('.lb'), lbImg = $('.lb__stage img'), lbSet = [], lbAt = 0;
   function lbShow(n) {
@@ -1217,7 +1169,7 @@
   });
 
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindReels(scope); }
+  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); }
   initView(document);
 </script>
 </body>

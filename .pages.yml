@@ -26,7 +26,7 @@ content:
       - { name: summary, label: Summary (one or two sentences), type: text }
       - { name: approach, label: Approach (short paragraph), type: text }
       - name: gallery
-        label: Gallery (the first five also play in the home page cover reel)
+        label: Gallery
         type: image
         options:
           multiple:
