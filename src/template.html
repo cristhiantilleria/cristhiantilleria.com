@@ -24,7 +24,7 @@
     --t-loader-in: .25s;
     --t-loader-out: 1.9s;
     --t-curtain: 2.05s;
-    --t-title: 2.55s;
+    --t-title: 2.7s;
   }
   body.is-dark { --bg: #0a0a0a; --ink: #f4f2ec; --muted: #8b8983; }
 
@@ -196,7 +196,11 @@
   .hero__meta { grid-column: 10 / -1; border-top: var(--bw) solid var(--ink); }
   .hero__meta div { display: flex; justify-content: space-between; gap: 1em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
   .hero__meta dd { text-align: right; }
-  .hero__foot { margin: auto var(--pad) 0; padding: 10px 0; border-top: var(--bw) solid var(--ink); display: flex; justify-content: space-between; align-items: center; }
+  .hero__foot { position: relative; margin: auto var(--pad) 0; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+  .hero__foot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: var(--bw); background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.8s var(--ease-in-out); }
+  .hero__foot.in::before { transform: scaleX(1); }
+  .hero__foot > * { opacity: 0; transition: opacity 1.4s var(--ease-out) .7s; }
+  .hero__foot.in > * { opacity: 1; }
   .hero__social { display: flex; gap: clamp(14px, 2.2vw, 36px); }
   .name, .h2, .statement, .touch { touch-action: pan-y; }
   .name { padding-inline: var(--pad); font-weight: 700; font-size: min(17.4vw, 33vh); line-height: .84; letter-spacing: -.07em; white-space: nowrap; }
@@ -414,7 +418,7 @@
   @media (prefers-reduced-motion: reduce) {
     .loader { animation: loader-fade .4s linear .6s forwards; }
     .loader__line > span, .name .char, .name.play .char { animation: none; transform: none; opacity: 1; }
-    .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
+    .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
     @keyframes loader-fade { to { opacity: 0; visibility: hidden; } }
@@ -453,12 +457,12 @@
     <div class="view" data-view="index" data-title="Cristhian Tilleria — Folio 2026" tabindex="-1">
       <section class="hero">
         <div class="grid">
-          <p class="hero__hey" data-reveal data-wait="700"><span class="fade" style="display:block"><!--@intro--></span></p>
-          <div class="hero__role" data-reveal data-wait="820">
+          <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block"><!--@intro--></span></p>
+          <div class="hero__role" data-reveal data-wait="1750">
             <p class="role fade">Freelance frontend developer &amp; web designer<br>Based in New York, US</p>
             <a class="btn mono fade" style="--d:120" href="#/contact" data-magnetic><span data-sweep>Book a free discovery call</span><span class="btn__arrow" aria-hidden="true"></span></a>
           </div>
-          <dl class="hero__meta mono fade" data-reveal data-wait="940">
+          <dl class="hero__meta mono fade" data-reveal data-wait="2000">
             <div><dt class="muted">Lat / Long</dt><dd data-type>40.7128° N, 74.0060° W</dd></div>
             <div><dt class="muted">NYC time</dt><dd class="clock"></dd></div>
             <div><dt class="muted">Status</dt><dd class="avail"><span class="dot"></span><span data-type><!--@status--></span></dd></div>
@@ -466,7 +470,7 @@
           </dl>
         </div>
 
-        <div class="hero__foot mono fade" data-reveal data-wait="1050">
+        <div class="hero__foot mono" data-reveal data-wait="900">
           <button class="hero__scroll mono" type="button" data-scroll="#works" data-sweep>↓ Scroll, the good stuff is below</button>
           <ul class="hero__social">
 <!--@socials-hero-->
@@ -755,7 +759,7 @@
       scrollToY(0, true);
       if (lenis) lenis.resize();
       $$('[data-reveal]', views[name]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
-      if (name === 'index') { heroName.classList.remove('play'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
+      if (name === 'index') { heroName.classList.remove('play'); heroName.style.setProperty('--t-title', '.35s'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
       body.classList.remove('is-leaving');
       body.classList.add('is-entering');
       update();
@@ -778,11 +782,15 @@
   /* ---------- first load: curtain, then content ---------- */
   activate(route());
   var loader = $('.loader');
-  function unlock() { if (lenis) lenis.start(); root.classList.remove('is-loading'); root.style.setProperty('--t-title', '.35s'); }
+  function unlock() { if (lenis) lenis.start(); root.classList.remove('is-loading'); }
   loader.addEventListener('animationend', function (e) { if (e.target === loader) { loader.remove(); unlock(); } });
   setTimeout(unlock, 4000);
   enter(current, reduce ? 600 : 2500);
-  setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 3300);
+  setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
+  if (!reduce) {
+    setTimeout(function () { body.classList.add('is-entering'); }, 2150);
+    setTimeout(function () { if (!busy) body.classList.remove('is-entering'); }, 5200);
+  }
 
   /* ---------- New York clock ---------- */
   var clocks = $$('.clock');
