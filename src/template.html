@@ -220,6 +220,7 @@
   .media { position: relative; overflow: hidden; aspect-ratio: 4 / 3; clip-path: inset(100% 0 0 0); transition: clip-path 1.9s var(--ease-in-out); }
   .work--wide .media { aspect-ratio: 21 / 8; }
   .art--img { background-size: cover; background-position: center; }
+  .art--vid { width: 100%; height: 100%; object-fit: cover; }
   .in .media { clip-path: inset(0); }
   .art { position: absolute; inset: 0; transform: scale(1.15); filter: grayscale(1) contrast(1.1); transition: transform 2.4s var(--ease-out), filter .8s; }
   .in .art { transform: scale(1); }
@@ -1134,6 +1135,14 @@
     });
   }
 
+  /* ---------- cover videos play only while they are on screen ---------- */
+  var videoIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting && !reduce) { var p = en.target.play(); if (p) p.catch(function () {}); } else en.target.pause();
+    });
+  }, { threshold: .25 });
+  function bindVideos(scope) { $$('video[data-autoplay]', scope).forEach(function (v) { if (!v._seen) { v._seen = true; videoIO.observe(v); } }); }
+
   /* ---------- image viewer for project galleries ---------- */
   var lb = $('.lb'), lbImg = $('.lb__stage img'), lbSet = [], lbAt = 0;
   function lbShow(n) {
@@ -1169,7 +1178,7 @@
   });
 
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); }
+  function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); }
   initView(document);
 </script>
 </body>

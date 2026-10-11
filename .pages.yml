@@ -22,6 +22,7 @@ content:
       - { name: order, label: Order (1 = first and widest card), type: number }
       - { name: published, label: Show on site, type: boolean, default: true }
       - { name: cover, label: Cover image, type: image }
+      - { name: video, label: Cover video (optional short muted MP4 that loops on the home page card), type: file }
       - { name: link, label: Live site URL, type: string }
       - { name: summary, label: Summary (one or two sentences), type: text }
       - { name: approach, label: Approach (short paragraph), type: text }

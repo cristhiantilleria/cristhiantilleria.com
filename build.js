@@ -32,9 +32,13 @@ projects.forEach((p) => {
 
 /* ---------- home page: project cards ---------- */
 // A project without a cover image falls back to one of the three abstract placeholders.
-const cover = (p, i) => `<div class="media">${p.cover
-  ? `<div class="art art--img" style="background-image:url('${esc(img(p.cover, i === 0 ? 1600 : 1080))}')"></div>`
-  : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
+const cover = (p, i) => {
+  const still = p.cover ? img(p.cover, i === 0 ? 1600 : 1080) : '';
+  if (p.video) return `<div class="media"><video class="art art--vid" src="${esc(encodeURI(p.video))}"${still ? ` poster="${esc(still)}"` : ''} muted loop playsinline preload="none" data-autoplay></video></div>`;
+  return `<div class="media">${p.cover
+    ? `<div class="art art--img" style="background-image:url('${esc(still)}')"></div>`
+    : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
+};
 const cards = projects.map((p, i) => `        <a class="work${i === 0 ? ' work--wide' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
           ${cover(p, i)}
           <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="mono">${esc(p.type)}</span></span>
