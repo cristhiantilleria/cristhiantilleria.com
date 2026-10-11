@@ -7,3 +7,4 @@ Static site. `node build.js` combines `src/template.html` with the content in `c
 - **Design and behaviour:** `src/template.html`.
 - **Deploy:** pushes to `main` build and deploy on Vercel.
 
+- **Brand reels:** `tools/reels/` holds the Blender script and one storyboard per project. From the repo root: `Blender -b -P tools/reels/reel.py -- tools/reels/level-up.py media/projects/level-up/reel.mp4 1680 640`.

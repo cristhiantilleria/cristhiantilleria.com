@@ -59,7 +59,9 @@ const cases = projects.map((p, i) => {
         <p class="mono" data-reveal><span data-type>Project ${letter(i)} — ${pad(i + 1, 2)}/${pad(projects.length, 2)}</span></p>
         <h1 class="h2 cs__title" style="--chars:${p.title.length}" data-reveal data-wait="350"><span class="sq" data-text="${esc(p.title)}"><span>${esc(p.title)}</span></span></h1>
         <div class="bar" data-reveal data-wait="700"><span class="bullet">${letter(i)}</span><h2>${esc(p.type)}</h2><span class="mono">${esc(p.year)}</span><span class="bar__a" aria-hidden="true">↓</span></div>
-        ${p.cover ? `<div class="cs__cover" data-reveal data-wait="900"><div class="media"><img src="${esc(img(p.cover, 2400))}" alt="${esc(p.title)} cover"></div></div>` : ''}
+        ${p.video
+    ? `<div class="cs__cover" data-reveal data-wait="900"><div class="media"><video src="${esc(encodeURI(p.video))}"${p.cover ? ` poster="${esc(img(p.cover, 2400))}"` : ''} muted loop playsinline preload="metadata" data-autoplay></video></div></div>`
+    : p.cover ? `<div class="cs__cover" data-reveal data-wait="900"><div class="media"><img src="${esc(img(p.cover, 2400))}" alt="${esc(p.title)} cover"></div></div>` : ''}
       </section>
       <section class="cs__intro grid">
         ${p.summary ? `<p class="cs__lead fade" data-reveal>${esc(p.summary)}</p>` : ''}
