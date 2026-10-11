@@ -39,12 +39,9 @@ const cover = (p, i) => {
     ? `<div class="art art--img" style="background-image:url('${esc(still)}')"></div>`
     : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
 };
-const cards = projects.map((p, i) => `        <a class="work${i === 0 ? ' work--wide' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
-          ${cover(p, i)}
-          <span class="work__info">
-            <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="mono">${esc(p.type)}</span></span>
-            ${p.blurb ? `<span class="work__desc">${esc(p.blurb)}</span>` : ''}
-          </span>
+const cards = projects.map((p, i) => `        <a class="work" href="/work/${p.slug}" data-reveal data-cursor="View project">
+          ${cover(p, i).replace('<div class="media">', `<div class="media"><span class="work__tag mono">${esc(p.type)}</span>`)}
+          <span class="work__cap"><span class="bullet">${letter(i)}</span><b>${esc(p.title)}</b><span class="work__more mono">View more <i aria-hidden="true">↗</i></span></span>
         </a>`).join('\n');
 
 /* ---------- project pages ---------- */
