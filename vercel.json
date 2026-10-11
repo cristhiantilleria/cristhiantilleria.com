@@ -21,17 +21,32 @@
   ],
   "redirects": [
     {
-      "source": "/design/:path*",
+      "source": "/design",
       "destination": "/",
       "permanent": false
     },
     {
-      "source": "/photography/:path*",
+      "source": "/design/(.*)",
       "destination": "/",
       "permanent": false
     },
     {
-      "source": "/projects/:path*",
+      "source": "/photography",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/photography/(.*)",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/projects",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/projects/(.*)",
       "destination": "/",
       "permanent": false
     },
