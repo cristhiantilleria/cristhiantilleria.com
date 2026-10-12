@@ -79,22 +79,25 @@
     position: fixed; inset: 0; z-index: 100;
     background: var(--black);
     display: grid; place-items: center;
-    animation: curtain 1.1s var(--ease-in-out) var(--t-curtain) forwards;
+    min-height: 100lvh;
+    animation: curtain-late 1.1s var(--ease-in-out) 9s forwards;   /* safety net if scripts never run */
   }
+  .is-ready .loader { animation: curtain 1.1s var(--ease-in-out) var(--t-curtain) forwards; }
   .loader__text { text-align: center; font-weight: 700; font-size: clamp(22px, 2.75vw, 44px); line-height: 1.28; letter-spacing: -.02em; }
   .loader__line { display: block; overflow: hidden; }
-  .loader__line > span {
-    display: block;
-    transform: translateY(105%);
+  .loader__line > span { display: block; transform: translateY(105%); }
+  .is-ready .loader__line > span {
     animation:
       line-in .9s var(--ease-out) var(--t-loader-in) forwards,
       line-out .8s var(--ease-in-out) var(--t-loader-out) forwards;
   }
   .loader__line:nth-child(1) > span { color: #dcdcd8; }
-  .loader__line:nth-child(2) > span { color: #b1b2a8; animation-delay: calc(var(--t-loader-in) + .08s), calc(var(--t-loader-out) + .08s); }
+  .loader__line:nth-child(2) > span { color: #b1b2a8; }
+  .is-ready .loader__line:nth-child(2) > span { animation-delay: calc(var(--t-loader-in) + .08s), calc(var(--t-loader-out) + .08s); }
   @keyframes line-in  { to { transform: translateY(0); } }
   @keyframes line-out { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-105%); opacity: .4; } }
   @keyframes curtain  { to { transform: translateY(-100%); } }
+  @keyframes curtain-late { to { transform: translateY(-100%); } }
 
   /* ---------- 4-column Swiss grid lines ---------- */
   .guides { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
@@ -221,7 +224,7 @@
   .name__line { display: block; overflow: hidden; padding: .06em .04em .2em; margin: -.06em -.04em -.2em; }
   .name__line:nth-child(2) { text-align: right; }
   .name .char { display: inline-block; transform: translateY(125%); will-change: transform; }
-  .name.play .char { animation: char-in 1.7s var(--ease-out) forwards; animation-delay: calc(var(--t-title) + var(--i) * 48ms); }
+  .is-ready .name.play .char { animation: char-in 1.7s var(--ease-out) forwards; animation-delay: calc(var(--t-title) + var(--i) * 48ms); }
   @keyframes char-in { to { transform: translateY(0); } }
 
   /* ---------- works: one large feature row per project, alternating sides ---------- */
@@ -503,8 +506,8 @@
   @media (hover: none) { .cursor-tag { display: none; } }
 
   @media (prefers-reduced-motion: reduce) {
-    .loader { animation: loader-fade .4s linear .6s forwards; }
-    .loader__line > span, .name .char, .name.play .char { animation: none; transform: none; opacity: 1; }
+    .loader, .is-ready .loader { animation: loader-fade .4s linear .6s forwards; }
+    .loader__line > span, .is-ready .loader__line > span, .name .char, .is-ready .name.play .char { animation: none; transform: none; opacity: 1; }
     .ln > span, .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
@@ -922,13 +925,25 @@
   var loader = $('.loader');
   function unlock() { if (lenis) lenis.start(); root.classList.remove('is-loading'); }
   loader.addEventListener('animationend', function (e) { if (e.target === loader) { loader.remove(); unlock(); } });
-  setTimeout(unlock, 4000);
-  enter(current, reduce ? 600 : 2500);
-  setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
-  if (!reduce) {
+  // The intro clock starts only when the loader is really on screen: fonts in and a frame painted.
+  // On slow phones the page can take seconds to appear, and a clock that started earlier would
+  // have the curtain lifting before anyone saw it.
+  var introStarted = false;
+  function startIntro() {
+    if (introStarted) return;
+    introStarted = true;
+    root.classList.add('is-ready');
+    setTimeout(unlock, 4000);
+    enter(current, reduce ? 600 : 2500);
+    setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
+    if (reduce) return;
     setTimeout(function () { body.classList.add('is-entering'); }, 2150);
     setTimeout(function () { if (!busy) body.classList.remove('is-entering'); }, 5200);
+    if (current === 'index') setTimeout(function () { ripple(views.index.querySelector('.hero'), .18); }, 2850);
   }
+  Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), new Promise(function (r) { setTimeout(r, 1500); })])
+    .then(function () { requestAnimationFrame(function () { requestAnimationFrame(startIntro); }); });
+  setTimeout(startIntro, 3200);          // in case frames are not being produced (background tab)
 
   /* ---------- New York clock ---------- */
   var fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZoneName: 'short' });
@@ -1131,7 +1146,6 @@
   function ripple(scope, strength) {
     $$('.name, .h2', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
   }
-  if (current === 'index') setTimeout(ripple, 2850, views.index.querySelector('.hero'), .18);
 
   /* ---------- pointer micro-interactions ---------- */
   var tag = $('.cursor-tag');
