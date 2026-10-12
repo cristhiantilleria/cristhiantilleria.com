@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--@head-->
+<link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#f4f2ec">
 <meta name="author" content="Cristhian Tilleria">
 <meta name="geo.region" content="US-NY">
@@ -123,7 +125,7 @@
     mix-blend-mode: difference;
   }
   .header__id { display: flex; align-items: center; gap: 1.4ch; }
-  .logo { display: inline-grid; place-items: center; width: 2.3em; height: 2.3em; border-radius: 50%; background: #fff; color: #000; font-weight: 700; letter-spacing: -.02em; transition: transform 1s var(--ease-out); }
+  .logo { display: inline-grid; place-items: center; width: 2em; height: 2em; border-radius: 50%; background: #fff; color: #000; font-family: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.15em; font-weight: 700; letter-spacing: -.03em; line-height: 1; text-transform: none; transition: transform 1s var(--ease-out); }  /* the "ct" bullet from the brand kit */
   .header__id:hover .logo { transform: rotate(360deg); }
   .header nav ul { display: flex; align-items: center; gap: clamp(14px, 1.6vw, 28px); }
   .header nav a { display: inline-block; padding: 2px 0; }
@@ -537,7 +539,7 @@
   </div>
 
   <header class="header mono fade">
-    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span class="logo">CT</span><span data-sweep>New York</span><span class="clock clock--head"></span></a>
+    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span class="logo">ct</span><span data-sweep>New York</span><span class="clock clock--head"></span></a>
     <nav aria-label="Primary">
       <ul>
         <li><a href="/" data-nav="index" data-sweep>Work</a></li>
