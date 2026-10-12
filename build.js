@@ -36,13 +36,13 @@ const cover = (p, i) => {
   const still = p.cover ? img(p.cover, i === 0 ? 1600 : 1080) : '';
   if (p.video) return `<div class="media"><video class="art art--vid" src="${esc(encodeURI(p.video))}"${still ? ` poster="${esc(still)}"` : ''} muted loop playsinline preload="metadata" data-autoplay></video></div>`;
   return `<div class="media">${p.cover
-    ? `<div class="art art--img" style="background-image:url('${esc(still)}')"></div>`
+    ? `<img class="art art--img" src="${esc(still)}" alt="${esc(p.title)} — ${esc((p.type || 'project').toLowerCase())} by Cristhian Tilleria" loading="lazy">`
     : `<div class="art art-${(i % 3) + 1}"></div>`}</div>`;
 };
 const cards = projects.map((p, i) => `        <a class="work${i % 2 ? ' work--flip' : ''}" href="/work/${p.slug}" data-reveal data-cursor="View project">
           <div class="work__frame">${cover(p, 1)}</div>
           <div class="work__info">
-            <b class="work__title">${esc(p.title)}</b>
+            <h3 class="work__title">${esc(p.title)}</h3>
             ${p.type ? `<span class="work__type mono">${esc(p.type)}</span>` : ''}
             <span class="work__more mono">View more<i aria-hidden="true">↗</i></span>
           </div>
@@ -58,7 +58,7 @@ const cases = projects.map((p, i) => {
           <img src="${esc(img(g, n % SHOT.length === 0 ? 2400 : 1600))}" alt="${esc(p.title)}, image ${n + 1}" loading="lazy">
           <figcaption class="mono"><span>${esc(p.initials)} — ${pad(n + 1, 2)}/${pad(p.gallery.length, 2)}</span><span aria-hidden="true">+</span></figcaption>
         </figure>`).join('\n');
-  return `    <div class="view" data-view="work/${p.slug}" data-title="${esc(p.title)} — Cristhian Tilleria" tabindex="-1" hidden>
+  return `    <div class="view" data-view="work/${p.slug}" data-title="${esc(p.title)} — ${esc(p.type || 'Project')} by Cristhian Tilleria" tabindex="-1" hidden>
       <section class="cs__first">
         <p class="mono" data-reveal><span data-type>Project ${letter(i)} — ${pad(i + 1, 2)}/${pad(projects.length, 2)}</span></p>
         <h1 class="h2 cs__title" style="--chars:${p.title.length}" data-reveal data-wait="350"><span class="sq" data-text="${esc(p.title)}"><span>${esc(p.title)}</span></span></h1>
@@ -94,7 +94,7 @@ ${shots}
 }).join('\n');
 
 /* ---------- other slots ---------- */
-const services = (site.services || []).map((s, i) => `          <li><a class="svc fade" href="/contact" style="--d:${i * 90}"><span class="bullet">${i + 1}</span><span class="svc__t">${esc(s.title)}</span><span class="svc__d">${esc(s.description)}</span><span class="svc__a" aria-hidden="true">↗</span></a></li>`).join('\n');
+const services = (site.services || []).map((s, i) => `          <li><a class="svc fade" href="/contact" style="--d:${i * 90}"><span class="bullet">${i + 1}</span><h3 class="svc__t">${esc(s.title)}</h3><span class="svc__d">${esc(s.description)}</span><span class="svc__a" aria-hidden="true">↗</span></a></li>`).join('\n');
 const steps = (site.steps || []).map((s, i) => `          <li class="step${i === 0 ? ' step--hot' : ''}" style="--s:${i}"><span class="mono">${esc(s.tag)}</span><span class="step__n">${pad(i + 1, 2)}</span><h3>${esc(s.title)}</h3><p>${esc(s.description)}</p></li>`).join('\n');
 const tickerOnce = (site.ticker || []).map((t) => `<span>${esc(t)}</span>`).join('');
 const social = (s) => `<li><a class="ext" href="${esc(s.url || '#')}"${s.url && s.url !== '#' ? ' target="_blank" rel="noopener"' : ''} data-sweep>${esc(s.label)}</a></li>`;
@@ -170,7 +170,27 @@ const meta = {
   visuals: { description: visualsData.intro, image: (visualItems[0] || {}).image || firstCover },
   404: { description: 'Page not found.', image: '' },
 };
-projects.forEach((p) => { meta['work/' + p.slug] = { description: p.summary, image: p.cover || firstCover }; });
+projects.forEach((p) => { meta['work/' + p.slug] = { description: `${p.title}: ${p.summary || ''}`, image: p.cover || firstCover }; });
+// A JPG made for sharing (media/share/<page>.jpg) wins over the page image; some apps cannot show WebP.
+const shareOf = (name, fallback) => {
+  const f = `/media/share/${name.replace(/\//g, '-')}.jpg`;
+  return fs.existsSync(path.join(root, f)) ? f : fallback;
+};
+const abs = (p) => (p ? origin + encodeURI(p) : undefined);
+const NYC = { '@type': 'PostalAddress', addressLocality: 'New York', addressRegion: 'NY', addressCountry: 'US' };
+const sameAs = (site.socials || []).map((s) => s.url).filter((u) => /^https?:/.test(u || ''));
+const serviceNames = (site.services || []).map((s) => s.title);
+const graphBase = [
+  { '@type': 'WebSite', '@id': origin + '/#website', url: origin + '/', name: 'Cristhian Tilleria', inLanguage: 'en-US', publisher: { '@id': origin + '/#person' } },
+  { '@type': 'Person', '@id': origin + '/#person', name: 'Cristhian Tilleria', url: origin + '/', jobTitle: 'Freelance Web Developer & Designer',
+    description: site.description, image: abs(site.portrait), email: site.email ? 'mailto:' + site.email : undefined, address: NYC,
+    sameAs: sameAs.length ? sameAs : undefined, knowsAbout: [...serviceNames, 'Web design', 'Frontend development', 'Shopify', 'Brand identity'] },
+  { '@type': 'ProfessionalService', '@id': origin + '/#business', name: 'Cristhian Tilleria — Web Development & Design', url: origin + '/',
+    description: site.description, image: abs(shareOf('index', firstCover)), email: site.email || undefined, founder: { '@id': origin + '/#person' },
+    address: NYC, geo: { '@type': 'GeoCoordinates', latitude: 40.7128, longitude: -74.006 },
+    areaServed: [{ '@type': 'City', name: 'New York' }, { '@type': 'Country', name: 'United States' }],
+    hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Services', itemListElement: (site.services || []).map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.title, description: s.description, areaServed: 'New York, NY' } })) } },
+];
 
 fs.rmSync(out, { recursive: true, force: true });
 const pages = [];
@@ -179,7 +199,12 @@ chunks.forEach((chunk) => {
   const title = chunk.match(/data-title="([^"]*)"/)[1];
   const m = meta[name] || {};
   const url = origin + (name === 'index' ? '/' : '/' + name);
-  const image = m.image ? origin + encodeURI(m.image) : '';
+  const image = abs(shareOf(name, m.image)) || '';
+  const graph = graphBase.slice();
+  const proj = projects.find((p) => 'work/' + p.slug === name);
+  if (proj) graph.push({ '@type': 'CreativeWork', '@id': url + '#work', name: proj.title, url, description: proj.summary, genre: proj.type,
+    dateCreated: proj.year || undefined, image: image || undefined, creator: { '@id': origin + '/#person' } });
+  if (name !== '404') graph.push({ '@type': 'WebPage', '@id': url + '#page', url, name: title.replace(/&amp;/g, '&'), isPartOf: { '@id': origin + '/#website' }, about: { '@id': origin + '/#person' } });
   const head = [
     `<title>${title}</title>`,
     `<meta name="description" content="${esc(short(m.description))}">`,
@@ -191,6 +216,8 @@ chunks.forEach((chunk) => {
     `<meta property="og:url" content="${esc(url)}">`,
     image ? `<meta property="og:image" content="${esc(image)}">` : '',
     `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">`,
+    `<meta property="og:locale" content="en_US">`,
+    name === '404' ? '' : `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c')}</script>`,
   ].filter(Boolean).join('\n');
   const view = chunk.replace(/(<div class="view"[^>]*?) hidden>/, '$1>');
   const html = shell
@@ -205,7 +232,8 @@ chunks.forEach((chunk) => {
 
 fs.writeFileSync(path.join(out, 'sitemap.xml'),
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-  pages.map((u) => `  <url><loc>${esc(u)}</loc></url>`).join('\n') + '\n</urlset>\n');
+  pages.map((u) => `  <url><loc>${esc(u)}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod></url>`).join('\n') + '\n</urlset>\n');
 fs.writeFileSync(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`);
+if (fs.existsSync(path.join(root, 'static'))) fs.cpSync(path.join(root, 'static'), out, { recursive: true });
 if (fs.existsSync(path.join(root, 'media'))) fs.cpSync(path.join(root, 'media'), path.join(out, 'media'), { recursive: true });
 console.log(`Built ${pages.length} page(s) + 404, with ${projects.length} project(s).`);

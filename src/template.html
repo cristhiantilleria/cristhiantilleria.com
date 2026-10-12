@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!--@head-->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#f4f2ec">
+<meta name="author" content="Cristhian Tilleria">
+<meta name="geo.region" content="US-NY">
+<meta name="geo.placename" content="New York">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -157,6 +163,7 @@
     transition: background-color .4s, color .4s, box-shadow .6s var(--ease-out), transform .8s var(--ease-out);
     will-change: transform;
   }
+  .btn[disabled] { opacity: .5; pointer-events: none; }
   .btn:hover { background: var(--bg); color: var(--ink); --blk-ink: var(--bg); box-shadow: 6px 6px 0 var(--ink); }
   .btn__arrow { position: relative; width: 1.2em; height: 1.2em; overflow: hidden; }
   .btn__arrow::before, .btn__arrow::after { content: "↗"; position: absolute; inset: 0; display: grid; place-items: center; transition: transform .65s var(--ease-out); }
@@ -229,7 +236,7 @@
   .art { position: absolute; inset: 0; transform: scale(1.15); filter: grayscale(1) contrast(1.1); transition: transform 2.4s var(--ease-out), filter .8s; }
   .in .art { transform: scale(1); }
   .work:hover .art { transform: scale(1.05); filter: none; }
-  .art--img { background-size: cover; background-position: center; }
+  .art--img { width: 100%; height: 100%; object-fit: cover; }
   .work .art--vid { width: 100%; height: 100%; object-fit: cover; filter: none; }
   .work__info { grid-column: 7 / -1; grid-row: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
   .work--flip .work__frame { grid-column: 7 / -1; }
@@ -540,7 +547,7 @@
 
   <main>
     <!-- ================= INDEX ================= -->
-    <div class="view" data-view="index" data-title="Cristhian Tilleria — Freelance frontend developer &amp; web designer, New York" tabindex="-1">
+    <div class="view" data-view="index" data-title="Freelance Web Developer &amp; Designer in NYC — Cristhian Tilleria" tabindex="-1">
       <section class="hero">
         <div class="grid">
           <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block"><!--@intro--></span></p>
@@ -613,7 +620,7 @@
     </div>
 
     <!-- ================= ABOUT ================= -->
-    <div class="view" data-view="about" data-title="About — Cristhian Tilleria" tabindex="-1" hidden>
+    <div class="view" data-view="about" data-title="About Cristhian Tilleria — Web Developer &amp; Designer in New York" tabindex="-1" hidden>
       <section class="page grid<!--@portrait-class-->">
         <p class="page__kicker mono" data-reveal><span data-type>About — Frontend developer &amp; web designer, New York</span></p>
         <h1 class="statement" data-reveal data-wait="350" data-lines><!--@statement--></h1>
@@ -631,7 +638,7 @@
     </div>
 
     <!-- ================= CONTACT ================= -->
-    <div class="view" data-view="contact" data-title="Book a discovery call — Cristhian Tilleria" tabindex="-1" hidden>
+    <div class="view" data-view="contact" data-title="Hire a Freelance Web Developer in NYC — Cristhian Tilleria" tabindex="-1" hidden>
       <section class="page grid">
         <h1 class="h2 contact__title" data-reveal>
           <span class="sq" data-text="Got a project?"><span>Got a project?</span></span>
@@ -672,16 +679,17 @@
               <label class="chip"><input type="radio" name="budget" value="Not sure yet" checked><span>Not sure yet</span></label>
             </div>
           </fieldset>
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
           <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="2" placeholder="What are you building, and when do you need it?"></textarea></label>
           <div class="cta-row fade" style="--d:400">
             <button class="btn mono" type="submit" data-magnetic><span data-sweep>Submit</span><span class="btn__arrow" aria-hidden="true"></span></button>
-            <span class="mono muted" role="status" data-status>Opens your email app with everything filled in</span>
+            <span class="mono muted" role="status" data-status>Goes straight to my inbox</span>
           </div>
         </form>
       </section>
     </div>
     <!-- ================= VISUALS ================= -->
-    <div class="view" data-view="visuals" data-title="Visuals — Cristhian Tilleria" tabindex="-1" hidden>
+    <div class="view" data-view="visuals" data-title="Visuals — Photography &amp; Experiments by Cristhian Tilleria" tabindex="-1" hidden>
       <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
         <div class="vz__canvas"></div>
         <div class="vz__src" hidden>
@@ -709,7 +717,7 @@
     </div>
 <!--@socials-footer-->
     <div class="footer__meta mono muted">
-      <p>Designed &amp; built in New York by Cristhian Tilleria</p>
+      <p>Cristhian Tilleria — Freelance web developer &amp; designer in New York City</p>
       <p>40.7128° N, 74.0060° W</p>
       <p>©2026 — All rights reserved</p>
     </div>
@@ -1161,16 +1169,35 @@
       if (navigator.clipboard) navigator.clipboard.writeText(CONFIG.email).then(function () { done('Copied to clipboard'); }, function () { done('Copy failed — select it below'); });
       else done('Copy failed — select it below');
     });
+    // The form posts to FormSubmit, which emails it to CONFIG.email. If that fails, fall back to the visitor's email app.
+    var sending = false, button = $('button[type="submit"]', form);
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (sending) return;
       var d = new FormData(form), name = (d.get('name') || '').trim(), email = (d.get('email') || '').trim();
       function say(msg) { status.dataset.t = msg; type(status, false); }
       if (!name) { say('Please add your name'); form.elements.name.focus(); return; }
       if (!/^\S+@\S+\.\S+$/.test(email)) { say('Please add a valid email'); form.elements.email.focus(); return; }
-      var text = 'Hi Cristhian,\n\nName: ' + name + '\nEmail: ' + email +
-        '\nNeed: ' + d.get('need') + '\nBudget: ' + d.get('budget') + '\n\n' + (d.get('message') || '');
-      location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Project enquiry — ' + name) + '&body=' + encodeURIComponent(text);
-      say('Opening your email app…');
+      if (d.get('_honey')) return;                                   // bots fill the hidden field
+      var subject = 'Project enquiry — ' + name;
+      function viaEmailApp() {
+        var text = 'Hi Cristhian,\n\nName: ' + name + '\nEmail: ' + email + '\nNeed: ' + d.get('need') + '\nBudget: ' + d.get('budget') + '\n\n' + (d.get('message') || '');
+        location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
+      }
+      sending = true; button.disabled = true;
+      say('Sending…');
+      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CONFIG.email), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name: name, email: email, need: d.get('need'), budget: d.get('budget'), message: d.get('message') || '', _subject: subject, _replyto: email, _template: 'table', _captcha: 'false' })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (String(j.success) !== 'true') throw new Error(j.message || 'Not sent');
+        say('Sent — thank you. I will be in touch soon.');
+        form.reset();
+      }).catch(function (err) {
+        if (/activat/i.test(err.message)) say('Almost set up — the site owner needs to confirm this form once by email');
+        else { say('Could not send here — opening your email app instead'); viaEmailApp(); }
+      }).then(function () { sending = false; button.disabled = false; });
     });
   }
 
