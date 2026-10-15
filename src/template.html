@@ -1296,12 +1296,14 @@
     if (!src.length) return;
     var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, drag = null, travelled = 0, touched = 0, lastT = 0, relayout = 0, laid = '';
     function mod(a, n) { return ((a % n) + n) % n; }
+    function rnd(a, b) { var x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }   // repeatable scatter
 
     // Columns of tiles repeat the pieces; each column is tall enough to wrap without a visible gap.
     function layout() {
       var vw = vz.clientWidth, vh = vz.clientHeight;
-      G = Math.max(12, vw * .016);
-      CW = vw < 761 ? (vw - G) / 1.7 : Math.max(210, (vw - G * 4) / 4.35);
+      // small pieces with wide, uneven gaps so the canvas feels open
+      CW = vw < 761 ? vw * .34 : Math.max(130, Math.min(230, vw * .12));
+      G = vw < 761 ? vw * .14 : Math.max(90, vw * .085);
       if (!vw || !vh) return;                       // the view is hidden; tick() lays out once it shows
       laid = vw + 'x' + vh;
       var n = Math.ceil((vw + CW + G) / (CW + G)) + 1;
@@ -1310,7 +1312,7 @@
       cols = [];
       var cap = 0;                                   // tiles are the image alone
       for (var c = 0; c < n; c++) {
-        var col = { x: c * (CW + G), off: (c % 2 ? CW * .55 : 0) + (c % 3) * CW * .21, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
+        var col = { x: c * (CW + G), off: rnd(c, 99) * vh, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
         while (y < vh + tallest + G || col.items.length < 3) {
           var s = src[k++ % src.length], h = CW * (s._ratio || 1.5) + cap;
           var el = s.cloneNode(true);
@@ -1320,9 +1322,9 @@
           im.loading = 'eager';
           im.addEventListener('load', measured);
           stage.appendChild(el);
-          col.items.push({ el: el, y: y, h: h });
+          col.items.push({ el: el, y: y, h: h, jx: (rnd(c, k) - .5) * G * .6 });
           tallest = Math.max(tallest, h);
-          y += h + G;
+          y += h + G * (.7 + rnd(k, c) * .9);
         }
         col.h = y;
         cols.push(col);
@@ -1342,7 +1344,7 @@
         var x = mod(col.x + ox + CW + G, PW) - CW - G;
         col.items.forEach(function (it) {
           var y = mod(it.y + oy + col.off + it.h, col.h) - it.h;
-          it.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
+          it.el.style.transform = 'translate3d(' + (x + it.jx).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
         });
       });
     }
