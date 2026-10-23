@@ -4,62 +4,74 @@
     {
       "image": "/media/visuals/01.jpg",
       "title": "Photo 01",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Woman in a white fur trapper hat and tinted sunglasses, chin resting on her hand, against a pale blue backdrop"
     },
     {
       "image": "/media/visuals/02.jpg",
       "title": "Photo 02",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Close-up of a woman in a white fur trapper hat and tinted sunglasses, wearing a white camisole"
     },
     {
       "image": "/media/visuals/03.jpg",
       "title": "Photo 03",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Man in a cream sweater and wide trousers leaning on a curved white concrete wall outside a building"
     },
     {
       "image": "/media/visuals/04.jpg",
       "title": "Photo 04",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Man in a cream outfit standing on a curved white ledge under a round overhang, hands in pockets"
     },
     {
       "image": "/media/visuals/05.jpg",
       "title": "Photo 05",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Woman in a black top and light jeans sitting cross-legged on a white studio floor in white socks"
     },
     {
       "image": "/media/visuals/06.jpg",
       "title": "Photo 06",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Woman with dark hair surrounded by flowing sheer cream fabric against a white background"
     },
     {
       "image": "/media/visuals/07.jpg",
       "title": "Photo 07",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Black-and-white photo of a young man in a dark jacket and jeans sitting on a stool in a studio"
     },
     {
       "image": "/media/visuals/08.jpg",
       "title": "Photo 08",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Black-and-white portrait of a young man with curly hair in a dark jacket, hand at his chin"
     },
     {
       "image": "/media/visuals/09.jpg",
       "title": "Photo 09",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Woman with curly hair in a grey blazer, one arm raised to her head, in front of brick apartment buildings"
     },
     {
       "image": "/media/visuals/10.jpg",
       "title": "Photo 10",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Young woman with long curly hair in a satin tie-front top and teal skirt, leaning in a white doorway"
     },
     {
       "image": "/media/visuals/11.jpg",
       "title": "Photo 11",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Black-and-white photo of a woman in an off-shoulder top, one hand raised to her head"
     },
     {
       "image": "/media/visuals/12.jpg",
       "title": "Photo 12",
-      "kind": "Photography"
+      "kind": "Photography",
+      "alt": "Woman in a white fur coat and white lace tights sitting on the floor against a pale blue backdrop"
     }
   ]
 }

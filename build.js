@@ -72,6 +72,7 @@ const cases = projects.map((p, i) => {
         <div class="cs__side" data-reveal>
           ${p.approach ? `<p class="mono muted fade">Approach</p><p class="fade" style="--d:100">${esc(p.approach)}</p>` : ''}
           ${facts ? `<dl class="cs__facts mono fade" style="--d:200">${facts}</dl>` : ''}
+          ${p.disclaimer ? `<p class="mono muted fade" style="--d:250">${esc(p.disclaimer)}</p>` : ''}
           ${p.link ? `<a class="btn mono fade" style="--d:300" href="${esc(p.link)}" target="_blank" rel="noopener" data-magnetic><span data-sweep>Visit the live site</span><span class="btn__arrow" aria-hidden="true"></span></a>` : ''}
         </div>
         ${p.body ? `<div class="case__body fade" data-reveal>${p.body}</div>` : ''}
@@ -103,7 +104,7 @@ const half = Math.ceil(socials.length / 2);
 
 const visualItems = (visualsData.items || []).filter((v) => v.image);
 const visuals = visualItems.map((v, i) => `          <figure class="visual" data-full="${esc(img(v.image, 2400))}">
-            <img src="${esc(img(v.image, 640))}" alt="${esc(v.title || '')}" loading="lazy">
+            <img src="${esc(img(v.image, 640))}" alt="${esc(v.alt || v.title || '')}" loading="lazy">
             <figcaption><span class="bullet">${i + 1}</span><b>${esc(v.title || '')}</b><span class="mono">${esc(v.kind || '')}</span></figcaption>
           </figure>`).join('\n');
 
@@ -166,7 +167,7 @@ const short = (s) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s
 const meta = {
   index: { description: site.description, image: firstCover },
   about: { description: site.statement, image: site.portrait || firstCover },
-  contact: { description: 'Tell me about your project and book a discovery call with Cristhian Tilleria, freelance frontend developer and web designer in New York.', image: firstCover },
+  contact: { description: 'Tell me about your project and book a call with Cristhian Tilleria, freelance frontend developer and web designer in New York.', image: firstCover },
   visuals: { description: visualsData.intro, image: (visualItems[0] || {}).image || firstCover },
   404: { description: 'Page not found.', image: '' },
 };
