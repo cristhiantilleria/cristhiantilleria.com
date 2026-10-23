@@ -1,0 +1,112 @@
+{
+ "home-390": [
+  {
+   "id": "color-contrast",
+   "impact": "serious",
+   "nodes": [
+    [
+     ".logo"
+    ],
+    [
+     ".header__id > span[data-sweep=\"\"]"
+    ],
+    [
+     "a[data-nav=\"index\"]"
+    ],
+    [
+     "a[href$=\"visuals\"]"
+    ],
+    [
+     "a[data-nav=\"about\"]"
+    ]
+   ]
+  }
+ ],
+ "contact-390": [
+  {
+   "id": "color-contrast",
+   "impact": "serious",
+   "nodes": [
+    [
+     ".logo"
+    ],
+    [
+     ".header__id > span[data-sweep=\"\"]"
+    ],
+    [
+     "a[data-nav=\"index\"]"
+    ],
+    [
+     "a[href$=\"visuals\"]"
+    ],
+    [
+     "a[href$=\"about\"]"
+    ]
+   ]
+  },
+  {
+   "id": "landmark-complementary-is-top-level",
+   "impact": "moderate",
+   "nodes": [
+    [
+     "aside"
+    ]
+   ]
+  }
+ ],
+ "home-1440": [
+  {
+   "id": "color-contrast",
+   "impact": "serious",
+   "nodes": [
+    [
+     ".logo"
+    ],
+    [
+     ".header__id > span[data-sweep=\"\"]"
+    ],
+    [
+     ".clock--head"
+    ],
+    [
+     "a[data-nav=\"index\"]"
+    ],
+    [
+     "a[href$=\"visuals\"]"
+    ]
+   ]
+  }
+ ],
+ "contact-1440": [
+  {
+   "id": "color-contrast",
+   "impact": "serious",
+   "nodes": [
+    [
+     ".logo"
+    ],
+    [
+     ".header__id > span[data-sweep=\"\"]"
+    ],
+    [
+     ".clock"
+    ],
+    [
+     "a[data-nav=\"index\"]"
+    ],
+    [
+     "a[href$=\"visuals\"]"
+    ]
+   ]
+  },
+  {
+   "id": "landmark-complementary-is-top-level",
+   "impact": "moderate",
+   "nodes": [
+    [
+     "aside"
+    ]
+   ]
+  }
+ ]
+}

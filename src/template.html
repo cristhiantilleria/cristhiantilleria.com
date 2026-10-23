@@ -355,8 +355,8 @@
   .field::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .9s var(--ease-out); }
   .field:focus-within::after { transform: scaleX(1); }
   .field ::placeholder { color: var(--muted); opacity: .6; }
-  .cal { display: block; }
-  .cal__box { min-height: 640px; }
+  .cal { display: block; min-width: 0; }
+  .cal__box { min-height: 640px; overflow: hidden; }
   .cal__box iframe { display: block; width: 100%; height: 640px; border: 0; }
   .cal__fallback { margin-top: 12px; }
   .form fieldset { grid-column: 1 / -1; border: 0; min-width: 0; }
@@ -666,7 +666,7 @@
         </aside>
 
         <div class="form cal" data-reveal data-wait="450">
-          <div class="cal__box fade"><iframe title="Book a 30-minute call with Cristhian Tilleria" data-cal loading="lazy"></iframe></div>
+          <div class="cal__box fade"><iframe title="Book a 30-minute call with Cristhian Tilleria" data-cal></iframe></div>
           <p class="cal__fallback mono" data-cal-fallback hidden>Calendar didn't load. <a class="link" href="#" data-book data-sweep>Open it on cal.com</a></p>
         </div>
       </section>
@@ -1168,8 +1168,10 @@
     if (!frame || !CONFIG.bookingUrl) { if (fallback) fallback.hidden = false; return; }
     frame.addEventListener('load', function () { loaded = true; fallback.hidden = true; });
     frame.addEventListener('error', function () { fallback.hidden = false; });
-    setTimeout(function () { if (!loaded) fallback.hidden = false; }, 10000);
-    frame.src = CONFIG.bookingUrl + (CONFIG.bookingUrl.indexOf('?') < 0 ? '?' : '&') + 'embed=true&layout=month_view&theme=light';
+    // Load the calendar only once its box is near the screen, and only after the page's intro has played, so it never competes with it.
+    function start() { setTimeout(function () { if (!loaded) fallback.hidden = false; }, 15000); frame.src = CONFIG.bookingUrl + (CONFIG.bookingUrl.indexOf('?') < 0 ? '?' : '&') + 'embed=true&layout=month_view&theme=light'; }
+    var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { io.disconnect(); setTimeout(start, 4000); } }, { rootMargin: '200px' });
+    io.observe(box);
   }
 
   /* ---------- cover videos play only while they are on screen ---------- */
