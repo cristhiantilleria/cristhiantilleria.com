@@ -421,9 +421,8 @@
   .book__bar { display: flex; align-items: center; gap: 14px; padding: 14px var(--pad); border-bottom: var(--bw) solid var(--ink); }
   .book__bar h2 { margin-right: auto; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
   .book__body { position: relative; flex: 1; min-height: 0; display: flex; align-items: center; }
-  .book__body iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; opacity: 0; visibility: hidden; transition: opacity .6s; }
-  .book__body iframe.on { opacity: 1; visibility: visible; }
-  @media (min-width: 701px) { .book__body iframe { position: static; height: min(100%, 620px); } }
+  .book__cal { width: 100%; height: 100%; overflow: auto; }
+  @media (min-width: 701px) { .book__cal { height: auto; max-height: 100%; margin: auto 0; } }
   .book__load { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: var(--pad); }
 
   /* ---------- image viewer ---------- */
@@ -1237,17 +1236,24 @@
       '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
       '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
       '<p class="book__load mono" hidden>Calendar didn\'t load. <a class="link" target="_blank" rel="noopener" data-sweep>Open it on cal.com</a></p>' +
-      '<iframe title="Book a 30-minute call with Cristhian Tilleria"></iframe></div>';
+      '<div class="book__cal"></div></div>';
     body.appendChild(box);
-    var frame = $('iframe', box), loading = $('.book__load', box), fallback = $('.book__load[hidden]', box), shut = $('button', box);
+    var cal = $('.book__cal', box), loading = $('.book__load', box), fallback = $('.book__load[hidden]', box), shut = $('button', box);
     var covered = [$('.header'), $('main'), $('footer')];
     $('a', fallback).href = url;
-    frame.addEventListener('load', function () { if (!frame.getAttribute('src')) return; loaded = true; clearTimeout(timer); loading.hidden = fallback.hidden = true; frame.classList.add('on'); });
+    function mount() {
+      (function (C, A, L) { var p = function (a, ar) { a.q.push(ar); }, d = C.document; C.Cal = C.Cal || function () { var c = C.Cal, ar = arguments; if (!c.loaded) { c.ns = {}; c.q = c.q || []; d.head.appendChild(d.createElement('script')).src = A; c.loaded = true; } if (ar[0] === L) { var api = function () { p(api, arguments); }, ns = ar[1]; api.q = api.q || []; if (typeof ns === 'string') { c.ns[ns] = c.ns[ns] || api; p(c.ns[ns], ar); p(c, ['initNamespace', ns]); } else p(c, ar); return; } p(c, ar); }; })(window, 'https://app.cal.com/embed/embed.js', 'init');
+      var layout = matchMedia('(max-width: 700px)').matches ? 'column_view' : 'month_view';
+      Cal('init', 'book', { origin: 'https://app.cal.com' });
+      Cal.ns.book('inline', { elementOrSelector: cal, calLink: new URL(url, location.href).pathname.replace(/^\/+|\/+$/g, ''), config: { layout: layout, theme: 'light' } });
+      Cal.ns.book('ui', { theme: 'light', hideEventTypeDetails: false, layout: layout, cssVarsPerTheme: { light: { 'cal-bg': '#f4f2ec', 'cal-bg-muted': '#ebe8e0', 'cal-bg-subtle': '#ebe8e0', 'cal-bg-emphasis': '#dcdcd8', 'cal-border': '#d6d5d0', 'cal-border-subtle': '#d6d5d0', 'cal-text': '#0a0a0a', 'cal-text-emphasis': '#0a0a0a', 'cal-text-subtle': '#7d7b75', 'cal-text-muted': '#7d7b75', 'cal-brand': '#0a0a0a', 'cal-brand-text': '#f4f2ec' } }, styles: { branding: { brandColor: '#0a0a0a' } } });
+      Cal.ns.book('on', { action: 'linkReady', callback: function () { loaded = true; clearTimeout(timer); loading.hidden = fallback.hidden = true; } });
+    }
     function open() {
       if (isOpen) return;
       isOpen = true; opener = document.activeElement;
-      if (!frame.getAttribute('src')) {
-        frame.src = url + (url.indexOf('?') < 0 ? '?' : '&') + 'embed=true&layout=' + (matchMedia('(max-width: 700px)').matches ? 'mobile' : 'month_view') + '&theme=light';
+      if (!timer) {
+        mount();
         timer = setTimeout(function () { if (!loaded) { loading.hidden = true; fallback.hidden = false; } }, 15000);
       }
       if (location.hash !== '#book') history.replaceState(null, '', location.pathname + location.search + '#book');
