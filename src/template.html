@@ -420,10 +420,10 @@
   .book.on { transform: none; visibility: visible; transition-delay: 0s; }
   .book__bar { display: flex; align-items: center; gap: 14px; padding: 14px var(--pad); border-bottom: var(--bw) solid var(--ink); }
   .book__bar h2 { margin-right: auto; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
-  .book__bar .bullet { font-size: clamp(18px, 2vw, 40px); }
-  .book__body { position: relative; flex: 1; min-height: 0; }
-  .book__body iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity .6s; }
-  .book__body iframe.on { opacity: 1; }
+  .book__body { position: relative; flex: 1; min-height: 0; display: flex; align-items: center; }
+  .book__body iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; opacity: 0; visibility: hidden; transition: opacity .6s; }
+  .book__body iframe.on { opacity: 1; visibility: visible; }
+  @media (min-width: 701px) { .book__body iframe { position: static; height: min(100%, 620px); } }
   .book__load { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: var(--pad); }
 
   /* ---------- image viewer ---------- */
@@ -558,7 +558,7 @@
         <li><a href="/" data-nav="index" data-sweep>Work</a></li>
         <li><a href="/visuals" data-nav="visuals" data-sweep>Visuals</a></li>
         <li><a href="/about" data-nav="about" data-sweep>About</a></li>
-        <li><a class="pill" href="/contact#book" data-book-open data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
+        <li><a class="pill" href="/contact" data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
       </ul>
     </nav>
   </header>
@@ -571,7 +571,7 @@
           <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block"><!--@intro--></span></p>
           <div class="hero__role" data-reveal data-wait="1750">
             <p class="role fade">Freelance frontend developer &amp; web designer<br>Based in New York, US</p>
-            <a class="btn mono fade" style="--d:120" href="/contact#book" data-book-open data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
+            <a class="btn mono fade" style="--d:120" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
           </div>
           <dl class="hero__meta mono fade" data-reveal data-wait="2000">
             <div><dt class="muted">Lat / Long</dt><dd data-type>40.7128° N, 74.0060° W</dd></div>
@@ -649,7 +649,7 @@
           <div class="fade" style="--d:240"><dt class="mono">Status</dt><dd><span class="avail"><span class="dot"></span><!--@status--></span></dd></div>
         </dl>
         <div class="cta-row fade" data-reveal>
-          <a class="btn mono" href="/contact#book" data-book-open data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
+          <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
           <a class="link mono" href="/" data-sweep>Back to the work</a>
         </div>
       </section>
@@ -670,7 +670,7 @@
             <li><span class="bullet">2</span>Clear next steps and a quote</li>
             <li><span class="bullet">3</span>Reply within one business day</li>
           </ul>
-          <a class="btn mono fade" style="--d:240" href="#book" data-book-open data-magnetic><span data-sweep>Pick a time on my calendar</span><span class="btn__arrow" aria-hidden="true"></span></a>
+          <a class="btn mono fade" style="--d:240" href="https://cal.com/cristhiantilleria/project-intro-call" target="_blank" rel="noopener" data-book-open data-magnetic><span data-sweep>Pick a time on my calendar</span><span class="btn__arrow" aria-hidden="true"></span></a>
           <button class="copy mono muted fade" style="--d:360" type="button" data-copy><span data-copy-label>Or email me — click to copy</span><b data-email></b></button>
         </aside>
 
@@ -731,7 +731,7 @@
 
     <div class="footer__cta" data-reveal>
       <p class="fade">A 30-minute call.<br>No pitch.</p>
-      <a class="btn mono fade" style="--d:120" href="/contact#book" data-book-open data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
+      <a class="btn mono fade" style="--d:120" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
     </div>
 <!--@socials-footer-->
     <div class="footer__meta mono muted">
@@ -1233,7 +1233,7 @@
     if (!url) return;                                              // no calendar set up: the buttons stay normal links
     var box = document.createElement('div'), opener = null, loaded = false, timer = 0, isOpen = false;
     box.className = 'book'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
-    box.innerHTML = '<div class="book__bar"><span class="bullet" aria-hidden="true">ct</span><h2 id="book-title">Book a 30-minute call</h2>' +
+    box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
       '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
       '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
       '<p class="book__load mono" hidden>Calendar didn\'t load. <a class="link" target="_blank" rel="noopener" data-sweep>Open it on cal.com</a></p>' +
