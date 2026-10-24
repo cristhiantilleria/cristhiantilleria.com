@@ -355,7 +355,7 @@
   .field::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform .9s var(--ease-out); }
   .field:focus-within::after { transform: scaleX(1); }
   .field ::placeholder { color: var(--muted); opacity: .6; }
-  .cal { display: block; min-width: 0; }
+  .cal { grid-column: 6 / -1; min-width: 0; margin-top: clamp(40px, 5vw, 96px); }
   .cal__box { min-height: 640px; overflow: hidden; }
   .cal__box iframe { display: block; width: 100%; height: 640px; border: 0; }
   .cal__fallback { margin-top: 12px; }
@@ -503,7 +503,7 @@
     .facts { grid-template-columns: 1fr; }
     .facts > div + div { border-left: 0; border-top: var(--bw) solid var(--ink); }
     .facts > div { min-height: 0; }
-    .contact__aside, .form { grid-column: 1 / -1; }
+    .contact__aside, .form, .cal { grid-column: 1 / -1; }
     .form { grid-template-columns: 1fr; }
     .footer__cta { grid-column: 1 / -1; }
     .footer__col--a { grid-column: 1 / 7; }
@@ -655,7 +655,7 @@
         </h1>
 
         <aside class="contact__aside" data-reveal data-wait="300">
-          <p class="lead fade">A 30-minute call about what you're building. No pitch.</p>
+          <p class="lead fade">A 30-minute call about what you're building.</p>
           <ul class="checks mono fade" style="--d:120">
             <li><span class="bullet">1</span>No commitment, no sales pitch</li>
             <li><span class="bullet">2</span>Clear next steps and a quote</li>
@@ -665,9 +665,39 @@
           <button class="copy mono muted fade" style="--d:360" type="button" data-copy><span data-copy-label>Or email me — click to copy</span><b data-email></b></button>
         </aside>
 
-        <div class="form cal" data-reveal data-wait="450">
+        <form class="form" data-reveal data-wait="450" novalidate>
+          <label class="field fade"><span class="mono">01 — Your name</span><input name="name" autocomplete="name" placeholder="Jane Doe" required></label>
+          <label class="field fade" style="--d:80"><span class="mono">02 — Your email</span><input name="email" type="email" autocomplete="email" placeholder="jane@company.com" required></label>
+          <fieldset class="fade" style="--d:160">
+            <legend class="mono">03 — What do you need?</legend>
+            <div class="chips mono">
+              <label class="chip"><input type="radio" name="need" value="Branding"><span>Branding</span></label>
+              <label class="chip"><input type="radio" name="need" value="Web development" checked><span>Web development</span></label>
+              <label class="chip"><input type="radio" name="need" value="Motion &amp; interaction"><span>Motion &amp; interaction</span></label>
+              <label class="chip"><input type="radio" name="need" value="Shopify store"><span>Shopify store</span></label>
+              <label class="chip"><input type="radio" name="need" value="Something else"><span>Something else</span></label>
+            </div>
+          </fieldset>
+          <fieldset class="fade" style="--d:240">
+            <legend class="mono">04 — Budget range</legend>
+            <div class="chips mono">
+              <label class="chip"><input type="radio" name="budget" value="Under $1k"><span>&lt; $1k</span></label>
+              <label class="chip"><input type="radio" name="budget" value="$1k–$2.5k"><span>$1–2.5k</span></label>
+              <label class="chip"><input type="radio" name="budget" value="$2.5k–$5k"><span>$2.5–5k</span></label>
+              <label class="chip"><input type="radio" name="budget" value="$5k+"><span>$5k+</span></label>
+              <label class="chip"><input type="radio" name="budget" value="Not sure yet" checked><span>Not sure yet</span></label>
+            </div>
+          </fieldset>
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
+          <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="2" placeholder="What are you building, and when do you need it?"></textarea></label>
+          <div class="cta-row fade" style="--d:400">
+            <button class="btn mono" type="submit" data-magnetic><span data-sweep>Submit</span><span class="btn__arrow" aria-hidden="true"></span></button>
+            <span class="mono muted" role="status" data-status>Goes straight to my inbox</span>
+          </div>
+        </form>
+        <div class="cal" id="book" data-reveal>
           <div class="cal__box fade"><iframe title="Book a 30-minute call with Cristhian Tilleria" data-cal></iframe></div>
-          <p class="cal__fallback mono" data-cal-fallback hidden>Calendar didn't load. <a class="link" href="#" data-book data-sweep>Open it on cal.com</a></p>
+          <p class="cal__fallback mono" data-cal-fallback hidden>Calendar didn't load. <a class="link" href="#" data-cal-link data-sweep>Open it on cal.com</a></p>
         </div>
       </section>
     </div>
@@ -1149,29 +1179,66 @@
 
   /* ---------- contact ---------- */
   function bindContact(scope) {
-    var box = $('.cal', scope);
-    if (!box || box._bound) return;
-    box._bound = true;
-    var label = $('[data-copy-label]', scope);
+    var form = $('.form', scope);
+    if (!form || form._bound) return;
+    form._bound = true;
+    var status = $('[data-status]', scope), label = $('[data-copy-label]', scope);
     $('[data-email]', scope).textContent = CONFIG.email;
+    var cal = $('.cal', scope);
     $$('[data-book]', scope).forEach(function (a) {
-      if (CONFIG.bookingUrl) { a.href = CONFIG.bookingUrl; a.target = '_blank'; a.rel = 'noopener'; }
-      else a.href = 'mailto:' + CONFIG.email;
+      a.href = '#book';
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (cal && CONFIG.bookingUrl) scrollToY(Math.max(0, cal.getBoundingClientRect().top + scrollY - $('.header').offsetHeight - 16));
+        else form.elements.name.focus();
+      });
     });
     $('[data-copy]', scope).addEventListener('click', function () {
       function done(msg) { label.dataset.t = msg; type(label, false); }
       if (navigator.clipboard) navigator.clipboard.writeText(CONFIG.email).then(function () { done('Copied to clipboard'); }, function () { done('Copy failed — select it below'); });
       else done('Copy failed — select it below');
     });
-    // The booking calendar loads in a fixed-height box so nothing shifts. If it hasn't loaded after 10s, show a direct link.
-    var frame = $('[data-cal]', box), fallback = $('[data-cal-fallback]', box), loaded = false;
-    if (!frame || !CONFIG.bookingUrl) { if (fallback) fallback.hidden = false; return; }
+    // The form posts to FormSubmit, which emails it to CONFIG.email. If that fails, fall back to the visitor's email app.
+    var sending = false, button = $('button[type="submit"]', form);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (sending) return;
+      var d = new FormData(form), name = (d.get('name') || '').trim(), email = (d.get('email') || '').trim();
+      function say(msg) { status.dataset.t = msg; type(status, false); }
+      if (!name) { say('Please add your name'); form.elements.name.focus(); return; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { say('Please add a valid email'); form.elements.email.focus(); return; }
+      if (d.get('_honey')) return;                                   // bots fill the hidden field
+      var subject = 'Project enquiry — ' + name;
+      function viaEmailApp() {
+        var text = 'Hi Cristhian,\n\nName: ' + name + '\nEmail: ' + email + '\nNeed: ' + d.get('need') + '\nBudget: ' + d.get('budget') + '\n\n' + (d.get('message') || '');
+        location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(text);
+      }
+      sending = true; button.disabled = true;
+      say('Sending…');
+      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CONFIG.email), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ name: name, email: email, need: d.get('need'), budget: d.get('budget'), message: d.get('message') || '', _subject: subject, _replyto: email, _template: 'table', _captcha: 'false' })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        if (String(j.success) !== 'true') throw new Error(j.message || 'Not sent');
+        say('Sent — thank you. I will be in touch soon.');
+        form.reset();
+      }).catch(function (err) {
+        if (/activat/i.test(err.message)) say('Almost set up — the site owner needs to confirm this form once by email');
+        else { say('Could not send here — opening your email app instead'); viaEmailApp(); }
+      }).then(function () { sending = false; button.disabled = false; });
+    });
+    // The booking calendar loads in a fixed-height box so nothing shifts. If it hasn't loaded 15s after it starts, show a direct link.
+    if (!cal) return;
+    if (!CONFIG.bookingUrl) { cal.hidden = true; return; }        // no calendar set up: the book button goes to the form instead
+    var frame = $('[data-cal]', cal), fallback = $('[data-cal-fallback]', cal), link = $('[data-cal-link]', cal), loaded = false;
+    link.href = CONFIG.bookingUrl; link.target = '_blank'; link.rel = 'noopener';
     frame.addEventListener('load', function () { loaded = true; fallback.hidden = true; });
     frame.addEventListener('error', function () { fallback.hidden = false; });
     // Load the calendar only once its box is near the screen, and only after the page's intro has played, so it never competes with it.
     function start() { setTimeout(function () { if (!loaded) fallback.hidden = false; }, 15000); frame.src = CONFIG.bookingUrl + (CONFIG.bookingUrl.indexOf('?') < 0 ? '?' : '&') + 'embed=true&layout=month_view&theme=light'; }
     var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { io.disconnect(); setTimeout(start, 4000); } }, { rootMargin: '200px' });
-    io.observe(box);
+    io.observe(cal);
   }
 
   /* ---------- cover videos play only while they are on screen ---------- */
