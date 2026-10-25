@@ -569,8 +569,9 @@
     <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span data-sweep>New York</span><span class="clock clock--head"></span></a>
     <nav aria-label="Primary">
       <ul>
-        <li><a href="/" data-nav="index" data-sweep>Work</a></li>
-        <li><a href="/visuals" data-nav="visuals" data-sweep>Visuals</a></li>
+        <li><a href="/" data-nav="index" data-sweep>Home</a></li>
+        <li><a href="/work" data-nav="work" data-sweep>Work</a></li>
+        <li><a href="/visuals" data-nav="visuals" data-sweep>Lab</a></li>
         <li><a href="/about" data-nav="about" data-sweep>About</a></li>
         <li><a class="pill" href="/contact" data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
       </ul>
@@ -596,7 +597,7 @@
         </div>
 
         <div class="hero__foot mono" data-reveal data-wait="900">
-          <button class="hero__scroll mono" type="button" data-scroll="#works" data-sweep>↓ Scroll, the good stuff is below</button>
+          <a class="hero__scroll mono" href="/work" data-sweep>↗ See the selected work</a>
           <ul class="hero__social">
 <!--@socials-hero-->
           </ul>
@@ -607,13 +608,8 @@
         </h1>
       </section>
 
-      <section class="works section grid" id="works">
-        <header class="bar" data-reveal><span class="bullet">1</span><h2>Selected work</h2><span class="mono" data-type><!--@project-count--> projects</span><span class="bar__a" aria-hidden="true">↓</span></header>
-<!--@projects-->
-      </section>
-
       <section class="section grid" id="services">
-        <header class="bar" data-reveal><span class="bullet">2</span><h2>What I can do for you</h2><span class="mono" data-type><!--@service-count--> services</span><span class="bar__a" aria-hidden="true">↓</span></header>
+        <header class="bar" data-reveal><span class="bullet">1</span><h2>What I can do for you</h2><span class="mono" data-type><!--@service-count--> services</span><span class="bar__a" aria-hidden="true">↓</span></header>
         <ul class="svc-list" data-reveal>
 <!--@services-->
         </ul>
@@ -640,7 +636,7 @@
       </div>
 
       <section class="section grid" id="process">
-        <header class="bar" data-reveal><span class="bullet">3</span><h2>How we'd work together</h2><span class="mono" data-type><!--@step-count--> stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
+        <header class="bar" data-reveal><span class="bullet">2</span><h2>How we'd work together</h2><span class="mono" data-type><!--@step-count--> stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
         <ol class="steps" data-reveal>
 <!--@steps-->
         </ol>
@@ -648,6 +644,15 @@
           <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Start at stop 01</span><span class="btn__arrow" aria-hidden="true"></span></a>
           <span class="mono muted">Replies within one business day</span>
         </div>
+      </section>
+    </div>
+
+    <!-- ================= WORK ================= -->
+    <div class="view" data-view="work" data-title="Selected Work — Websites &amp; Brands by Cristhian Tilleria" tabindex="-1" hidden>
+      <section class="works page grid" id="works">
+        <p class="page__kicker mono" data-reveal><span data-type>Selected work — <!--@project-count--> projects</span></p>
+        <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="Work"><span>Work</span></span></h1>
+<!--@projects-->
       </section>
     </div>
 
@@ -664,7 +669,7 @@
         </dl>
         <div class="cta-row fade" data-reveal>
           <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
-          <a class="link mono" href="/" data-sweep>Back to the work</a>
+          <a class="link mono" href="/work" data-sweep>Back to the work</a>
         </div>
       </section>
     </div>
@@ -720,8 +725,8 @@
         </form>
       </section>
     </div>
-    <!-- ================= VISUALS ================= -->
-    <div class="view" data-view="visuals" data-title="Visuals — Photography &amp; Experiments by Cristhian Tilleria" tabindex="-1" hidden>
+    <!-- ================= VISUALS (shown as "Lab") ================= -->
+    <div class="view" data-view="visuals" data-title="Lab — Photography &amp; Experiments by Cristhian Tilleria" tabindex="-1" hidden>
       <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
         <div class="vz__canvas"></div>
         <div class="vz__src" hidden>
@@ -896,8 +901,7 @@
   var footer = $('.footer'), header = $('.header');
   var current = null, busy = false;
 
-  // /work on its own is the list of projects, which lives on the home page
-  function nameOf(path) { return path.replace(/index\.html$/, '').replace(/^\/+|\/+$/g, '').replace(/^work$/, '') || 'index'; }
+  function nameOf(path) { return path.replace(/index\.html$/, '').replace(/^\/+|\/+$/g, '') || 'index'; }
   function pathOf(name) { return name === 'index' ? '/' : '/' + name; }
   function load(name) {
     if (views[name]) return Promise.resolve(views[name]);

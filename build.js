@@ -30,7 +30,7 @@ projects.forEach((p) => {
   p.initials = p.title.split(/\s+|(?=[A-Z])/).filter(Boolean).map((w) => w[0]).join('').slice(0, 3).toUpperCase();
 });
 
-/* ---------- home page: project cards ---------- */
+/* ---------- work page: project cards ---------- */
 // A project without a cover image falls back to one of the three abstract placeholders.
 const cover = (p, i) => {
   const still = p.cover ? img(p.cover, i === 0 ? 1600 : 1080) : '';
@@ -88,7 +88,7 @@ ${shots}
         </a>` : ''}
         <div class="cta-row fade" data-reveal>
           <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Want something like this?</span><span class="btn__arrow" aria-hidden="true"></span></a>
-          <a class="link mono" href="/" data-sweep>All work</a>
+          <a class="link mono" href="/work" data-sweep>All work</a>
         </div>
       </section>
     </div>`;
@@ -121,7 +121,7 @@ const notFound = `
         <p class="page__kicker mono" data-reveal><span data-type>Error 404 — Wrong stop</span></p>
         <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="404"><span>404</span></span></h1>
         <p class="case__lead fade" data-reveal>This page doesn't exist, or it moved.</p>
-        <div class="cta-row fade" data-reveal><a class="btn mono" href="/" data-magnetic><span data-sweep>Back to the work</span><span class="btn__arrow" aria-hidden="true"></span></a></div>
+        <div class="cta-row fade" data-reveal><a class="btn mono" href="/work" data-magnetic><span data-sweep>Back to the work</span><span class="btn__arrow" aria-hidden="true"></span></a></div>
       </section>
     </div>`;
 
@@ -141,7 +141,7 @@ const slots = {
   'portrait-class': site.portrait ? ' has-portrait' : '',
   'visual-count': pad(visualItems.length),
   'visual-count-short': String(visualItems.length),
-  'visuals-title': 'Visuals',
+  'visuals-title': 'Lab',
   'visuals-intro': esc(visualsData.intro),
   visuals,
   'socials-hero': socials.slice(0, 3).map((s) => '            ' + social(s)).join('\n'),
@@ -166,6 +166,7 @@ const chunks = mainMatch[1].split(/(?=\n    <div class="view" data-view=")/).fil
 const short = (s) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > 160 ? s.slice(0, 157).replace(/\s+\S*$/, '') + '…' : s; };
 const meta = {
   index: { description: site.description, image: firstCover },
+  work: { description: `Selected work by Cristhian Tilleria: ${projects.map((p) => p.title).join(', ')}. Websites, brands and Shopify stores, designed and built in New York.`, image: firstCover },
   about: { description: site.statement, image: site.portrait || firstCover },
   contact: { description: 'Tell me about your project and book a call with Cristhian Tilleria, freelance frontend developer and web designer in New York.', image: firstCover },
   visuals: { description: visualsData.intro, image: (visualItems[0] || {}).image || firstCover },
@@ -230,22 +231,6 @@ chunks.forEach((chunk) => {
   fs.writeFileSync(path.join(out, file), html);
   if (name !== '404') pages.push(url);
 });
-
-// /work has no page of its own: the projects are listed on the home page. In-site links are routed there by
-// the page script; a visitor typing /work gets this stub, which sends them on to the list.
-fs.writeFileSync(path.join(out, 'work/index.html'), `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Work — Cristhian Tilleria</title>
-<meta name="robots" content="noindex">
-<link rel="canonical" href="${esc(origin + '/')}">
-<meta http-equiv="refresh" content="0; url=/#works">
-<script>location.replace('/#works');</script>
-</head>
-<body><p><a href="/#works">See the work</a></p></body>
-</html>
-`);
 
 fs.writeFileSync(path.join(out, 'sitemap.xml'),
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
