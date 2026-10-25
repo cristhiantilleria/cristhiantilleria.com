@@ -31,6 +31,8 @@
     --gap: 1.1vw;
     --ease-out: cubic-bezier(.16, 1, .3, 1);
     --ease-in-out: cubic-bezier(.76, 0, .24, 1);
+    --t-rise: 1.5s;     /* text and blocks coming in */
+    --t-leave: .7s;     /* text going out on a page change */
     --sans: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 
@@ -120,7 +122,7 @@
   @keyframes guide-in { from { transform: scaleY(0); } }
   .view, .footer { transition: opacity .6s var(--ease-out); }
   .is-leaving .view, .is-leaving .footer { opacity: 0; transition-delay: .3s; }
-  .is-leaving .sq > span, .is-leaving .name { transform: scaleY(0); transition: transform .7s var(--ease-in-out); transition-delay: 0s; }
+  .is-leaving .sq > span, .is-leaving .name { transform: scaleY(0); transition: transform var(--t-leave) var(--ease-in-out); transition-delay: 0s; }
   .name { transform-origin: 50% 100%; }
 
   /* ---------- header ---------- */
@@ -142,21 +144,21 @@
   main, footer { position: relative; z-index: 1; }
 
   /* ---------- reveal primitives ---------- */
-  .fade { opacity: 0; translate: 0 16px; transition: opacity 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), translate 1.5s var(--ease-out) calc(var(--d, 0) * 1ms); }
+  .fade { opacity: 0; translate: 0 16px; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms); }
   .in.fade, .in .fade { opacity: 1; translate: none; }
 
   .sq { display: block; position: relative; }
-  .sq > span { display: block; transform: scaleY(0); transform-origin: 50% 84%; transition: transform 1.5s var(--ease-out); transition-delay: calc(var(--l, 0) * 180ms); will-change: transform; }
+  .sq > span { display: block; transform: scaleY(0); transform-origin: 50% 84%; transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 180ms); }
   .in .sq > span { transform: none; }
   .sq::after { content: attr(data-text); position: absolute; left: 0; right: 0; top: 84%; transform: scaleY(-.3); transform-origin: 50% 0; opacity: 0; pointer-events: none; }
-  .in .sq::after { animation: ghost 1.2s ease-out both; animation-delay: calc(var(--l, 0) * 180ms); }
+  .in .sq::after { animation: ghost var(--t-rise) var(--ease-out) both; animation-delay: calc(var(--l, 0) * 180ms); }   /* the reflection settles with the line it mirrors */
   @keyframes ghost { 0% { opacity: 1; transform: scaleY(-.34); } 60% { opacity: .9; } 100% { opacity: 0; transform: scaleY(-.02); } }
 
   /* long statements: each line rises out of its own mask, one after another */
   .ln { display: block; overflow: hidden; padding: .08em .04em .17em; margin: -.08em -.04em -.17em; }
-  .ln > span { display: block; transform: translateY(112%); transition: transform 1.35s var(--ease-out); transition-delay: calc(var(--l, 0) * 110ms); will-change: transform; }
+  .ln > span { display: block; transform: translateY(112%); transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 110ms); }
   .in .ln > span { transform: none; }
-  .is-leaving .ln > span { transform: translateY(-112%); transition: transform .65s var(--ease-in-out); transition-delay: 0s; }
+  .is-leaving .ln > span { transform: translateY(-112%); transition: transform var(--t-leave) var(--ease-in-out); transition-delay: 0s; }
 
   [data-type] { visibility: hidden; }
   [data-type].typed { visibility: visible; }
@@ -172,7 +174,7 @@
     border: var(--bw) solid var(--ink);
     background: var(--ink); color: var(--bg); --blk-ink: var(--ink);
     font-weight: 700;
-    transition: opacity 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), translate 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), background-color .4s, color .4s, box-shadow .6s var(--ease-out), transform .8s var(--ease-out);
+    transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), background-color .4s, color .4s, box-shadow .6s var(--ease-out), transform .8s var(--ease-out);
   }
   .btn[disabled] { opacity: .5; pointer-events: none; }
   .btn:hover { background: var(--bg); color: var(--ink); --blk-ink: var(--bg); box-shadow: 6px 6px 0 var(--ink); }
@@ -181,7 +183,7 @@
   .btn__arrow::after { transform: translate(-110%, 110%); }
   .btn:hover .btn__arrow::before { transform: translate(110%, -110%); }
   .btn:hover .btn__arrow::after { transform: none; }
-  .link { background: linear-gradient(currentColor, currentColor) left bottom / 100% var(--bw) no-repeat; padding-bottom: 4px; font-weight: 700; transition: opacity 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), translate 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), background-size .7s var(--ease-out); }
+  .link { background: linear-gradient(currentColor, currentColor) left bottom / 100% var(--bw) no-repeat; padding-bottom: 4px; font-weight: 700; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), background-size .7s var(--ease-out); }
   .link:hover { background-size: 0 var(--bw); background-position: right bottom; }
   .ext::after { content: " ↗"; }
   .ext { white-space: nowrap; }
@@ -231,7 +233,7 @@
   .name { padding-inline: var(--pad); font-weight: 700; font-size: min(17.4vw, 30vh); line-height: .84; letter-spacing: -.07em; white-space: nowrap; }
   .name__line { display: block; overflow: hidden; padding: .06em .04em .2em; margin: -.06em -.04em -.2em; }
   .name__line:nth-child(2) { text-align: right; }
-  .name .char { display: inline-block; transform: translateY(125%); will-change: transform; }
+  .name .char { display: inline-block; transform: translateY(125%); }
   .is-ready .name.play .char { animation: char-in 1.7s var(--ease-out) forwards; animation-delay: calc(var(--t-title) + var(--i) * 48ms); }
   @keyframes char-in { to { transform: translateY(0); } }
 
@@ -292,10 +294,15 @@
     display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gap); align-items: center;
     padding: clamp(16px, 1.7vw, 30px) 0;
     border-bottom: var(--bw) solid var(--ink);
-    transition: opacity 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), translate 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), color .4s, padding .8s var(--ease-out);
+    transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), color .4s;
   }
   .svc::before { content: ""; position: absolute; inset: 0 calc(var(--pad) * -1); background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease-out); z-index: -1; }
-  .svc:hover { color: var(--bg); padding-left: 1.2vw; }
+  .svc:hover { color: var(--bg); }
+  /* the row nudges right on hover; each column moves as far as a 1.2vw left padding would have pushed it, without re-laying out the row */
+  .svc .bullet, .svc__t, .svc__d { transition: transform .8s var(--ease-out), background-color .4s, color .4s; }
+  .svc:hover .bullet { transform: translateX(1.2vw); }
+  .svc:hover .svc__t { transform: translateX(1.1vw); }
+  .svc:hover .svc__d { transform: translateX(.5vw); }
   .svc:hover::before { transform: scaleY(1); }
   .svc:hover .bullet { background: var(--bg); color: var(--ink); }
   .svc .bullet { grid-column: 1; font-size: clamp(16px, 1.7vw, 32px); }
@@ -407,7 +414,7 @@
   .cs__facts div { display: flex; justify-content: space-between; gap: 2em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
   .cs__facts dd { text-align: right; }
   .gallery { padding-top: clamp(50px, 6vw, 120px); gap: calc(var(--gap) * 2); align-items: start; }
-  .shot { grid-column: span 6; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); cursor: zoom-in; transition: opacity 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), translate 1.5s var(--ease-out) calc(var(--d, 0) * 1ms), transform .7s var(--ease-out), box-shadow .7s var(--ease-out); }
+  .shot { grid-column: span 6; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); cursor: zoom-in; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), transform .7s var(--ease-out), box-shadow .7s var(--ease-out); }
   .shot.in:hover { transform: translate(-5px, -5px); box-shadow: 7px 7px 0 var(--ink); }
   .shot img { display: block; width: 100%; height: auto; }
   .shot figcaption { display: flex; justify-content: space-between; padding: 8px 10px; border-top: var(--bw) solid var(--ink); }
@@ -437,7 +444,7 @@
   .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); opacity: 0; transform: translateY(10px); transition: opacity .5s var(--ease-out), transform .7s var(--ease-out); }
   .lb.on .lb__row { opacity: 1; transform: none; transition-delay: .45s; }
   .lb__title { font-family: var(--sans); text-transform: none; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
-  .lb__stage img { will-change: transform; }
+  .lb.on .lb__stage img { will-change: transform; }
   .lb__stage { position: relative; min-height: 0; margin: 0 var(--pad); cursor: zoom-out; }
   .lb__stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .lb button { padding: .6em .9em; border: var(--bw) solid currentColor; font-weight: 700; transition: background-color .4s, color .4s; }
@@ -451,7 +458,7 @@
   .vz.in .vz__canvas { opacity: 1; }
   .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; border: 0; background: none; overflow: hidden; will-change: transform; }
   .vz__canvas .visual figcaption { display: none; }
-  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out), filter .6s; }
+  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out); }
   .vz__canvas .visual:hover img { transform: scale(1.04); }
   .vz.is-drag .visual img { transform: none; }
   .vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(10px, 1.2vw, 20px); z-index: 5; pointer-events: none; box-shadow: 0 0 0 var(--bw) var(--bg); }
@@ -468,7 +475,7 @@
   .visual .mono { margin-left: auto; }
 
   /* ---------- cursor tag ---------- */
-  .cursor-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: .6em .8em; background: var(--bg); color: var(--ink); border: var(--bw) solid var(--ink); font-weight: 700; opacity: 0; scale: .6; transition: opacity .4s var(--ease-out), scale .55s var(--ease-out), transform .28s var(--ease-out); }
+  .cursor-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: .6em .8em; background: var(--bg); color: var(--ink); border: var(--bw) solid var(--ink); font-weight: 700; opacity: 0; scale: .6; transition: opacity .4s var(--ease-out), scale .55s var(--ease-out); will-change: transform; }   /* follows the pointer from JS */
   .cursor-tag.on { opacity: 1; scale: 1; }
 
   /* ---------- full-screen sections (desktop) ---------- */
@@ -529,7 +536,8 @@
     .loader, .is-ready .loader { animation: loader-fade .4s linear .6s forwards; }
     .loader__line > span, .is-ready .loader__line > span, .name .char, .is-ready .name.play .char { animation: none; transform: none; opacity: 1; }
     .ln > span, .sq > span, .fade, .media, .art, .portrait img, .cs__cover img, .cs__cover video, .vz__canvas, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; translate: none !important; }
-    .logo, .header__id:hover .logo, .work:hover .work__frame, .shot.in:hover, .chip:hover span, .btn, .pill { transform: none !important; }
+    .logo, .header__id:hover .logo, .work:hover .work__frame, .shot.in:hover, .chip:hover span, .btn, .pill, .svc .bullet, .svc__t, .svc__d, .vz__canvas .visual img, .lb__row { transform: none !important; }
+    .cursor-tag { scale: none; transition: opacity .2s; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
     @keyframes loader-fade { to { opacity: 0; visibility: hidden; } }
@@ -755,15 +763,33 @@
   if (/^#\//.test(location.hash)) location.replace(location.hash.slice(1).replace(/\/$/, '') || '/');
 
   var root = document.documentElement, body = document.body;
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motionPref = matchMedia('(prefers-reduced-motion: reduce)'), reduce = motionPref.matches;   // kept live, see the end of the script
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-  /* ---------- smooth scroll (falls back to native if the library is unavailable) ---------- */
-  var lenis = (window.Lenis && !reduce) ? new Lenis({ lerp: .06, wheelMultiplier: .9 }) : null;
-  if (lenis) { lenis.stop(); requestAnimationFrame(function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }); }
+  /* ---------- smooth scroll (falls back to native if the library is unavailable) ----------
+     Lenis gets its own frame loop. Anything that depends on the scroll position listens to its scroll
+     event, which fires inside that loop, so it lands in the same frame as the scroll instead of the next. */
+  var lenis = null, holds = {};
+  function smooth(on) {
+    if (on && !lenis && window.Lenis) {
+      var l = lenis = new Lenis({ lerp: .06, wheelMultiplier: .9 });
+      l.on('scroll', function () { update(); });
+      if (Object.keys(holds).length) l.stop();
+      requestAnimationFrame(function raf(t) { if (lenis !== l) return; l.raf(t); requestAnimationFrame(raf); });
+    } else if (!on && lenis) { lenis.destroy(); lenis = null; }
+  }
+  // The intro and the overlays each hold the page still; scrolling comes back once nothing holds it.
+  function hold(why, on) {
+    if (on) holds[why] = true; else delete holds[why];
+    var held = Object.keys(holds).length > 0;
+    root.style.overflow = held ? 'hidden' : '';
+    if (lenis) held ? lenis.stop() : lenis.start();
+  }
+  hold('intro', true);
+  function easeInOut(t) { return t < .5 ? 8 * t * t * t * t : 1 - Math.pow(2 - 2 * t, 4) / 2; }   // close to --ease-in-out
   function scrollToY(target, instant) {
-    if (lenis) lenis.scrollTo(target, { immediate: !!instant, force: true, duration: 2 });
+    if (lenis) lenis.scrollTo(target, { immediate: !!instant, force: true, duration: 2, easing: easeInOut });
     else if (typeof target === 'number') scrollTo({ top: target, behavior: instant || reduce ? 'auto' : 'smooth' });
     else target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
   }
@@ -818,6 +844,10 @@
 
   /* ---------- auto line splitting for the big statement ---------- */
   function splitLines(el) {
+    // Phones fire resize while the address bar slides; the lines only change with the width or type size.
+    var key = el.clientWidth + '/' + getComputedStyle(el).fontSize;
+    if (key === el._split) return;
+    el._split = key;
     var text = el.dataset.src || (el.dataset.src = el.textContent.trim().replace(/\s+/g, ' '));
     el.setAttribute('aria-label', text);
     el.innerHTML = text.split(' ').map(function (w) { return '<span style="display:inline-block">' + esc(w) + '</span>'; }).join(' ');
@@ -945,7 +975,7 @@
   /* ---------- first load: curtain, then content ---------- */
   activate(($('.view:not([hidden])') || $('.view')).dataset.view);
   var loader = $('.loader');
-  function unlock() { if (lenis && !$('.book.on')) lenis.start(); root.classList.remove('is-loading'); }
+  function unlock() { hold('intro', false); root.classList.remove('is-loading'); }
   loader.addEventListener('animationend', function (e) { if (e.target === loader) { loader.remove(); unlock(); } });
   // The intro clock starts only when the loader is really on screen: fonts in and a frame painted.
   // On slow phones the page can take seconds to appear, and a clock that started earlier would
@@ -984,24 +1014,30 @@
     touch.innerHTML = html;
     strips = $$('.touch__strip', touch);
   })();
-  var sliceScroll = 0, sliceHover = 0;
+  var sliceScroll = 0, sliceHover = 0, sliceKey = '', swellT0 = 0, swelling = false;
   function slice() {
-    var t = Math.max(sliceScroll, sliceHover);
-    strips.forEach(function (s, n) { s.style.transform = t < .002 ? '' : 'scaleY(' + Math.max(.05, 1 + t * AMP[n]).toFixed(3) + ')'; });
+    var t = Math.max(sliceScroll, sliceHover), key = t < .002 ? '' : t.toFixed(4);
+    if (key === sliceKey) return;                  // nothing moved: leave the strips alone
+    sliceKey = key;
+    strips.forEach(function (s, n) { s.style.transform = key && 'scaleY(' + Math.max(.05, 1 + t * AMP[n]).toFixed(3) + ')'; });
   }
   touch.addEventListener('mouseenter', function () {
     if (reduce) return;
-    var t0 = performance.now();
-    (function loop(now) {
-      var p = Math.min(1, (now - t0) / 1100);
+    var now = performance.now(), p = swelling ? (now - swellT0) / 1100 : 1;
+    // coming back in while it is still settling picks the swell up at the same height instead of starting a second loop
+    swellT0 = now - (p < 1 ? Math.min(p, 1 - p) * 1100 : 0);
+    if (swelling) return;
+    swelling = true;
+    requestAnimationFrame(function swell(now) {
+      var p = Math.min(1, Math.max(0, (now - swellT0) / 1100));
       sliceHover = Math.sin(p * Math.PI) * .18;
       slice();
-      if (p < 1) requestAnimationFrame(loop);
-    })(t0);
+      if (p < 1) requestAnimationFrame(swell); else swelling = false;
+    });
   });
 
   /* ---------- scroll-driven: dark switch, footer stretch ---------- */
-  var darks = $$('[data-dark]'), queued = false, touchWater = null;
+  var darks = $$('[data-dark]'), queued = false;
   function update() {
     queued = false;
     var vh = innerHeight, mid = vh * .6;
@@ -1010,21 +1046,26 @@
       var r = d.getBoundingClientRect();
       return r.top < mid && r.bottom > mid;
     }));
-    if (reduce) return;
     var remaining = root.scrollHeight - (scrollY + vh);
     var t = Math.min(1, Math.max(0, remaining / (vh * .8)));
-    sliceScroll = touch.offsetParent ? t * t * .7 : 0;
+    sliceScroll = reduce || !touch.offsetParent ? 0 : t * t * .7;
     slice();
-    if (touchWater) { touchWater.floor = sliceScroll * size(touchWater) * .16; if (touchWater.floor > .5) startWater(); }
+    var w = touch._water;
+    if (!w) return;
+    // the swell only runs while the headline is on screen; off screen it kept the water loop going for nothing
+    var r = touch.getBoundingClientRect();
+    w.floor = r.bottom > 0 && r.top < vh ? sliceScroll * size(w) * .16 : 0;
+    if (w.floor > .5) startWater();
   }
-  function onScroll() { if (!queued) { queued = true; requestAnimationFrame(update); } }
-  addEventListener('scroll', onScroll, { passive: true });
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
+  addEventListener('scroll', function () { if (!lenis) queue(); }, { passive: true });   // with Lenis, its scroll event calls update()
   addEventListener('resize', function () {
-    onScroll();
+    queue();
     clearTimeout(splitLines._t);
     splitLines._t = setTimeout(function () { $$('[data-lines]', views[current]).forEach(splitLines); }, 200);
   });
   update();
+  smooth(!reduce);
 
   /* ---------- water typography ----------
      Big type sits behind one SVG displacement filter per headline. Three things feed it:
@@ -1032,10 +1073,7 @@
      2. a lens that follows the pointer and gets stronger the faster you move,
      3. drops: rings that spread from where the pointer has been, and a big splash on click/tap. */
   var waters = [], waterOn = false, waterLast = 0, SLOTS = 6;   // slot 0 = lens, 1..5 = drops
-  var wsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  wsvg.setAttribute('aria-hidden', 'true');
-  wsvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
-  body.appendChild(wsvg);
+  var wsvg = null, ringMap, swells;
 
   // Displacement maps are drawn once on tiny canvases: red pushes pixels sideways, green up and down,
   // mid-grey means "leave it alone".
@@ -1057,16 +1095,27 @@
       return [Math.sin(v * 3 + seed + Math.sin(u + seed) * 1.2) * (.6 + .4 * Math.sin(v + u * 2 + seed)), .8 * Math.sin(u * 2 + v * 2.5 + seed * 2), 1];
     });
   }
-  // concentric ripple pushing pixels outward/inward along the radius, fading to nothing at the rim
-  var ringMap = drawMap(128, 128, function (x, y) {
-    var dx = x * 2 - 1, dy = y * 2 - 1, r = Math.hypot(dx, dy);
-    if (r >= 1) return [0, 0, 0];
-    var wave = Math.sin(r * 9.42) * Math.pow(r, .6), k = r || 1;
-    return [dx / k * wave, dy / k * wave, Math.min(1, (1 - r) * 3.5)];
-  });
-  var swells = [swellMap(.4), swellMap(2.1), swellMap(3.9)];
+  // Built the first time a headline needs it, so reduced motion never pays for it.
+  function waterMaps() {
+    if (wsvg) return;
+    wsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    wsvg.setAttribute('aria-hidden', 'true');
+    wsvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    body.appendChild(wsvg);
+    // concentric ripple pushing pixels outward/inward along the radius, fading to nothing at the rim
+    ringMap = drawMap(128, 128, function (x, y) {
+      var dx = x * 2 - 1, dy = y * 2 - 1, r = Math.hypot(dx, dy);
+      if (r >= 1) return [0, 0, 0];
+      var wave = Math.sin(r * 9.42) * Math.pow(r, .6), k = r || 1;
+      return [dx / k * wave, dy / k * wave, Math.min(1, (1 - r) * 3.5)];
+    });
+    swells = [swellMap(.4), swellMap(2.1), swellMap(3.9)];
+  }
+  // Filter attributes are only written when they change: every write makes the browser re-run the filter.
+  function attr(el, k, v) { if (el['_' + k] !== v) { el['_' + k] = v; el.setAttribute(k, v); } }
 
   function addWater(el) {
+    waterMaps();
     var id = 'water-' + waters.length, n, merge = '';
     var h = '<filter id="' + id + '" x="-10%" y="-35%" width="120%" height="170%" color-interpolation-filters="sRGB">' +
       '<feFlood flood-color="rgb(128,128,128)" result="n"/>' +
@@ -1121,9 +1170,17 @@
   }
   function place(w, n, x, y, R, strength) {
     var im = w.imgs[n];
-    im.setAttribute('x', (x - R).toFixed(1)); im.setAttribute('y', (y - R).toFixed(1));
-    im.setAttribute('width', (R * 2).toFixed(1)); im.setAttribute('height', (R * 2).toFixed(1));
-    w.fa[n].setAttribute('slope', strength.toFixed(3));
+    attr(im, 'x', (x - R).toFixed(1)); attr(im, 'y', (y - R).toFixed(1));
+    attr(im, 'width', (R * 2).toFixed(1)); attr(im, 'height', (R * 2).toFixed(1));
+    attr(w.fa[n], 'slope', strength.toFixed(3));
+  }
+  // flat water: filter off, every input back to zero so the next start has no leftovers
+  function still(w) {
+    if (w.on) { w.el.style.filter = ''; w.on = false; }
+    w.e = w.lens = 0; w.lx = null;
+    w.drops.forEach(function (d) { d.life = 0; });
+    attr(w.swellA, 'slope', '0');
+    w.fa.forEach(function (f) { attr(f, 'slope', '0'); });
   }
   // whole-headline swell; strength is relative to font size so every headline moves in proportion
   function kick(w, strength) {
@@ -1134,7 +1191,8 @@
   }
   function startWater() { if (!waterOn && !reduce) { waterOn = true; waterLast = performance.now(); requestAnimationFrame(flow); } }
   function flow(now) {
-    var active = false, ms = Math.min(100, now - waterLast), dt = ms / 16.7;
+    if (reduce) { waters.forEach(still); waterOn = false; return; }
+    var active = false, ms = Math.max(0, Math.min(100, now - waterLast)), dt = ms / 16.7;
     waterLast = now;
     waters.forEach(function (w) {
       var amp = Math.max(w.e, w.floor);
@@ -1145,51 +1203,63 @@
         if (!d.life) return;
         d.age += ms;
         var p = d.age / d.life;
-        if (p >= 1) { d.life = 0; w.fa[n].setAttribute('slope', 0); return; }
+        if (p >= 1) { d.life = 0; attr(w.fa[n], 'slope', '0'); return; }
         alive = true;
         place(w, n, d.x, d.y, d.r0 + (d.r1 - d.r0) * (1 - Math.pow(1 - p, 3)), d.power * Math.pow(1 - p, 1.4));
       });
-      if (!alive) { if (w.on) { w.el.style.filter = ''; w.on = false; } w.e = 0; w.lens = 0; return; }
+      if (!alive) { if (w.on) still(w); w.e = 0; w.lens = 0; return; }
       active = true;
       var fs = size(w);
       w.t += .05 * dt;
-      w.swellA.setAttribute('slope', amp < .5 ? 0 : (Math.min(1, amp / (fs * .3)) * (.72 + .28 * Math.sin(w.t))).toFixed(3));
-      if (w.lens > .02) place(w, 0, w.px, w.py, fs * .5, w.lens * .8); else w.fa[0].setAttribute('slope', 0);
-      w.disp.setAttribute('scale', (fs * .3).toFixed(1));
+      attr(w.swellA, 'slope', amp < .5 ? '0' : (Math.min(1, amp / (fs * .3)) * (.72 + .28 * Math.sin(w.t))).toFixed(3));
+      if (w.lens > .02) place(w, 0, w.px, w.py, fs * .5, w.lens * .8); else attr(w.fa[0], 'slope', '0');
+      attr(w.disp, 'scale', (fs * .3).toFixed(1));
       if (!w.on) { w.el.style.filter = 'url(#' + w.id + ')'; w.on = true; }
     });
     waterOn = active;
     if (active) requestAnimationFrame(flow);
   }
-  function bindWater(scope) { $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
+  function bindWater(scope) { if (!reduce) $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
   bindWater(document);
   addEventListener('resize', function () { waters.forEach(function (w) { w.fs = 0; }); });
-  touchWater = touch._water;
   function ripple(scope, strength) {
     $$('.name, .h2', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
   }
 
   /* ---------- pointer micro-interactions ---------- */
-  var tag = $('.cursor-tag');
+  // The tag eases after the pointer once per frame; a CSS transition restarted on every mousemove stutters.
+  var tag = $('.cursor-tag'), tagX = 0, tagY = 0, tagTX = 0, tagTY = 0, tagLast = 0, tagRun = false;
+  function tagAt(x, y) { tag.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)'; }
+  function tagFollow(now) {
+    var dt = Math.max(0, Math.min(50, now - tagLast)) / 16.7, k = 1 - Math.pow(.7, dt);
+    tagLast = now;
+    tagX += (tagTX - tagX) * k; tagY += (tagTY - tagY) * k;
+    var done = Math.abs(tagTX - tagX) < .1 && Math.abs(tagTY - tagY) < .1;
+    if (done) { tagX = tagTX; tagY = tagTY; }
+    tagAt(tagX, tagY);
+    tagRun = !done;
+    if (tagRun) requestAnimationFrame(tagFollow);
+  }
   addEventListener('mousemove', function (e) {
     var h = e.target.closest && e.target.closest('[data-cursor]'), shown = tag.classList.contains('on');
     if (h && tag.textContent !== h.dataset.cursor) tag.textContent = h.dataset.cursor;
-    if (h && !shown) {                     // appear where the pointer is, not sliding in from the corner
-      tag.style.transition = 'none';
-      tag.style.transform = 'translate(' + (e.clientX + 16) + 'px,' + (e.clientY + 18) + 'px)';
-      void tag.offsetWidth;
-      tag.style.transition = '';
-    } else if (h) tag.style.transform = 'translate(' + (e.clientX + 16) + 'px,' + (e.clientY + 18) + 'px)';
+    if (h) {
+      tagTX = e.clientX + 16; tagTY = e.clientY + 18;
+      if (!shown || reduce) { tagX = tagTX; tagY = tagTY; tagAt(tagX, tagY); }   // appear where the pointer is, not sliding in from the corner
+      else if (!tagRun) { tagRun = true; tagLast = performance.now(); requestAnimationFrame(tagFollow); }
+    }
     if (!!h !== shown) tag.classList.toggle('on', !!h);
   }, { passive: true });
   function bindMagnetic(scope) {
-    if (reduce) return;
     $$('[data-magnetic]', scope).forEach(function (m) {
       if (m._magnetic) return;
       m._magnetic = true;
       m.addEventListener('mousemove', function (e) {
-        var r = m.getBoundingClientRect();
-        m.style.transform = 'translate(' + ((e.clientX - r.left - r.width / 2) * .22).toFixed(1) + 'px,' + ((e.clientY - r.top - r.height / 2) * .35).toFixed(1) + 'px)';
+        if (reduce) return;
+        // measure from where the button rests, not where it has been pulled to, or it chases its own offset
+        var r = m.getBoundingClientRect(), t = new DOMMatrixReadOnly(getComputedStyle(m).transform);
+        var cx = r.left + r.width / 2 - t.m41, cy = r.top + r.height / 2 - t.m42;
+        m.style.transform = 'translate(' + ((e.clientX - cx) * .22).toFixed(1) + 'px,' + ((e.clientY - cy) * .35).toFixed(1) + 'px)';
       });
       m.addEventListener('mouseleave', function () { m.style.transform = ''; });
     });
@@ -1244,7 +1314,7 @@
     var url = CONFIG.bookingUrl;
     if (!url) return;                                              // no calendar set up: the buttons stay normal links
     var box = document.createElement('div'), opener = null, loaded = false, timer = 0, isOpen = false;
-    box.className = 'book'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
+    box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
     box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
       '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
       '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
@@ -1270,8 +1340,7 @@
         timer = setTimeout(function () { if (!loaded) { loading.hidden = true; fallback.hidden = false; } }, 15000);
       }
       if (location.hash !== '#book') history.replaceState(null, '', location.pathname + location.search + '#book');
-      if (lenis) lenis.stop();
-      root.style.overflow = 'hidden';
+      hold('book', true);
       covered.forEach(function (el) { if (el) el.inert = true; });
       box.classList.add('on');
       shut.focus({ preventScroll: true });
@@ -1281,8 +1350,7 @@
       isOpen = false;
       box.classList.remove('on');
       covered.forEach(function (el) { if (el) el.inert = false; });
-      root.style.overflow = '';
-      if (lenis && !root.classList.contains('is-loading')) lenis.start();
+      hold('book', false);
       if (!keepUrl) history.replaceState(null, '', location.pathname + location.search.replace(/([?&])book=1&?/, '$1').replace(/[?&]$/, ''));
       if (opener && opener.isConnected) opener.focus({ preventScroll: true });
     }
@@ -1325,8 +1393,11 @@
     lbImg.alt = small.alt;
     if (full && full !== lbImg.getAttribute('src')) {
       var hi = new Image();
-      hi.onload = function () { if (lbSet[lbAt] === el && lb.classList.contains('on')) lbImg.src = full; };
       hi.src = full;
+      // decoded off the main thread before the swap, so the big image doesn't hitch the zoom
+      (hi.decode ? hi.decode() : new Promise(function (ok) { hi.onload = ok; })).then(function () {
+        if (lbSet[lbAt] === el && lb.classList.contains('on')) lbImg.src = full;
+      }, function () {});
     }
     var name = $('figcaption b', el), kind = $('figcaption .mono', el);
     if (name) $('.lb__title').textContent = name.textContent + (kind && kind.textContent ? ' — ' + kind.textContent : '');
@@ -1338,7 +1409,16 @@
     var w = Math.min(s.width, s.height * r.width / r.height);
     return 'translate(' + (r.left + r.width / 2 - s.left - s.width / 2).toFixed(1) + 'px,' + (r.top + r.height / 2 - s.top - s.height / 2).toFixed(1) + 'px) scale(' + (r.width / w).toFixed(4) + ')';
   }
+  // Where the piece on screen now lives on the page: the tile it was opened from, or (in a gallery,
+  // after prev/next) the shot it belongs to. Only if that spot is in view; otherwise it just fades.
+  function lbHome() {
+    var el = lbSet[lbAt], t = lbFrom && lbFrom._source === el ? lbFrom : el && el.classList.contains('shot') ? $('img', el) : null;
+    if (!t || !t.isConnected) return null;
+    var r = t.getBoundingClientRect();
+    return r.width && r.bottom > 0 && r.top < innerHeight ? t : null;
+  }
   function lbToggle(open, from) {
+    var home;
     if (open) {
       lbFrom = from || null;
       if (lbFrom && !reduce) {                      // grow out of the clicked tile
@@ -1348,13 +1428,13 @@
         lbImg.style.transition = 'transform .9s var(--ease-out)';
         lbImg.style.transform = '';
       }
-    } else if (lbFrom && lbFrom.isConnected && lbFrom._source === lbSet[lbAt] && !reduce) {
+    } else if (!reduce && (home = lbHome())) {
       lbImg.style.transition = 'transform .6s var(--ease-in-out)';   // shrink back into its tile
-      lbImg.style.transform = lbOver(lbFrom);
+      lbImg.style.transform = lbOver(home);
     }
     lb.classList.toggle('on', open);
     lb.setAttribute('aria-hidden', String(!open));
-    if (lenis) open ? lenis.stop() : lenis.start();
+    hold('lb', open);
     if (open) $('[data-lb="close"]', lb).focus();
     else setTimeout(function () { if (!lb.classList.contains('on')) { lbImg.removeAttribute('src'); lbImg.style.transition = 'none'; lbImg.style.transform = ''; } }, 650);
   }
@@ -1364,7 +1444,7 @@
       lbSet = $$('.shot', shot.closest('.gallery'));
       $('.lb__title').textContent = shot.closest('.view').dataset.title.split(' — ')[0];
       lbShow(lbSet.indexOf(shot));
-      lbToggle(true);
+      lbToggle(true, $('img', shot));
       return;
     }
     var act = e.target.closest('[data-lb]');
@@ -1385,7 +1465,11 @@
     vz._bound = true;
     var stage = $('.vz__canvas', vz), src = $$('.vz__src .visual', vz);
     if (!src.length) return;
-    var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, drag = null, travelled = 0, touched = 0, lastT = 0, relayout = 0, laid = '';
+    var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, wx = 0, wy = 0, drift = 0, drag = null, travelled = 0, touched = 0;
+    var lastT = 0, running = false, seen = false, dirty = false, relayout = 0, laid = '';
+    // One feel for every way of moving it: a fling coasts and slows like the page scroll settles,
+    // wheel steps are eased in rather than jumped, and the idle drift fades in and out.
+    var FRICTION = .94, WHEEL = .16, DRIFT = .28, KEY = 26;
     function mod(a, n) { return ((a % n) + n) % n; }
     function rnd(a, b) { var x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }   // repeatable scatter
 
@@ -1395,7 +1479,7 @@
       // small pieces with wide, uneven gaps so the canvas feels open
       CW = vw < 761 ? vw * .34 : Math.max(130, Math.min(230, vw * .12));
       G = vw < 761 ? vw * .14 : Math.max(90, vw * .085);
-      if (!vw || !vh) return;                       // the view is hidden; tick() lays out once it shows
+      if (!vw || !vh) return;                       // the view is hidden; the ResizeObserver lays out once it shows
       laid = vw + 'x' + vh;
       var n = Math.ceil((vw + CW + G) / (CW + G)) + 1;
       PW = n * (CW + G);
@@ -1439,38 +1523,56 @@
         });
       });
     }
+    // The frame loop only runs while the canvas is on screen, and under reduced motion only while something moves.
+    function wake() { if (!running && seen) { running = true; lastT = 0; requestAnimationFrame(tick); } }
+    vz._wake = wake;
     function tick(now) {
+      if (!seen) { running = false; return; }
+      var dt = lastT ? Math.min(50, Math.max(0, now - lastT)) / 16.7 : 1, moved = dirty;
+      lastT = now; dirty = false;
+      if (!drag) {
+        if (Math.abs(wx) > .1 || Math.abs(wy) > .1) {
+          var k = 1 - Math.pow(1 - WHEEL, dt);
+          ox += wx * k; oy += wy * k; wx -= wx * k; wy -= wy * k; moved = true;
+        } else wx = wy = 0;
+        if (Math.abs(vx) > .05 || Math.abs(vy) > .05) {
+          var f = Math.pow(FRICTION, dt);
+          ox += vx * dt; oy += vy * dt; vx *= f; vy *= f; moved = true;
+        } else vx = vy = 0;
+      }
+      var idle = !reduce && !drag && !moved && now - touched > 2600 && !lb.classList.contains('on');
+      drift += ((idle ? DRIFT : 0) - drift) * (1 - Math.pow(.97, dt));   // slow idle drift, eased in and out
+      if (drift > .004) { oy -= drift * dt; moved = true; } else drift = 0;
+      if (moved) draw();
+      if (reduce && !moved && !drag) { running = false; return; }
       requestAnimationFrame(tick);
-      if (!vz.offsetParent) { lastT = now; return; }
-      if (laid !== vz.clientWidth + 'x' + vz.clientHeight) layout();
-      var dt = Math.min(50, now - (lastT || now)) / 16.7;
-      lastT = now;
-      if (drag) return;
-      var coasting = Math.abs(vx) > .05 || Math.abs(vy) > .05;
-      if (coasting) { ox += vx * dt; oy += vy * dt; vx *= Math.pow(.94, dt); vy *= Math.pow(.94, dt); }
-      else if (!reduce && now - touched > 2600 && !lb.classList.contains('on')) oy -= .28 * dt;   // slow idle drift
-      else return;
-      draw();
     }
+    function stir() { touched = performance.now(); drift = 0; wake(); }
     vz.addEventListener('pointerdown', function (e) {
       if (e.button) return;
-      drag = { x: e.clientX, y: e.clientY, ox: ox, oy: oy, px: e.clientX, py: e.clientY };
-      travelled = 0; vx = vy = 0; touched = performance.now();
+      drag = { x: e.clientX, y: e.clientY, ox: ox, oy: oy, px: e.clientX, py: e.clientY, t: e.timeStamp, vx: 0, vy: 0 };
+      travelled = 0; vx = vy = wx = wy = 0; stir();
       vz.setPointerCapture(e.pointerId);
       vz.classList.add('is-drag');
     });
     vz.addEventListener('pointermove', function (e) {
       if (!drag) return;
+      var dx = e.clientX - drag.px, dy = e.clientY - drag.py, k = 16.7 / Math.max(1, e.timeStamp - drag.t);
       ox = drag.ox + e.clientX - drag.x; oy = drag.oy + e.clientY - drag.y;
-      vx = e.clientX - drag.px; vy = e.clientY - drag.py;
-      travelled += Math.abs(vx) + Math.abs(vy);
-      drag.px = e.clientX; drag.py = e.clientY; touched = performance.now();
-      draw();
+      // velocity in px per 60Hz frame, smoothed, so the fling is the same on any pointer rate
+      drag.vx = drag.vx * .25 + dx * k * .75; drag.vy = drag.vy * .25 + dy * k * .75;
+      travelled += Math.abs(dx) + Math.abs(dy);
+      drag.px = e.clientX; drag.py = e.clientY; drag.t = e.timeStamp;
+      dirty = true; stir();                         // drawn on the next frame, once, however many events arrive
     });
     function release(e) {
       if (!drag) return;
+      var d = drag, held = e.timeStamp - d.t > 80;  // stopped before letting go: no fling
       drag = null;
       vz.classList.remove('is-drag');
+      vx = reduce || held ? 0 : Math.max(-80, Math.min(80, d.vx));
+      vy = reduce || held ? 0 : Math.max(-80, Math.min(80, d.vy));
+      stir();
       if (travelled > 6 || e.type !== 'pointerup') return;
       vx = vy = 0;
       var hit = document.elementFromPoint(e.clientX, e.clientY), tile = hit && hit.closest('.vz__canvas .visual');
@@ -1483,23 +1585,41 @@
     vz.addEventListener('pointercancel', release);
     vz.addEventListener('wheel', function (e) {
       e.preventDefault();
-      ox -= e.deltaX; oy -= e.deltaY; vx = vy = 0; touched = performance.now();
-      draw();
+      var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vz.clientHeight : 1;
+      vx = vy = 0;
+      if (reduce) { ox -= e.deltaX * unit; oy -= e.deltaY * unit; dirty = true; }
+      else { wx -= e.deltaX * unit; wy -= e.deltaY * unit; }
+      stir();
     }, { passive: false });
     addEventListener('keydown', function (e) {
-      if (!vz.offsetParent || lb.classList.contains('on')) return;
+      if (!seen || lb.classList.contains('on')) return;
       var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
       if (!k) return;
       e.preventDefault();
-      vx = k[0] * 26; vy = k[1] * 26; touched = performance.now();
+      if (reduce) { ox += k[0] * KEY / (1 - FRICTION); oy += k[1] * KEY / (1 - FRICTION); dirty = true; }   // same distance, no glide
+      else { vx = k[0] * KEY; vy = k[1] * KEY; }
+      stir();
     });
+    // size changes (and the view being shown) re-lay out from here, instead of reading the size every frame
+    new ResizeObserver(function () { if (vz.clientWidth && laid !== vz.clientWidth + 'x' + vz.clientHeight) layout(); }).observe(vz);
+    new IntersectionObserver(function (en) { seen = en[en.length - 1].isIntersecting; if (seen) { touched = performance.now(); wake(); } }).observe(vz);
     layout();
-    requestAnimationFrame(tick);
   }
 
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
   function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
   initView(document);
+
+  /* ---------- reduced motion can be switched on or off while the page is open ---------- */
+  if (motionPref.addEventListener) motionPref.addEventListener('change', function (e) {
+    reduce = e.matches;
+    smooth(!reduce);                               // Lenis off (or back on); the water loop tears itself down on its next frame
+    if (reduce) $$('[data-magnetic]').forEach(function (m) { m.style.transform = ''; });
+    else bindWater(document);
+    $$('video[data-autoplay]').forEach(function (v) { if (v._seen) { videoIO.unobserve(v); videoIO.observe(v); } });   // re-check: pause or resume
+    $$('.vz').forEach(function (v) { if (v._wake) v._wake(); });
+    update();
+  });
 </script>
 </body>
 </html>
