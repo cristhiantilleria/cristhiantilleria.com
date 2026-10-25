@@ -1,5 +1,6 @@
 ---
 // One large feature row per project on /work, alternating sides. Without a cover it falls back to an abstract placeholder.
+import ResponsiveImage from './ResponsiveImage.astro';
 import { img, type Project } from '../lib/content';
 interface Props { project: Project; index: number }
 const { project: p, index: i } = Astro.props;
@@ -10,7 +11,7 @@ const still = p.cover ? img(p.cover, 1080) : '';
     p.video
       ? <video class="art art--vid" src={encodeURI(p.video)} poster={still || undefined} muted loop playsinline preload="metadata" data-autoplay></video>
       : p.cover
-        ? <img class="art art--img" src={still} alt={`${p.title} — ${(p.type || 'project').toLowerCase()} by Cristhian Tilleria`} loading="lazy">
+        ? <ResponsiveImage class="art art--img" src={p.cover} sizes="(max-width: 700px) 100vw, 60vw" maxW={1600} priority={i < 2} alt={`${p.title} — ${(p.type || 'project').toLowerCase()} by Cristhian Tilleria`} />
         : <div class={`art art-${(i % 3) + 1}`}></div>
   }</div></div>
   <div class="work__info">

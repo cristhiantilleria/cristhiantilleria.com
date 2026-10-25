@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Btn from '../../components/Btn.astro';
+import ResponsiveImage from '../../components/ResponsiveImage.astro';
 import { getProjects, img, pad, letter, bodyOf, type Project } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -21,7 +22,7 @@ const Body = p.hasBody ? bodyOf(p.slug) : null;
     <div class="bar" data-reveal data-wait="700"><span class="bullet">{letter(i)}</span><h2>{p.type}</h2><span class="mono">{p.year}</span><span class="bar__a" aria-hidden="true">↓</span></div>
     {p.video
       ? <div class="cs__cover" data-reveal data-wait="900"><div class="media"><video src={encodeURI(p.video)} poster={p.cover ? img(p.cover, 2400) : undefined} muted loop playsinline preload="metadata" data-autoplay></video></div></div>
-      : p.cover && <div class="cs__cover" data-reveal data-wait="900"><div class="media"><img src={img(p.cover, 2400)} alt={`${p.title} cover`}></div></div>}
+      : p.cover && <div class="cs__cover" data-reveal data-wait="900"><div class="media"><ResponsiveImage src={p.cover} alt={`${p.title} cover`} sizes="100vw" priority /></div></div>}
   </section>
   <section class="cs__intro grid">
     {p.summary && <p class="cs__lead fade" data-reveal>{p.summary}</p>}
@@ -38,7 +39,7 @@ const Body = p.hasBody ? bodyOf(p.slug) : null;
       <div class="bar" data-reveal><span class="bullet">{p.gallery.length}</span><h2>Gallery</h2><span class="mono">Click any frame to enlarge</span><span class="bar__a" aria-hidden="true">↓</span></div>
       {p.gallery.map((g, n) => (
         <figure class:list={['shot', SHOT[n % SHOT.length], 'fade']} data-reveal data-full={img(g, 2400)}>
-          <img src={img(g, n % SHOT.length === 0 ? 2400 : 1600)} alt={`${p.title}, image ${n + 1}`} loading="lazy">
+          <ResponsiveImage src={g} alt={`${p.title}, image ${n + 1}`} sizes={n % SHOT.length === 0 ? '100vw' : '(max-width: 700px) 100vw, 60vw'} maxW={n % SHOT.length === 0 ? 2400 : 1600} />
           <figcaption class="mono"><span>{p.initials} — {pad(n + 1, 2)}/{pad(p.gallery.length, 2)}</span><span aria-hidden="true">+</span></figcaption>
         </figure>
       ))}

@@ -1,6 +1,7 @@
 // Reads the Keystatic content in src/content at build time and shapes it for the pages.
 import fs from 'node:fs';
 import path from 'node:path';
+import sharp from 'sharp';
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config';
 
@@ -11,10 +12,22 @@ export const letter = (i: number) => String.fromCharCode(65 + (i % 26));
 
 // On Vercel, images are resized and re-encoded on the fly; locally the originals are used.
 const SIZES = [640, 1080, 1600, 2400];
+const plain = (src: string | null | undefined) => !process.env.VERCEL || !src || /\.(gif|svg)$/i.test(src);
 export const img = (src: string | null | undefined, w: number) =>
-  !process.env.VERCEL || !src || /\.(gif|svg)$/i.test(src)
-    ? encodeURI(src || '')
-    : `/_vercel/image?url=${encodeURIComponent(src)}&w=${SIZES.find((s) => s >= w) || 2400}&q=75`;
+  plain(src) ? encodeURI(src || '') : `/_vercel/image?url=${encodeURIComponent(src!)}&w=${SIZES.find((s) => s >= w) || 2400}&q=75`;
+
+// srcset for the optimiser widths up to `max`; empty when images are served as-is.
+export const srcset = (src: string | null | undefined, max = 2400) =>
+  plain(src) ? '' : SIZES.filter((s) => s <= max || s === SIZES.find((x) => x >= max)).map((s) => `${img(src, s)} ${s}w`).join(', ');
+
+// Intrinsic size of a file in public/, so the browser can reserve space before it loads.
+const sizes = new Map<string, Promise<{ width?: number; height?: number }>>();
+export const dimensions = (src: string | null | undefined) => {
+  if (!src) return Promise.resolve({});
+  if (!sizes.has(src))
+    sizes.set(src, sharp(path.join(process.cwd(), 'public', src)).metadata().then((m) => ({ width: m.width, height: m.height }), () => ({})));
+  return sizes.get(src)!;
+};
 
 export async function getSite() {
   const site = await reader.singletons.site.readOrThrow();

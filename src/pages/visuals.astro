@@ -1,6 +1,7 @@
 ---
 // Shown as "Lab" in the nav: an endless canvas of pieces you can drag in any direction.
 import Base from '../layouts/Base.astro';
+import ResponsiveImage from '../components/ResponsiveImage.astro';
 import { getVisuals, img } from '../lib/content';
 
 const { intro, items } = await getVisuals();
@@ -11,7 +12,7 @@ const { intro, items } = await getVisuals();
     <div class="vz__src" hidden>
       {items.map((v, i) => (
         <figure class="visual" data-full={img(v.image, 2400)}>
-          <img src={img(v.image, 640)} alt={v.alt || v.title || ''} loading="lazy">
+          <ResponsiveImage src={v.image} alt={v.alt || v.title || ''} sizes="(max-width: 700px) 60vw, 24vw" maxW={640} />
           <figcaption><span class="bullet">{i + 1}</span><b>{v.title || ''}</b><span class="mono">{v.kind || ''}</span></figcaption>
         </figure>
       ))}
