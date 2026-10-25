@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { getSite, img } from '../lib/content';
+
+const site = await getSite();
+---
+<Base view="about" title="About Cristhian Tilleria — Web Developer & Designer in New York" description={site.statement} image={site.portrait}>
+  <section class:list={['page grid', { 'has-portrait': site.portrait }]}>
+    <p class="page__kicker mono" data-reveal><span data-type>About — Frontend developer &amp; web designer, New York</span></p>
+    <h1 class="statement" data-reveal data-wait="350" data-lines>{site.statement}</h1>
+    {site.portrait && (
+      <figure class="portrait" data-reveal data-wait="500">
+        <div class="media"><img src={img(site.portrait, 1080)} alt="Portrait of Cristhian Tilleria" width="1024" height="1024"></div>
+        <figcaption class="mono"><span>Cristhian Tilleria</span><span>New York</span></figcaption>
+      </figure>
+    )}
+    <dl class="facts" data-reveal>
+      <div class="fade" style="--d:0"><dt class="mono">Based in</dt><dd>New York, US<br>Working worldwide</dd></div>
+      <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>Branding<br>Web development<br>Motion &amp; interaction</dd></div>
+      <div class="fade" style="--d:240"><dt class="mono">Status</dt><dd><span class="avail"><span class="dot"></span>{site.status}</span></dd></div>
+    </dl>
+    <div class="cta-row fade" data-reveal>
+      <Btn href="/contact">Book a call</Btn>
+      <a class="link mono" href="/work" data-sweep>Back to the work</a>
+    </div>
+  </section>
+</Base>

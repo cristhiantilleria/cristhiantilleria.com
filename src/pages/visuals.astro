@@ -1,0 +1,25 @@
+---
+// Shown as "Lab" in the nav: an endless canvas of pieces you can drag in any direction.
+import Base from '../layouts/Base.astro';
+import { getVisuals, img } from '../lib/content';
+
+const { intro, items } = await getVisuals();
+---
+<Base view="visuals" title="Lab — Photography & Experiments by Cristhian Tilleria" description={intro} image={items[0]?.image}>
+  <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
+    <div class="vz__canvas"></div>
+    <div class="vz__src" hidden>
+      {items.map((v, i) => (
+        <figure class="visual" data-full={img(v.image, 2400)}>
+          <img src={img(v.image, 640)} alt={v.alt || v.title || ''} loading="lazy">
+          <figcaption><span class="bullet">{i + 1}</span><b>{v.title || ''}</b><span class="mono">{v.kind || ''}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+    <div class="bar vz__bar" data-reveal data-wait="900">
+      <span class="bullet">{items.length}</span><h1>Lab</h1>
+      <span class="mono vz__intro">{intro}</span>
+      <span class="mono">Drag, scroll or use the arrow keys</span><span class="bar__a" aria-hidden="true">✥</span>
+    </div>
+  </section>
+</Base>

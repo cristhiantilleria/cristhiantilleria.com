@@ -1,0 +1,21 @@
+---
+// One large feature row per project on /work, alternating sides. Without a cover it falls back to an abstract placeholder.
+import { img, type Project } from '../lib/content';
+interface Props { project: Project; index: number }
+const { project: p, index: i } = Astro.props;
+const still = p.cover ? img(p.cover, 1080) : '';
+---
+<a class:list={['work', { 'work--flip': i % 2 }]} href={`/work/${p.slug}`} data-reveal data-cursor="View project">
+  <div class="work__frame"><div class="media">{
+    p.video
+      ? <video class="art art--vid" src={encodeURI(p.video)} poster={still || undefined} muted loop playsinline preload="metadata" data-autoplay></video>
+      : p.cover
+        ? <img class="art art--img" src={still} alt={`${p.title} — ${(p.type || 'project').toLowerCase()} by Cristhian Tilleria`} loading="lazy">
+        : <div class={`art art-${(i % 3) + 1}`}></div>
+  }</div></div>
+  <div class="work__info">
+    <h3 class="work__title">{p.title}</h3>
+    {p.type && <span class="work__type mono">{p.type}</span>}
+    <span class="work__more mono">View more<i aria-hidden="true">↗</i></span>
+  </div>
+</a>

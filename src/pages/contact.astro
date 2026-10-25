@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import { getSite } from '../lib/content';
+
+const site = await getSite();
+const needs = ['Branding', 'Web development', 'Motion & interaction', 'Shopify store', 'Something else'];
+const budgets = [['Under $1k', '< $1k'], ['$1k–$2.5k', '$1–2.5k'], ['$2.5k–$5k', '$2.5–5k'], ['$5k+', '$5k+'], ['Not sure yet', 'Not sure yet']];
+---
+<Base view="contact" title="Hire a Freelance Web Developer in NYC — Cristhian Tilleria" description="Tell me about your project and book a call with Cristhian Tilleria, freelance frontend developer and web designer in New York.">
+  <section class="page grid">
+    <h1 class="h2 contact__title" data-reveal>
+      <span class="sq" data-text="Got a project?"><span>Got a project?</span></span>
+      <span class="sq" data-text="Let's talk it through." style="--l:1"><span>Let's talk it through.</span></span>
+    </h1>
+
+    <aside class="contact__aside" data-reveal data-wait="300">
+      <p class="lead fade">A 30-minute call about what you're building.</p>
+      <ul class="checks mono fade" style="--d:120">
+        <li><span class="bullet">1</span>No commitment, no sales pitch</li>
+        <li><span class="bullet">2</span>Clear next steps and a quote</li>
+        <li><span class="bullet">3</span>Reply within one business day</li>
+      </ul>
+      <Btn class="fade" style="--d:240" href={site.bookingUrl || 'https://cal.com/cristhiantilleria/project-intro-call'} target="_blank" rel="noopener" data-book-open="">Pick a time on my calendar</Btn>
+      <button class="copy mono muted fade" style="--d:360" type="button" data-copy><span data-copy-label>Or email me — click to copy</span><b data-email></b></button>
+    </aside>
+
+    <form class="form" data-reveal data-wait="450" novalidate>
+      <label class="field fade"><span class="mono">01 — Your name</span><input name="name" autocomplete="name" placeholder="Jane Doe" required></label>
+      <label class="field fade" style="--d:80"><span class="mono">02 — Your email</span><input name="email" type="email" autocomplete="email" placeholder="jane@company.com" required></label>
+      <fieldset class="fade" style="--d:160">
+        <legend class="mono">03 — What do you need?</legend>
+        <div class="chips mono">
+          {needs.map((n) => <label class="chip"><input type="radio" name="need" value={n} checked={n === 'Web development'}><span>{n}</span></label>)}
+        </div>
+      </fieldset>
+      <fieldset class="fade" style="--d:240">
+        <legend class="mono">04 — Budget range</legend>
+        <div class="chips mono">
+          {budgets.map(([v, l]) => <label class="chip"><input type="radio" name="budget" value={v} checked={v === 'Not sure yet'}><span>{l}</span></label>)}
+        </div>
+      </fieldset>
+      <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
+      <label class="field field--wide fade" style="--d:320"><span class="mono">05 — A few words about the project</span><textarea name="message" rows="2" placeholder="What are you building, and when do you need it?"></textarea></label>
+      <div class="cta-row fade" style="--d:400">
+        <Btn type="submit">Submit</Btn>
+        <span class="mono muted" role="status" data-status>Goes straight to my inbox</span>
+      </div>
+    </form>
+  </section>
+</Base>

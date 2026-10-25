@@ -1,0 +1,18 @@
+---
+// Fixed header: NYC clock on the left, primary nav with the magnetic "Book a call" pill on the right.
+const nav = [
+  { href: '/', name: 'index', label: 'Home' },
+  { href: '/work', name: 'work', label: 'Work' },
+  { href: '/visuals', name: 'visuals', label: 'Lab' },
+  { href: '/about', name: 'about', label: 'About' },
+];
+---
+<header class="header mono fade">
+  <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span data-sweep>New York</span><span class="clock clock--head"></span></a>
+  <nav aria-label="Primary">
+    <ul>
+      {nav.map((n) => <li><a href={n.href} data-nav={n.name} data-sweep>{n.label}</a></li>)}
+      <li><a class="pill" href="/contact" data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
+    </ul>
+  </nav>
+</header>
