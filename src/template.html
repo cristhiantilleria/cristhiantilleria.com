@@ -923,40 +923,61 @@
       a.dataset.nav === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
     });
   }
+  // Each page change bumps seq, so timers left over from an earlier change can tell they're stale.
+  var seq = 0;
   function enter(name, delay) {
-    setTimeout(function () { arm(views[name]); arm(footer); }, delay);
+    var run = seq;
+    setTimeout(function () { if (run === seq) { arm(views[name]); arm(footer); } }, delay);
   }
+  // Lines are measured and masked in the same task the view is shown, so the statement never paints as plain text.
+  // Always rebuilt: lines kept from an earlier visit would carry the leave transform and sweep through view.
+  function splitNow(name) { $$('[data-lines]', views[name]).forEach(function (el) { el._split = null; splitLines(el); }); }
+  // The browser putting back an old scroll position on Back would fight the transition; the page scrolls itself.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   function go(name) {
     if (name === current || busy) return;
     busy = true;
-    function hard() { location.href = pathOf(name); }   // unknown page or offline: let the browser handle it
+    var run = ++seq;
+    function hard(n) { location.href = pathOf(n); }   // unknown page or offline: let the browser handle it
+    if (lb.classList.contains('on')) lbToggle(false);
+    tag.classList.remove('on');
     if (reduce) {
-      load(name).then(function () { activate(name); scrollToY(0, true); enter(name, 0); update(); busy = false; }, hard);
+      load(name).then(function () {
+        activate(name); splitNow(name); scrollToY(0, true); enter(name, 0); update(); busy = false;
+        var wanted = nameOf(location.pathname);
+        if (wanted !== current) go(wanted);
+      }, function () { hard(name); });
       return;
     }
+    hold('leave', true);                             // the page stays where it was while it leaves
+    body.classList.remove('is-entering');
     body.classList.add('is-leaving');
     var leaving = new Promise(function (done) { setTimeout(done, 1100); });
     Promise.all([load(name), leaving]).then(function () {
-      activate(name);
+      var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
+      return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
+    }).then(function (target) {
+      activate(target);
       scrollToY(0, true);
+      hold('leave', false);
       if (lenis) lenis.resize();
-      $$('[data-reveal]', views[name]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
-      var heroName = $('.name', views[name]);
+      $$('[data-reveal]', views[target]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
+      var heroName = $('.name', views[target]);
       if (heroName) { heroName.classList.remove('play'); heroName.style.setProperty('--t-title', '.35s'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
       body.classList.remove('is-leaving');
+      splitNow(target);
       body.classList.add('is-entering');
       update();
-      enter(name, 550);
-      views[name].focus({ preventScroll: true });
-      setTimeout(function () {
-        body.classList.remove('is-entering');
-        busy = false;
-        var wanted = nameOf(location.pathname);
-        if (wanted !== current) go(wanted);
-      }, 2100);
-    }, hard);
+      enter(target, 550);
+      views[target].focus({ preventScroll: true });
+      busy = false;                                  // the next click can start leaving straight away
+      setTimeout(function () { if (run === seq) body.classList.remove('is-entering'); }, 2100);
+    }, function (err) { if (err !== 0) hard(name); });
   }
-  addEventListener('popstate', function () { go(nameOf(location.pathname)); });
+  addEventListener('popstate', function () {
+    if (lb.classList.contains('on')) lbToggle(false);   // Back closes the viewer and lets go of its scroll hold
+    go(nameOf(location.pathname));
+  });
   document.addEventListener('click', function (e) {
     var s = e.target.closest('[data-scroll]');
     if (s) { scrollToY($(s.dataset.scroll)); return; }
@@ -966,9 +987,8 @@
     if (a.hash && a.pathname === location.pathname && a.search === location.search) return;   // same-page #hash: leave it to the browser / booking overlay
     e.preventDefault();
     var name = nameOf(a.pathname);
-    if (name === current) { scrollToY(0); return; }
-    if (busy) return;
-    history.pushState(null, '', pathOf(name));
+    if (name === current && !busy) { scrollToY(0); return; }
+    if (name !== nameOf(location.pathname)) history.pushState(null, '', pathOf(name));   // mid-leave, this just changes where it lands
     go(name);
   });
 
@@ -985,13 +1005,14 @@
     if (introStarted) return;
     introStarted = true;
     root.classList.add('is-ready');
+    splitNow(current);
     setTimeout(unlock, 4000);
     enter(current, reduce ? 600 : 2500);
     setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
     if (reduce) return;
-    setTimeout(function () { body.classList.add('is-entering'); }, 2150);
-    setTimeout(function () { if (!busy) body.classList.remove('is-entering'); }, 5200);
-    if (current === 'index') setTimeout(function () { ripple(views.index.querySelector('.hero'), .18); }, 2850);
+    setTimeout(function () { if (!seq) body.classList.add('is-entering'); }, 2150);
+    setTimeout(function () { if (!seq) body.classList.remove('is-entering'); }, 5200);
+    if (current === 'index') setTimeout(function () { if (!seq) ripple(views.index.querySelector('.hero'), .18); }, 2850);
   }
   Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), new Promise(function (r) { setTimeout(r, 1500); })])
     .then(function () { requestAnimationFrame(function () { requestAnimationFrame(startIntro); }); });
@@ -1241,7 +1262,7 @@
     if (tagRun) requestAnimationFrame(tagFollow);
   }
   addEventListener('mousemove', function (e) {
-    var h = e.target.closest && e.target.closest('[data-cursor]'), shown = tag.classList.contains('on');
+    var h = !busy && e.target.closest && e.target.closest('[data-cursor]'), shown = tag.classList.contains('on');   // no tag while a page is leaving
     if (h && tag.textContent !== h.dataset.cursor) tag.textContent = h.dataset.cursor;
     if (h) {
       tagTX = e.clientX + 16; tagTY = e.clientY + 18;
@@ -1314,7 +1335,8 @@
     var url = CONFIG.bookingUrl;
     if (!url) return;                                              // no calendar set up: the buttons stay normal links
     var box = document.createElement('div'), opener = null, loaded = false, timer = 0, isOpen = false;
-    box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
+    box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar
+    box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
     box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
       '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
       '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
