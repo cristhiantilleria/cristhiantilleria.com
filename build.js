@@ -231,6 +231,22 @@ chunks.forEach((chunk) => {
   if (name !== '404') pages.push(url);
 });
 
+// /work has no page of its own: the projects are listed on the home page. In-site links are routed there by
+// the page script; a visitor typing /work gets this stub, which sends them on to the list.
+fs.writeFileSync(path.join(out, 'work/index.html'), `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work — Cristhian Tilleria</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${esc(origin + '/')}">
+<meta http-equiv="refresh" content="0; url=/#works">
+<script>location.replace('/#works');</script>
+</head>
+<body><p><a href="/#works">See the work</a></p></body>
+</html>
+`);
+
 fs.writeFileSync(path.join(out, 'sitemap.xml'),
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
   pages.map((u) => `  <url><loc>${esc(u)}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod></url>`).join('\n') + '\n</urlset>\n');
