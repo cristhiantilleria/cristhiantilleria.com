@@ -134,8 +134,6 @@
     mix-blend-mode: difference;
   }
   .header__id { display: flex; align-items: center; gap: 1.4ch; }
-  .logo { display: inline-grid; place-items: center; width: 2em; height: 2em; border-radius: 50%; background: #fff; color: #000; font-family: var(--sans); font-size: 1.15em; font-weight: 700; letter-spacing: -.03em; line-height: 1; text-transform: none; transition: transform 1s var(--ease-out); }  /* the "ct" bullet from the brand kit */
-  .header__id:hover .logo { transform: rotate(360deg); }
   .header nav ul { display: flex; align-items: center; gap: clamp(14px, 1.6vw, 28px); }
   .header nav a { display: inline-block; padding: 2px 0; }
   .header nav a[aria-current="page"]:not(.pill) { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
@@ -468,8 +466,8 @@
   /* over the canvas the header gets a solid strip so it stays readable on top of photos;
      on contact the headline and form scroll up under it, so it gets the same strip */
   body[data-view="visuals"] .header, body[data-view="contact"] .header { mix-blend-mode: normal; color: var(--ink); background: var(--bg); border-bottom: var(--bw) solid var(--ink); --blk-ink: var(--bg); }
-  body[data-view="visuals"] .header .logo, body[data-view="visuals"] .header .pill,
-  body[data-view="contact"] .header .logo, body[data-view="contact"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
+  body[data-view="visuals"] .header .pill,
+  body[data-view="contact"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
   .visual { border: var(--bw) solid var(--ink); background: var(--bg); }
   .visual img { display: block; width: 100%; height: auto; }
   .visual figcaption { display: flex; align-items: center; gap: .8em; padding: clamp(8px, .8vw, 14px); border-top: var(--bw) solid var(--ink); }
@@ -538,7 +536,7 @@
     .loader, .is-ready .loader { animation: loader-fade .4s linear .6s forwards; }
     .loader__line > span, .is-ready .loader__line > span, .name .char, .is-ready .name.play .char { animation: none; transform: none; opacity: 1; }
     .ln > span, .sq > span, .fade, .media, .art, .portrait img, .cs__cover img, .cs__cover video, .vz__canvas, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; translate: none !important; }
-    .logo, .header__id:hover .logo, .work:hover .work__frame, .shot.in:hover, .chip:hover span, .btn, .pill, .svc .bullet, .svc__t, .svc__d, .vz__canvas .visual img, .lb__row { transform: none !important; }
+    .work:hover .work__frame, .shot.in:hover, .chip:hover span, .btn, .pill, .svc .bullet, .svc__t, .svc__d, .vz__canvas .visual img, .lb__row { transform: none !important; }
     .cursor-tag { scale: none; transition: opacity .2s; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
@@ -568,7 +566,7 @@
   </div>
 
   <header class="header mono fade">
-    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span class="logo">ct</span><span data-sweep>New York</span><span class="clock clock--head"></span></a>
+    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span data-sweep>New York</span><span class="clock clock--head"></span></a>
     <nav aria-label="Primary">
       <ul>
         <li><a href="/" data-nav="index" data-sweep>Work</a></li>
