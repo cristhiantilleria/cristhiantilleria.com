@@ -14,8 +14,11 @@
 <meta name="geo.placename" content="New York">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  @property --bg    { syntax: "<color>"; inherits: true; initial-value: #f4f2ec; }
+  @property --ink   { syntax: "<color>"; inherits: true; initial-value: #0a0a0a; }
+  @property --muted { syntax: "<color>"; inherits: true; initial-value: #7d7b75; }
   :root {
     --bg: #f4f2ec;
     --ink: #0a0a0a;
@@ -28,6 +31,10 @@
     --gap: 1.1vw;
     --ease-out: cubic-bezier(.16, 1, .3, 1);
     --ease-in-out: cubic-bezier(.76, 0, .24, 1);
+    --t-rise: 1.5s;     /* text and blocks coming in */
+    --t-leave: .7s;     /* text going out on a page change */
+    --sans: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
 
     /* intro timeline */
     --t-loader-in: .25s;
@@ -47,12 +54,14 @@
   body {
     background: var(--bg);
     color: var(--ink);
-    font-family: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: var(--sans);
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    transition: background-color .9s ease, color .9s ease;
+    transition: --bg .9s ease, --ink .9s ease, --muted .9s ease;   /* every fill, text and border follows the same fade */
   }
+  p { text-wrap: pretty; }
   a { color: inherit; text-decoration: none; }
   ul, ol { list-style: none; }
   button, input, textarea { font: inherit; color: inherit; background: none; border: 0; border-radius: 0; }
@@ -60,14 +69,14 @@
   :focus-visible { outline: var(--bw) dashed currentColor; outline-offset: 4px; }
 
   .mono {
-    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    font-family: var(--mono);
     font-size: clamp(10px, .8vw, 13px);
     font-weight: 500;
     letter-spacing: .02em;
     text-transform: uppercase;
     line-height: 1.35;
   }
-  .muted { color: var(--muted); transition: color .9s ease; }
+  .muted { color: var(--muted); }
 
   .grid {
     display: grid;
@@ -111,9 +120,9 @@
   .is-leaving .guides i { transform: scaleY(0); transform-origin: 50% 100%; transition: transform .8s var(--ease-in-out); transition-delay: calc(var(--n) * 16ms); }
   .is-entering .guides i { animation: guide-in 1.6s var(--ease-out) both; animation-delay: calc(var(--n) * 60ms); }
   @keyframes guide-in { from { transform: scaleY(0); } }
-  .view, .footer { transition: opacity .6s ease; }
+  .view, .footer { transition: opacity .6s var(--ease-out); }
   .is-leaving .view, .is-leaving .footer { opacity: 0; transition-delay: .3s; }
-  .is-leaving .sq > span, .is-leaving .name { transform: scaleY(0); transition: transform .7s var(--ease-in-out); transition-delay: 0s; }
+  .is-leaving .sq > span, .is-leaving .name { transform: scaleY(0); transition: transform var(--t-leave) var(--ease-in-out); transition-delay: 0s; }
   .name { transform-origin: 50% 100%; }
 
   /* ---------- header ---------- */
@@ -125,8 +134,6 @@
     mix-blend-mode: difference;
   }
   .header__id { display: flex; align-items: center; gap: 1.4ch; }
-  .logo { display: inline-grid; place-items: center; width: 2em; height: 2em; border-radius: 50%; background: #fff; color: #000; font-family: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 1.15em; font-weight: 700; letter-spacing: -.03em; line-height: 1; text-transform: none; transition: transform 1s var(--ease-out); }  /* the "ct" bullet from the brand kit */
-  .header__id:hover .logo { transform: rotate(360deg); }
   .header nav ul { display: flex; align-items: center; gap: clamp(14px, 1.6vw, 28px); }
   .header nav a { display: inline-block; padding: 2px 0; }
   .header nav a[aria-current="page"]:not(.pill) { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
@@ -135,21 +142,21 @@
   main, footer { position: relative; z-index: 1; }
 
   /* ---------- reveal primitives ---------- */
-  .fade { opacity: 0; transform: translateY(16px); transition: opacity 1.5s var(--ease-out), transform 1.5s var(--ease-out); transition-delay: calc(var(--d, 0) * 1ms); }
-  .in.fade, .in .fade { opacity: 1; transform: none; }
+  .fade { opacity: 0; translate: 0 16px; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms); }
+  .in.fade, .in .fade { opacity: 1; translate: none; }
 
   .sq { display: block; position: relative; }
-  .sq > span { display: block; transform: scaleY(0); transform-origin: 50% 84%; transition: transform 1.5s var(--ease-out); transition-delay: calc(var(--l, 0) * 180ms); will-change: transform; }
+  .sq > span { display: block; transform: scaleY(0); transform-origin: 50% 84%; transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 180ms); }
   .in .sq > span { transform: none; }
   .sq::after { content: attr(data-text); position: absolute; left: 0; right: 0; top: 84%; transform: scaleY(-.3); transform-origin: 50% 0; opacity: 0; pointer-events: none; }
-  .in .sq::after { animation: ghost 1.2s ease-out both; animation-delay: calc(var(--l, 0) * 180ms); }
+  .in .sq::after { animation: ghost var(--t-rise) var(--ease-out) both; animation-delay: calc(var(--l, 0) * 180ms); }   /* the reflection settles with the line it mirrors */
   @keyframes ghost { 0% { opacity: 1; transform: scaleY(-.34); } 60% { opacity: .9; } 100% { opacity: 0; transform: scaleY(-.02); } }
 
   /* long statements: each line rises out of its own mask, one after another */
   .ln { display: block; overflow: hidden; padding: .08em .04em .17em; margin: -.08em -.04em -.17em; }
-  .ln > span { display: block; transform: translateY(112%); transition: transform 1.35s var(--ease-out); transition-delay: calc(var(--l, 0) * 110ms); will-change: transform; }
+  .ln > span { display: block; transform: translateY(112%); transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 110ms); }
   .in .ln > span { transform: none; }
-  .is-leaving .ln > span { transform: translateY(-112%); transition: transform .65s var(--ease-in-out); transition-delay: 0s; }
+  .is-leaving .ln > span { transform: translateY(-112%); transition: transform var(--t-leave) var(--ease-in-out); transition-delay: 0s; }
 
   [data-type] { visibility: hidden; }
   [data-type].typed { visibility: visible; }
@@ -165,8 +172,7 @@
     border: var(--bw) solid var(--ink);
     background: var(--ink); color: var(--bg); --blk-ink: var(--ink);
     font-weight: 700;
-    transition: background-color .4s, color .4s, box-shadow .6s var(--ease-out), transform .8s var(--ease-out);
-    will-change: transform;
+    transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), background-color .4s, color .4s, box-shadow .6s var(--ease-out), transform .8s var(--ease-out);
   }
   .btn[disabled] { opacity: .5; pointer-events: none; }
   .btn:hover { background: var(--bg); color: var(--ink); --blk-ink: var(--bg); box-shadow: 6px 6px 0 var(--ink); }
@@ -175,7 +181,7 @@
   .btn__arrow::after { transform: translate(-110%, 110%); }
   .btn:hover .btn__arrow::before { transform: translate(110%, -110%); }
   .btn:hover .btn__arrow::after { transform: none; }
-  .link { background: linear-gradient(currentColor, currentColor) left bottom / 100% var(--bw) no-repeat; padding-bottom: 4px; font-weight: 700; transition: background-size .7s var(--ease-out); }
+  .link { background: linear-gradient(currentColor, currentColor) left bottom / 100% var(--bw) no-repeat; padding-bottom: 4px; font-weight: 700; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), background-size .7s var(--ease-out); }
   .link:hover { background-size: 0 var(--bw); background-position: right bottom; }
   .ext::after { content: " ↗"; }
   .ext { white-space: nowrap; }
@@ -186,7 +192,7 @@
   @keyframes ping { to { transform: scale(3.4); opacity: 0; } }
 
   /* round line-number bullets, a nod to subway signage */
-  .bullet { display: inline-grid; place-items: center; flex: none; width: 1.55em; height: 1.55em; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: "Inter Tight", sans-serif; font-weight: 700; letter-spacing: -.02em; line-height: 1; text-transform: uppercase; }
+  .bullet { display: inline-grid; place-items: center; flex: none; width: 1.55em; height: 1.55em; border-radius: 50%; background: var(--ink); color: var(--bg); font-family: var(--sans); font-weight: 700; letter-spacing: -.02em; line-height: 1; text-transform: uppercase; }
 
   /* sign-style section bar */
   .bar {
@@ -195,14 +201,14 @@
     color: var(--bg); isolation: isolate;
     padding: calc(.75vw + 12px) 1.4vw .9vw;
   }
-  .bar::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.6s var(--ease-in-out), background-color .9s; }
+  .bar::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.6s var(--ease-in-out); }
   .bar.in::after { transform: scaleX(1); }
   .bar > * { opacity: 0; transform: translateY(12px); transition: opacity 1.1s var(--ease-out) .7s, transform 1.1s var(--ease-out) .7s; }
   .bar.in > * { opacity: 1; transform: none; }
   .bar::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: var(--bw); background: var(--bg); transform: scaleX(0); transform-origin: 0 50%; transition: transform 1.6s var(--ease-in-out) .35s; }
   .bar.in::before { transform: scaleX(1); }
   .bar .bullet { background: var(--bg); color: var(--ink); font-size: clamp(18px, 2vw, 40px); }
-  .bar h2 { font-weight: 700; font-size: clamp(24px, 3vw, 62px); letter-spacing: -.045em; line-height: 1; }
+  .bar h1, .bar h2 { font-weight: 700; font-size: clamp(24px, 3vw, 62px); letter-spacing: -.045em; line-height: 1; }
   .bar .mono { margin-left: auto; }
   .bar__a { font-size: clamp(20px, 2.4vw, 48px); font-weight: 700; line-height: 1; }
   .section { padding-top: clamp(70px, 8vw, 170px); row-gap: clamp(22px, 2.4vw, 44px); }
@@ -225,7 +231,7 @@
   .name { padding-inline: var(--pad); font-weight: 700; font-size: min(17.4vw, 30vh); line-height: .84; letter-spacing: -.07em; white-space: nowrap; }
   .name__line { display: block; overflow: hidden; padding: .06em .04em .2em; margin: -.06em -.04em -.2em; }
   .name__line:nth-child(2) { text-align: right; }
-  .name .char { display: inline-block; transform: translateY(125%); will-change: transform; }
+  .name .char { display: inline-block; transform: translateY(125%); }
   .is-ready .name.play .char { animation: char-in 1.7s var(--ease-out) forwards; animation-delay: calc(var(--t-title) + var(--i) * 48ms); }
   @keyframes char-in { to { transform: translateY(0); } }
 
@@ -286,16 +292,21 @@
     display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gap); align-items: center;
     padding: clamp(16px, 1.7vw, 30px) 0;
     border-bottom: var(--bw) solid var(--ink);
-    transition: color .45s, padding .8s var(--ease-out);
+    transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), color .4s;
   }
   .svc::before { content: ""; position: absolute; inset: 0 calc(var(--pad) * -1); background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease-out); z-index: -1; }
-  .svc:hover { color: var(--bg); padding-left: 1.2vw; }
+  .svc:hover { color: var(--bg); }
+  /* the row nudges right on hover; each column moves as far as a 1.2vw left padding would have pushed it, without re-laying out the row */
+  .svc .bullet, .svc__t, .svc__d { transition: transform .8s var(--ease-out), background-color .4s, color .4s; }
+  .svc:hover .bullet { transform: translateX(1.2vw); }
+  .svc:hover .svc__t { transform: translateX(1.1vw); }
+  .svc:hover .svc__d { transform: translateX(.5vw); }
   .svc:hover::before { transform: scaleY(1); }
   .svc:hover .bullet { background: var(--bg); color: var(--ink); }
   .svc .bullet { grid-column: 1; font-size: clamp(16px, 1.7vw, 32px); }
   .svc__t { grid-column: 2 / 8; font-weight: 700; font-size: clamp(26px, 3.6vw, 72px); letter-spacing: -.055em; line-height: 1; }
   .svc__d { grid-column: 8 / 12; font-size: clamp(14px, 1.05vw, 18px); line-height: 1.35; letter-spacing: -.01em; }
-  .svc__a { grid-column: 12; justify-self: end; font-weight: 700; font-size: clamp(22px, 2.6vw, 52px); line-height: 1; transform: translate(-10px, 10px); opacity: 0; transition: transform .8s var(--ease-out), opacity .45s; }
+  .svc__a { grid-column: 12; justify-self: end; font-weight: 700; font-size: clamp(22px, 2.6vw, 52px); line-height: 1; transform: translate(-10px, 10px); opacity: 0; transition: transform .8s var(--ease-out), opacity .4s; }
   .svc:hover .svc__a { transform: none; opacity: 1; }
 
   /* ---------- ticker ---------- */
@@ -312,14 +323,14 @@
 
   /* ---------- process ---------- */
   .steps { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); margin-top: calc(clamp(22px, 2.4vw, 44px) * -1); border: var(--bw) solid var(--ink); border-top: 0; }
-  .step { position: relative; padding: clamp(14px, 1.4vw, 26px); min-height: clamp(260px, 25vw, 520px); display: flex; flex-direction: column; opacity: 0; transform: translateY(18px); transition: opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out), background-color .45s, color .45s; transition-delay: calc(var(--s) * 170ms), calc(var(--s) * 170ms), 0s, 0s; }
+  .step { position: relative; padding: clamp(14px, 1.4vw, 26px); min-height: clamp(260px, 25vw, 520px); display: flex; flex-direction: column; opacity: 0; transform: translateY(18px); transition: opacity 1.4s var(--ease-out), transform 1.4s var(--ease-out), background-color .4s, color .4s; transition-delay: calc(var(--s) * 170ms), calc(var(--s) * 170ms), 0s, 0s; }
   .steps.in .step { opacity: 1; transform: none; }
   .step + .step { border-left: var(--bw) solid var(--ink); }
   .step:hover, .step--hot { background: var(--ink); color: var(--bg); }
   .steps:hover .step--hot:not(:hover) { background: transparent; color: var(--ink); }
   .step__n { font-weight: 700; font-size: clamp(64px, 9vw, 190px); letter-spacing: -.07em; line-height: .8; margin-top: clamp(18px, 2vw, 40px); }
   .step h3 { font-weight: 700; font-size: clamp(20px, 2vw, 40px); letter-spacing: -.045em; line-height: 1; margin: auto 0 .45em; padding-top: 1em; }
-  .step p { font-size: clamp(14px, 1.02vw, 17px); line-height: 1.35; max-width: 30ch; }
+  .step p { font-size: clamp(14px, 1.02vw, 17px); line-height: 1.35; letter-spacing: -.01em; max-width: 30ch; }
   .cta-row { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 14px 28px; }
 
   /* ---------- about page ---------- */
@@ -345,7 +356,7 @@
   .checks li { display: flex; align-items: center; gap: 1em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
   .checks .bullet { font-size: 1.15em; }
   .copy { text-align: left; }
-  .copy b { display: block; font-family: "Inter Tight", sans-serif; font-weight: 700; text-transform: none; color: var(--ink); font-size: clamp(17px, min(1.9vw, 3.1vh), 36px); letter-spacing: -.045em; margin-top: .3em; }
+  .copy b { display: block; font-family: var(--sans); font-weight: 700; text-transform: none; color: var(--ink); font-size: clamp(17px, min(1.9vw, 3.1vh), 36px); letter-spacing: -.045em; margin-top: .3em; }
 
   .form { grid-column: 6 / -1; margin-top: clamp(4px, min(2.5vw, 2vh), 50px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, min(2.6vw, 2.6vh), 44px) calc(var(--gap) * 2); align-content: start; }
   .field { position: relative; display: block; }
@@ -358,7 +369,7 @@
   .form fieldset { grid-column: 1 / -1; border: 0; min-width: 0; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip input { position: absolute; opacity: 0; pointer-events: none; }
-  .chip span { display: block; padding: clamp(.5em, 1.1vh, .85em) 1.1em; border: var(--bw) solid var(--ink); font-weight: 700; cursor: pointer; transition: background-color .35s, color .35s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
+  .chip span { display: block; padding: clamp(.5em, 1.1vh, .85em) 1.1em; border: var(--bw) solid var(--ink); font-weight: 700; cursor: pointer; transition: background-color .4s, color .4s, transform .5s var(--ease-out), box-shadow .5s var(--ease-out); }
   .chip:hover span { transform: translate(-3px, -3px); box-shadow: 4px 4px 0 var(--ink); }
   .chip input:checked + span { background: var(--ink); color: var(--bg); }
   .chip input:focus-visible + span { outline: var(--bw) dashed var(--ink); outline-offset: 3px; }
@@ -401,7 +412,7 @@
   .cs__facts div { display: flex; justify-content: space-between; gap: 2em; padding: .7em 0; border-bottom: 1px solid var(--ink); }
   .cs__facts dd { text-align: right; }
   .gallery { padding-top: clamp(50px, 6vw, 120px); gap: calc(var(--gap) * 2); align-items: start; }
-  .shot { grid-column: span 6; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); cursor: zoom-in; transition: opacity 1.5s var(--ease-out), transform .7s var(--ease-out), box-shadow .7s var(--ease-out); }
+  .shot { grid-column: span 6; margin: 0; border: var(--bw) solid var(--ink); background: var(--bg); cursor: zoom-in; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), transform .7s var(--ease-out), box-shadow .7s var(--ease-out); }
   .shot.in:hover { transform: translate(-5px, -5px); box-shadow: 7px 7px 0 var(--ink); }
   .shot img { display: block; width: 100%; height: auto; }
   .shot figcaption { display: flex; justify-content: space-between; padding: 8px 10px; border-top: var(--bw) solid var(--ink); }
@@ -410,7 +421,7 @@
   .shot--wide { grid-column: span 8; }
   .shot--narrow { grid-column: span 4; }
   .cs__end { padding: clamp(60px, 7vw, 140px) var(--pad) 0; display: grid; gap: var(--row); }
-  .nextlink { display: block; border: var(--bw) solid var(--ink); padding: clamp(12px, 1.2vw, 22px); overflow: hidden; transition: background-color .45s, color .45s; }
+  .nextlink { display: block; border: var(--bw) solid var(--ink); padding: clamp(12px, 1.2vw, 22px); overflow: hidden; transition: background-color .4s, color .4s; }
   .nextlink:hover { background: var(--ink); color: var(--bg); }
   .nextlink .mono { display: flex; justify-content: space-between; margin-bottom: clamp(20px, 3vw, 60px); }
   .nextlink b { display: block; font-size: clamp(40px, min(calc(170vw / (var(--chars) + 2)), 15vw), 320px); line-height: .9; letter-spacing: -.07em; white-space: nowrap; }
@@ -426,15 +437,15 @@
   .book__load { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: var(--pad); }
 
   /* ---------- image viewer ---------- */
-  .lb { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr auto; background: rgba(7, 7, 7, .97); color: #f4f2ec; opacity: 0; visibility: hidden; transition: opacity .45s, visibility .45s; }
+  .lb { position: fixed; inset: 0; z-index: 90; display: grid; grid-template-rows: auto 1fr auto; background: rgba(7, 7, 7, .97); color: #f4f2ec; opacity: 0; visibility: hidden; transition: opacity .45s var(--ease-out), visibility .45s; }
   .lb.on { opacity: 1; visibility: visible; }
-  .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); opacity: 0; transform: translateY(10px); transition: opacity .5s, transform .7s var(--ease-out); }
+  .lb__row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px var(--pad); opacity: 0; transform: translateY(10px); transition: opacity .5s var(--ease-out), transform .7s var(--ease-out); }
   .lb.on .lb__row { opacity: 1; transform: none; transition-delay: .45s; }
-  .lb__title { font-family: "Inter Tight", sans-serif; text-transform: none; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
-  .lb__stage img { will-change: transform; }
+  .lb__title { font-family: var(--sans); text-transform: none; font-weight: 700; font-size: clamp(18px, 1.9vw, 36px); letter-spacing: -.045em; line-height: 1; }
+  .lb.on .lb__stage img { will-change: transform; }
   .lb__stage { position: relative; min-height: 0; margin: 0 var(--pad); cursor: zoom-out; }
   .lb__stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .lb button { padding: .6em .9em; border: var(--bw) solid currentColor; font-weight: 700; transition: background-color .3s, color .3s; }
+  .lb button { padding: .6em .9em; border: var(--bw) solid currentColor; font-weight: 700; transition: background-color .4s, color .4s; }
   .lb button:hover { background: #f4f2ec; color: #070707; }
 
   /* ---------- visuals page ---------- */
@@ -445,16 +456,18 @@
   .vz.in .vz__canvas { opacity: 1; }
   .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; border: 0; background: none; overflow: hidden; will-change: transform; }
   .vz__canvas .visual figcaption { display: none; }
-  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out), filter .6s; }
+  .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out); }
   .vz__canvas .visual:hover img { transform: scale(1.04); }
   .vz.is-drag .visual img { transform: none; }
   .vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(10px, 1.2vw, 20px); z-index: 5; pointer-events: none; box-shadow: 0 0 0 var(--bw) var(--bg); }
   .vz__bar .mono { margin-left: 0; }
   .vz__bar .vz__intro { margin-left: auto; opacity: .7; }
   body[data-view="visuals"] .footer { display: none; }
-  /* over the canvas the header gets a solid strip so it stays readable on top of photos */
-  body[data-view="visuals"] .header { mix-blend-mode: normal; color: var(--ink); background: var(--bg); border-bottom: var(--bw) solid var(--ink); --blk-ink: var(--bg); }
-  body[data-view="visuals"] .header .logo, body[data-view="visuals"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
+  /* over the canvas the header gets a solid strip so it stays readable on top of photos;
+     on contact the headline and form scroll up under it, so it gets the same strip */
+  body[data-view="visuals"] .header, body[data-view="contact"] .header { mix-blend-mode: normal; color: var(--ink); background: var(--bg); border-bottom: var(--bw) solid var(--ink); --blk-ink: var(--bg); }
+  body[data-view="visuals"] .header .pill,
+  body[data-view="contact"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
   .visual { border: var(--bw) solid var(--ink); background: var(--bg); }
   .visual img { display: block; width: 100%; height: auto; }
   .visual figcaption { display: flex; align-items: center; gap: .8em; padding: clamp(8px, .8vw, 14px); border-top: var(--bw) solid var(--ink); }
@@ -462,7 +475,7 @@
   .visual .mono { margin-left: auto; }
 
   /* ---------- cursor tag ---------- */
-  .cursor-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: .6em .8em; background: var(--bg); color: var(--ink); border: var(--bw) solid var(--ink); font-weight: 700; opacity: 0; scale: .6; transition: opacity .4s, scale .55s var(--ease-out), transform .28s ease-out; }
+  .cursor-tag { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; padding: .6em .8em; background: var(--bg); color: var(--ink); border: var(--bw) solid var(--ink); font-weight: 700; opacity: 0; scale: .6; transition: opacity .4s var(--ease-out), scale .55s var(--ease-out); will-change: transform; }   /* follows the pointer from JS */
   .cursor-tag.on { opacity: 1; scale: 1; }
 
   /* ---------- full-screen sections (desktop) ---------- */
@@ -522,7 +535,9 @@
     .book.on { opacity: 1; }
     .loader, .is-ready .loader { animation: loader-fade .4s linear .6s forwards; }
     .loader__line > span, .is-ready .loader__line > span, .name .char, .is-ready .name.play .char { animation: none; transform: none; opacity: 1; }
-    .ln > span, .sq > span, .fade, .media, .art, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; }
+    .ln > span, .sq > span, .fade, .media, .art, .portrait img, .cs__cover img, .cs__cover video, .vz__canvas, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; translate: none !important; }
+    .work:hover .work__frame, .shot.in:hover, .chip:hover span, .btn, .pill, .svc .bullet, .svc__t, .svc__d, .vz__canvas .visual img, .lb__row { transform: none !important; }
+    .cursor-tag { scale: none; transition: opacity .2s; }
     .sq::after, .dot::after { display: none; }
     .ticker__track { animation: none; }
     @keyframes loader-fade { to { opacity: 0; visibility: hidden; } }
@@ -551,11 +566,12 @@
   </div>
 
   <header class="header mono fade">
-    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span class="logo">ct</span><span data-sweep>New York</span><span class="clock clock--head"></span></a>
+    <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span data-sweep>New York</span><span class="clock clock--head"></span></a>
     <nav aria-label="Primary">
       <ul>
-        <li><a href="/" data-nav="index" data-sweep>Work</a></li>
-        <li><a href="/visuals" data-nav="visuals" data-sweep>Visuals</a></li>
+        <li><a href="/" data-nav="index" data-sweep>Home</a></li>
+        <li><a href="/work" data-nav="work" data-sweep>Work</a></li>
+        <li><a href="/visuals" data-nav="visuals" data-sweep>Lab</a></li>
         <li><a href="/about" data-nav="about" data-sweep>About</a></li>
         <li><a class="pill" href="/contact" data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
       </ul>
@@ -581,7 +597,7 @@
         </div>
 
         <div class="hero__foot mono" data-reveal data-wait="900">
-          <button class="hero__scroll mono" type="button" data-scroll="#works" data-sweep>↓ Scroll, the good stuff is below</button>
+          <a class="hero__scroll mono" href="/work" data-sweep>↗ See the selected work</a>
           <ul class="hero__social">
 <!--@socials-hero-->
           </ul>
@@ -592,13 +608,8 @@
         </h1>
       </section>
 
-      <section class="works section grid" id="works">
-        <header class="bar" data-reveal><span class="bullet">1</span><h2>Selected work</h2><span class="mono" data-type><!--@project-count--> projects</span><span class="bar__a" aria-hidden="true">↓</span></header>
-<!--@projects-->
-      </section>
-
       <section class="section grid" id="services">
-        <header class="bar" data-reveal><span class="bullet">2</span><h2>What I can do for you</h2><span class="mono" data-type><!--@service-count--> services</span><span class="bar__a" aria-hidden="true">↓</span></header>
+        <header class="bar" data-reveal><span class="bullet">1</span><h2>What I can do for you</h2><span class="mono" data-type><!--@service-count--> services</span><span class="bar__a" aria-hidden="true">↓</span></header>
         <ul class="svc-list" data-reveal>
 <!--@services-->
         </ul>
@@ -625,7 +636,7 @@
       </div>
 
       <section class="section grid" id="process">
-        <header class="bar" data-reveal><span class="bullet">3</span><h2>How we'd work together</h2><span class="mono" data-type><!--@step-count--> stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
+        <header class="bar" data-reveal><span class="bullet">2</span><h2>How we'd work together</h2><span class="mono" data-type><!--@step-count--> stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
         <ol class="steps" data-reveal>
 <!--@steps-->
         </ol>
@@ -633,6 +644,15 @@
           <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Start at stop 01</span><span class="btn__arrow" aria-hidden="true"></span></a>
           <span class="mono muted">Replies within one business day</span>
         </div>
+      </section>
+    </div>
+
+    <!-- ================= WORK ================= -->
+    <div class="view" data-view="work" data-title="Selected Work — Websites &amp; Brands by Cristhian Tilleria" tabindex="-1" hidden>
+      <section class="works page grid" id="works">
+        <p class="page__kicker mono" data-reveal><span data-type>Selected work — <!--@project-count--> projects</span></p>
+        <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="Work"><span>Work</span></span></h1>
+<!--@projects-->
       </section>
     </div>
 
@@ -649,7 +669,7 @@
         </dl>
         <div class="cta-row fade" data-reveal>
           <a class="btn mono" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
-          <a class="link mono" href="/" data-sweep>Back to the work</a>
+          <a class="link mono" href="/work" data-sweep>Back to the work</a>
         </div>
       </section>
     </div>
@@ -705,8 +725,8 @@
         </form>
       </section>
     </div>
-    <!-- ================= VISUALS ================= -->
-    <div class="view" data-view="visuals" data-title="Visuals — Photography &amp; Experiments by Cristhian Tilleria" tabindex="-1" hidden>
+    <!-- ================= VISUALS (shown as "Lab") ================= -->
+    <div class="view" data-view="visuals" data-title="Lab — Photography &amp; Experiments by Cristhian Tilleria" tabindex="-1" hidden>
       <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
         <div class="vz__canvas"></div>
         <div class="vz__src" hidden>
@@ -748,15 +768,33 @@
   if (/^#\//.test(location.hash)) location.replace(location.hash.slice(1).replace(/\/$/, '') || '/');
 
   var root = document.documentElement, body = document.body;
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motionPref = matchMedia('(prefers-reduced-motion: reduce)'), reduce = motionPref.matches;   // kept live, see the end of the script
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-  /* ---------- smooth scroll (falls back to native if the library is unavailable) ---------- */
-  var lenis = (window.Lenis && !reduce) ? new Lenis({ lerp: .06, wheelMultiplier: .9 }) : null;
-  if (lenis) { lenis.stop(); requestAnimationFrame(function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }); }
+  /* ---------- smooth scroll (falls back to native if the library is unavailable) ----------
+     Lenis gets its own frame loop. Anything that depends on the scroll position listens to its scroll
+     event, which fires inside that loop, so it lands in the same frame as the scroll instead of the next. */
+  var lenis = null, holds = {};
+  function smooth(on) {
+    if (on && !lenis && window.Lenis) {
+      var l = lenis = new Lenis({ lerp: .06, wheelMultiplier: .9 });
+      l.on('scroll', function () { update(); });
+      if (Object.keys(holds).length) l.stop();
+      requestAnimationFrame(function raf(t) { if (lenis !== l) return; l.raf(t); requestAnimationFrame(raf); });
+    } else if (!on && lenis) { lenis.destroy(); lenis = null; }
+  }
+  // The intro and the overlays each hold the page still; scrolling comes back once nothing holds it.
+  function hold(why, on) {
+    if (on) holds[why] = true; else delete holds[why];
+    var held = Object.keys(holds).length > 0;
+    root.style.overflow = held ? 'hidden' : '';
+    if (lenis) held ? lenis.stop() : lenis.start();
+  }
+  hold('intro', true);
+  function easeInOut(t) { return t < .5 ? 8 * t * t * t * t : 1 - Math.pow(2 - 2 * t, 4) / 2; }   // close to --ease-in-out
   function scrollToY(target, instant) {
-    if (lenis) lenis.scrollTo(target, { immediate: !!instant, force: true, duration: 2 });
+    if (lenis) lenis.scrollTo(target, { immediate: !!instant, force: true, duration: 2, easing: easeInOut });
     else if (typeof target === 'number') scrollTo({ top: target, behavior: instant || reduce ? 'auto' : 'smooth' });
     else target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
   }
@@ -811,6 +849,10 @@
 
   /* ---------- auto line splitting for the big statement ---------- */
   function splitLines(el) {
+    // Phones fire resize while the address bar slides; the lines only change with the width or type size.
+    var key = el.clientWidth + '/' + getComputedStyle(el).fontSize + '/' + (document.fonts ? document.fonts.status : '');
+    if (key === el._split) return;
+    el._split = key;
     var text = el.dataset.src || (el.dataset.src = el.textContent.trim().replace(/\s+/g, ' '));
     el.setAttribute('aria-label', text);
     el.innerHTML = text.split(' ').map(function (w) { return '<span style="display:inline-block">' + esc(w) + '</span>'; }).join(' ');
@@ -886,40 +928,61 @@
       a.dataset.nav === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
     });
   }
+  // Each page change bumps seq, so timers left over from an earlier change can tell they're stale.
+  var seq = 0;
   function enter(name, delay) {
-    setTimeout(function () { arm(views[name]); arm(footer); }, delay);
+    var run = seq;
+    setTimeout(function () { if (run === seq) { arm(views[name]); arm(footer); } }, delay);
   }
+  // Lines are measured and masked in the same task the view is shown, so the statement never paints as plain text.
+  // Always rebuilt: lines kept from an earlier visit would carry the leave transform and sweep through view.
+  function splitNow(name) { $$('[data-lines]', views[name]).forEach(function (el) { el._split = null; splitLines(el); }); }
+  // The browser putting back an old scroll position on Back would fight the transition; the page scrolls itself.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   function go(name) {
     if (name === current || busy) return;
     busy = true;
-    function hard() { location.href = pathOf(name); }   // unknown page or offline: let the browser handle it
+    var run = ++seq;
+    function hard(n) { location.href = pathOf(n); }   // unknown page or offline: let the browser handle it
+    if (lb.classList.contains('on')) lbToggle(false);
+    tag.classList.remove('on');
     if (reduce) {
-      load(name).then(function () { activate(name); scrollToY(0, true); enter(name, 0); update(); busy = false; }, hard);
+      load(name).then(function () {
+        activate(name); splitNow(name); scrollToY(0, true); enter(name, 0); update(); busy = false;
+        var wanted = nameOf(location.pathname);
+        if (wanted !== current) go(wanted);
+      }, function () { hard(name); });
       return;
     }
+    hold('leave', true);                             // the page stays where it was while it leaves
+    body.classList.remove('is-entering');
     body.classList.add('is-leaving');
     var leaving = new Promise(function (done) { setTimeout(done, 1100); });
     Promise.all([load(name), leaving]).then(function () {
-      activate(name);
+      var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
+      return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
+    }).then(function (target) {
+      activate(target);
       scrollToY(0, true);
+      hold('leave', false);
       if (lenis) lenis.resize();
-      $$('[data-reveal]', views[name]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
-      var heroName = $('.name', views[name]);
+      $$('[data-reveal]', views[target]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
+      var heroName = $('.name', views[target]);
       if (heroName) { heroName.classList.remove('play'); heroName.style.setProperty('--t-title', '.35s'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
       body.classList.remove('is-leaving');
+      splitNow(target);
       body.classList.add('is-entering');
       update();
-      enter(name, 550);
-      views[name].focus({ preventScroll: true });
-      setTimeout(function () {
-        body.classList.remove('is-entering');
-        busy = false;
-        var wanted = nameOf(location.pathname);
-        if (wanted !== current) go(wanted);
-      }, 2100);
-    }, hard);
+      enter(target, 550);
+      views[target].focus({ preventScroll: true });
+      busy = false;                                  // the next click can start leaving straight away
+      setTimeout(function () { if (run === seq) body.classList.remove('is-entering'); }, 2100);
+    }, function (err) { if (err !== 0) hard(name); });
   }
-  addEventListener('popstate', function () { go(nameOf(location.pathname)); });
+  addEventListener('popstate', function () {
+    if (lb.classList.contains('on')) lbToggle(false);   // Back closes the viewer and lets go of its scroll hold
+    go(nameOf(location.pathname));
+  });
   document.addEventListener('click', function (e) {
     var s = e.target.closest('[data-scroll]');
     if (s) { scrollToY($(s.dataset.scroll)); return; }
@@ -929,17 +992,16 @@
     if (a.hash && a.pathname === location.pathname && a.search === location.search) return;   // same-page #hash: leave it to the browser / booking overlay
     e.preventDefault();
     var name = nameOf(a.pathname);
-    if (name === current) { scrollToY(0); return; }
-    if (busy) return;
-    history.pushState(null, '', pathOf(name));
+    if (name === current && !busy) { scrollToY(0); return; }
+    if (name !== nameOf(location.pathname)) history.pushState(null, '', pathOf(name));   // mid-leave, this just changes where it lands
     go(name);
   });
 
   /* ---------- first load: curtain, then content ---------- */
   activate(($('.view:not([hidden])') || $('.view')).dataset.view);
   var loader = $('.loader');
-  function unlock() { if (lenis && !$('.book.on')) lenis.start(); root.classList.remove('is-loading'); }
-  loader.addEventListener('animationend', function (e) { if (e.target === loader) { loader.remove(); unlock(); } });
+  function unlock() { hold('intro', false); root.classList.remove('is-loading'); }
+  loader.addEventListener('animationend', function (e) { if (e.target === loader) { loader.remove(); unlock(); waterGo(); } });
   // The intro clock starts only when the loader is really on screen: fonts in and a frame painted.
   // On slow phones the page can take seconds to appear, and a clock that started earlier would
   // have the curtain lifting before anyone saw it.
@@ -948,13 +1010,14 @@
     if (introStarted) return;
     introStarted = true;
     root.classList.add('is-ready');
+    splitNow(current);
     setTimeout(unlock, 4000);
     enter(current, reduce ? 600 : 2500);
     setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
     if (reduce) return;
-    setTimeout(function () { body.classList.add('is-entering'); }, 2150);
-    setTimeout(function () { if (!busy) body.classList.remove('is-entering'); }, 5200);
-    if (current === 'index') setTimeout(function () { ripple(views.index.querySelector('.hero'), .18); }, 2850);
+    setTimeout(function () { if (!seq) body.classList.add('is-entering'); }, 2150);
+    setTimeout(function () { if (!seq) body.classList.remove('is-entering'); }, 5200);
+    if (current === 'index') setTimeout(function () { if (!seq) ripple(views.index.querySelector('.hero'), .18); }, 2850);
   }
   Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), new Promise(function (r) { setTimeout(r, 1500); })])
     .then(function () { requestAnimationFrame(function () { requestAnimationFrame(startIntro); }); });
@@ -977,24 +1040,30 @@
     touch.innerHTML = html;
     strips = $$('.touch__strip', touch);
   })();
-  var sliceScroll = 0, sliceHover = 0;
+  var sliceScroll = 0, sliceHover = 0, sliceKey = '', swellT0 = 0, swelling = false;
   function slice() {
-    var t = Math.max(sliceScroll, sliceHover);
-    strips.forEach(function (s, n) { s.style.transform = t < .002 ? '' : 'scaleY(' + Math.max(.05, 1 + t * AMP[n]).toFixed(3) + ')'; });
+    var t = Math.max(sliceScroll, sliceHover), key = t < .002 ? '' : t.toFixed(4);
+    if (key === sliceKey) return;                  // nothing moved: leave the strips alone
+    sliceKey = key;
+    strips.forEach(function (s, n) { s.style.transform = key && 'scaleY(' + Math.max(.05, 1 + t * AMP[n]).toFixed(3) + ')'; });
   }
   touch.addEventListener('mouseenter', function () {
     if (reduce) return;
-    var t0 = performance.now();
-    (function loop(now) {
-      var p = Math.min(1, (now - t0) / 1100);
+    var now = performance.now(), p = swelling ? (now - swellT0) / 1100 : 1;
+    // coming back in while it is still settling picks the swell up at the same height instead of starting a second loop
+    swellT0 = now - (p < 1 ? Math.min(p, 1 - p) * 1100 : 0);
+    if (swelling) return;
+    swelling = true;
+    requestAnimationFrame(function swell(now) {
+      var p = Math.min(1, Math.max(0, (now - swellT0) / 1100));
       sliceHover = Math.sin(p * Math.PI) * .18;
       slice();
-      if (p < 1) requestAnimationFrame(loop);
-    })(t0);
+      if (p < 1) requestAnimationFrame(swell); else swelling = false;
+    });
   });
 
   /* ---------- scroll-driven: dark switch, footer stretch ---------- */
-  var darks = $$('[data-dark]'), queued = false, touchWater = null;
+  var darks = $$('[data-dark]'), queued = false;
   function update() {
     queued = false;
     var vh = innerHeight, mid = vh * .6;
@@ -1003,21 +1072,28 @@
       var r = d.getBoundingClientRect();
       return r.top < mid && r.bottom > mid;
     }));
-    if (reduce) return;
     var remaining = root.scrollHeight - (scrollY + vh);
     var t = Math.min(1, Math.max(0, remaining / (vh * .8)));
-    sliceScroll = touch.offsetParent ? t * t * .7 : 0;
+    sliceScroll = reduce || !touch.offsetParent ? 0 : t * t * .7;
     slice();
-    if (touchWater) { touchWater.floor = sliceScroll * parseFloat(getComputedStyle(touch).fontSize) * .16; if (touchWater.floor > .5) startWater(); }
+    var w = touch._water;
+    if (!w) return;
+    // the swell only runs while the headline is on screen; off screen it kept the water loop going for nothing
+    var r = touch.getBoundingClientRect();
+    w.floor = r.bottom > 0 && r.top < vh ? sliceScroll * size(w) * .16 : 0;
+    if (w.floor > .5) startWater();
   }
-  function onScroll() { if (!queued) { queued = true; requestAnimationFrame(update); } }
-  addEventListener('scroll', onScroll, { passive: true });
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
+  addEventListener('scroll', function () { if (!lenis) queue(); }, { passive: true });   // with Lenis, its scroll event calls update()
   addEventListener('resize', function () {
-    onScroll();
+    queue();
     clearTimeout(splitLines._t);
     splitLines._t = setTimeout(function () { $$('[data-lines]', views[current]).forEach(splitLines); }, 200);
   });
   update();
+  smooth(!reduce);
+  // The intro stops waiting for fonts after 1.5s; lines measured in the fallback face are measured again once the real one is in.
+  if (document.fonts) document.fonts.ready.then(function () { if (current) $$('[data-lines]', views[current]).forEach(splitLines); });
 
   /* ---------- water typography ----------
      Big type sits behind one SVG displacement filter per headline. Three things feed it:
@@ -1025,10 +1101,15 @@
      2. a lens that follows the pointer and gets stronger the faster you move,
      3. drops: rings that spread from where the pointer has been, and a big splash on click/tap. */
   var waters = [], waterOn = false, waterLast = 0, SLOTS = 6;   // slot 0 = lens, 1..5 = drops
-  var wsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  wsvg.setAttribute('aria-hidden', 'true');
-  wsvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
-  body.appendChild(wsvg);
+  // Nothing moves behind the curtain: kicks asked for before it has gone are kept and played once it lifts.
+  var waterReady = false;
+  function waterGo() {
+    if (waterReady) return;
+    waterReady = true;
+    waters.forEach(function (w) { var s = w.pend; w.pend = 0; if (s) kick(w, s); });
+    update();
+  }
+  var wsvg = null, ringMap, swells;
 
   // Displacement maps are drawn once on tiny canvases: red pushes pixels sideways, green up and down,
   // mid-grey means "leave it alone".
@@ -1050,16 +1131,27 @@
       return [Math.sin(v * 3 + seed + Math.sin(u + seed) * 1.2) * (.6 + .4 * Math.sin(v + u * 2 + seed)), .8 * Math.sin(u * 2 + v * 2.5 + seed * 2), 1];
     });
   }
-  // concentric ripple pushing pixels outward/inward along the radius, fading to nothing at the rim
-  var ringMap = drawMap(128, 128, function (x, y) {
-    var dx = x * 2 - 1, dy = y * 2 - 1, r = Math.hypot(dx, dy);
-    if (r >= 1) return [0, 0, 0];
-    var wave = Math.sin(r * 9.42) * Math.pow(r, .6), k = r || 1;
-    return [dx / k * wave, dy / k * wave, Math.min(1, (1 - r) * 3.5)];
-  });
-  var swells = [swellMap(.4), swellMap(2.1), swellMap(3.9)];
+  // Built the first time a headline needs it, so reduced motion never pays for it.
+  function waterMaps() {
+    if (wsvg) return;
+    wsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    wsvg.setAttribute('aria-hidden', 'true');
+    wsvg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    body.appendChild(wsvg);
+    // concentric ripple pushing pixels outward/inward along the radius, fading to nothing at the rim
+    ringMap = drawMap(128, 128, function (x, y) {
+      var dx = x * 2 - 1, dy = y * 2 - 1, r = Math.hypot(dx, dy);
+      if (r >= 1) return [0, 0, 0];
+      var wave = Math.sin(r * 9.42) * Math.pow(r, .6), k = r || 1;
+      return [dx / k * wave, dy / k * wave, Math.min(1, (1 - r) * 3.5)];
+    });
+    swells = [swellMap(.4), swellMap(2.1), swellMap(3.9)];
+  }
+  // Filter attributes are only written when they change: every write makes the browser re-run the filter.
+  function attr(el, k, v) { if (el['_' + k] !== v) { el['_' + k] = v; el.setAttribute(k, v); } }
 
   function addWater(el) {
+    waterMaps();
     var id = 'water-' + waters.length, n, merge = '';
     var h = '<filter id="' + id + '" x="-10%" y="-35%" width="120%" height="170%" color-interpolation-filters="sRGB">' +
       '<feFlood flood-color="rgb(128,128,128)" result="n"/>' +
@@ -1071,12 +1163,13 @@
       merge += '<feMergeNode in="q' + n + '"/>';
     }
     h += '<feMerge result="m"><feMergeNode in="n"/><feMergeNode in="gg"/>' + merge + '</feMerge>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>';
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="0" xChannelSelector="R" yChannelSelector="G"/>' +
+      '<feGaussianBlur stdDeviation=".5"/></filter>';   // displacement samples the nearest pixel and tears the edges; this smooths them back
     wsvg.insertAdjacentHTML('beforeend', h);
     var f = wsvg.lastElementChild, imgs = $$('feImage', f), fa = $$('feFuncA', f);
     var w = {
-      el: el, id: id, disp: f.lastElementChild, swellA: fa[0], imgs: imgs.slice(1), fa: fa.slice(1),
-      drops: [], next: 1, e: 0, floor: 0, lens: 0, px: 0, py: 0, lx: null, ly: 0, fs: 0, on: false, t: waters.length * 1.7
+      el: el, id: id, disp: $('feDisplacementMap', f), swellA: fa[0], imgs: imgs.slice(1), fa: fa.slice(1),
+      drops: [], next: 1, e: 0, pend: 0, floor: 0, lens: 0, px: 0, py: 0, lx: null, ly: 0, fs: 0, on: false, t: waters.length * 1.7
     };
     for (n = 0; n < SLOTS; n++) w.drops.push({ life: 0 });
     waters.push(w);
@@ -1085,7 +1178,7 @@
     function at(e) { var r = el.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
     el.addEventListener('pointerenter', function () { kick(w, .04); });
     el.addEventListener('pointermove', function (e) {
-      if (reduce) return;
+      if (reduce || !waterReady) return;
       var p = at(e), fs = size(w);
       w.px = p[0]; w.py = p[1];
       w.lens = Math.min(.8, w.lens + .04 + Math.hypot(e.movementX, e.movementY) * .02);
@@ -1098,7 +1191,7 @@
     });
     el.addEventListener('pointerleave', function () { w.lx = null; });
     el.addEventListener('pointerdown', function (e) {
-      if (reduce) return;
+      if (reduce || !waterReady) return;
       var p = at(e), fs = size(w);
       drop(w, p[0], p[1], fs * .2, fs * 3, 2600, .85);
       kick(w, .05);
@@ -1114,69 +1207,101 @@
   }
   function place(w, n, x, y, R, strength) {
     var im = w.imgs[n];
-    im.setAttribute('x', (x - R).toFixed(1)); im.setAttribute('y', (y - R).toFixed(1));
-    im.setAttribute('width', (R * 2).toFixed(1)); im.setAttribute('height', (R * 2).toFixed(1));
-    w.fa[n].setAttribute('slope', strength.toFixed(3));
+    attr(im, 'x', (x - R).toFixed(1)); attr(im, 'y', (y - R).toFixed(1));
+    attr(im, 'width', (R * 2).toFixed(1)); attr(im, 'height', (R * 2).toFixed(1));
+    attr(w.fa[n], 'slope', strength.toFixed(3));
+  }
+  // flat water: filter off, every input back to zero so the next start has no leftovers
+  function still(w) {
+    if (w.on) { w.el.style.filter = ''; w.on = false; }
+    attr(w.disp, 'scale', '0');
+    w.e = w.lens = 0; w.lx = null;
+    w.drops.forEach(function (d) { d.life = 0; });
+    attr(w.swellA, 'slope', '0');
+    w.fa.forEach(function (f) { attr(f, 'slope', '0'); });
   }
   // whole-headline swell; strength is relative to font size so every headline moves in proportion
   function kick(w, strength) {
     if (reduce || !w) return;
+    if (!waterReady) { w.pend = Math.max(w.pend, strength); return; }
     var fs = size(w);
     w.e = Math.min(fs * .3, w.e + fs * strength);
     startWater();
   }
-  function startWater() { if (!waterOn && !reduce) { waterOn = true; waterLast = performance.now(); requestAnimationFrame(flow); } }
+  function startWater() { if (!waterOn && !reduce && waterReady) { waterOn = true; waterLast = performance.now(); requestAnimationFrame(flow); } }
   function flow(now) {
-    var active = false, ms = Math.min(100, now - waterLast), dt = ms / 16.7;
+    if (reduce) { waters.forEach(still); waterOn = false; return; }
+    var active = false, ms = Math.max(0, Math.min(100, now - waterLast)), dt = ms / 16.7;
     waterLast = now;
     waters.forEach(function (w) {
-      var amp = Math.max(w.e, w.floor);
+      var amp = Math.max(w.e, w.floor), fs = size(w);
       w.e *= Math.pow(.965, dt);
       w.lens *= Math.pow(.94, dt);
-      var alive = amp >= .5 || w.lens > .02;
+      w.t += .05 * dt;
+      var swell = Math.min(1, amp / (fs * .3)) * (.72 + .28 * Math.sin(w.t)), lens = w.lens > .02 ? w.lens * .8 : 0, peak = Math.max(swell, lens);
       w.drops.forEach(function (d, n) {
         if (!d.life) return;
         d.age += ms;
         var p = d.age / d.life;
-        if (p >= 1) { d.life = 0; w.fa[n].setAttribute('slope', 0); return; }
-        alive = true;
-        place(w, n, d.x, d.y, d.r0 + (d.r1 - d.r0) * (1 - Math.pow(1 - p, 3)), d.power * Math.pow(1 - p, 1.4));
+        if (p >= 1) { d.life = 0; attr(w.fa[n], 'slope', '0'); return; }
+        var k = d.power * Math.pow(1 - p, 1.4);
+        peak = Math.max(peak, k);
+        place(w, n, d.x, d.y, d.r0 + (d.r1 - d.r0) * (1 - Math.pow(1 - p, 3)), k);
       });
-      if (!alive) { if (w.on) { w.el.style.filter = ''; w.on = false; } w.e = 0; w.lens = 0; return; }
+      // Largest push in px (the map sits within ±.5 of grey). Under a few px it only roughens the edges,
+      // so the scale itself eases to 0 over that last stretch and the filter comes off once it is under a third of a px.
+      var push = fs * .15 * peak, fade = Math.min(1, push / 3);
+      if (push * fade < .3) { still(w); return; }
       active = true;
-      var fs = size(w);
-      w.t += .05 * dt;
-      w.swellA.setAttribute('slope', amp < .5 ? 0 : (Math.min(1, amp / (fs * .3)) * (.72 + .28 * Math.sin(w.t))).toFixed(3));
-      if (w.lens > .02) place(w, 0, w.px, w.py, fs * .5, w.lens * .8); else w.fa[0].setAttribute('slope', 0);
-      w.disp.setAttribute('scale', (fs * .3).toFixed(1));
+      attr(w.swellA, 'slope', swell.toFixed(3));
+      if (lens) place(w, 0, w.px, w.py, fs * .5, lens); else attr(w.fa[0], 'slope', '0');
+      attr(w.disp, 'scale', (fs * .3 * fade).toFixed(1));
       if (!w.on) { w.el.style.filter = 'url(#' + w.id + ')'; w.on = true; }
     });
     waterOn = active;
     if (active) requestAnimationFrame(flow);
   }
-  function bindWater(scope) { $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
+  function bindWater(scope) { if (!reduce) $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
   bindWater(document);
   addEventListener('resize', function () { waters.forEach(function (w) { w.fs = 0; }); });
-  touchWater = touch._water;
   function ripple(scope, strength) {
     $$('.name, .h2', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
   }
 
   /* ---------- pointer micro-interactions ---------- */
-  var tag = $('.cursor-tag');
+  // The tag eases after the pointer once per frame; a CSS transition restarted on every mousemove stutters.
+  var tag = $('.cursor-tag'), tagX = 0, tagY = 0, tagTX = 0, tagTY = 0, tagLast = 0, tagRun = false;
+  function tagAt(x, y) { tag.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)'; }
+  function tagFollow(now) {
+    var dt = Math.max(0, Math.min(50, now - tagLast)) / 16.7, k = 1 - Math.pow(.7, dt);
+    tagLast = now;
+    tagX += (tagTX - tagX) * k; tagY += (tagTY - tagY) * k;
+    var done = Math.abs(tagTX - tagX) < .1 && Math.abs(tagTY - tagY) < .1;
+    if (done) { tagX = tagTX; tagY = tagTY; }
+    tagAt(tagX, tagY);
+    tagRun = !done;
+    if (tagRun) requestAnimationFrame(tagFollow);
+  }
   addEventListener('mousemove', function (e) {
-    var h = e.target.closest && e.target.closest('[data-cursor]');
-    tag.classList.toggle('on', !!h);
-    if (h) { tag.textContent = h.dataset.cursor; tag.style.transform = 'translate(' + (e.clientX + 16) + 'px,' + (e.clientY + 18) + 'px)'; }
+    var h = !busy && e.target.closest && e.target.closest('[data-cursor]'), shown = tag.classList.contains('on');   // no tag while a page is leaving
+    if (h && tag.textContent !== h.dataset.cursor) tag.textContent = h.dataset.cursor;
+    if (h) {
+      tagTX = e.clientX + 16; tagTY = e.clientY + 18;
+      if (!shown || reduce) { tagX = tagTX; tagY = tagTY; tagAt(tagX, tagY); }   // appear where the pointer is, not sliding in from the corner
+      else if (!tagRun) { tagRun = true; tagLast = performance.now(); requestAnimationFrame(tagFollow); }
+    }
+    if (!!h !== shown) tag.classList.toggle('on', !!h);
   }, { passive: true });
   function bindMagnetic(scope) {
-    if (reduce) return;
     $$('[data-magnetic]', scope).forEach(function (m) {
       if (m._magnetic) return;
       m._magnetic = true;
       m.addEventListener('mousemove', function (e) {
-        var r = m.getBoundingClientRect();
-        m.style.transform = 'translate(' + ((e.clientX - r.left - r.width / 2) * .22).toFixed(1) + 'px,' + ((e.clientY - r.top - r.height / 2) * .35).toFixed(1) + 'px)';
+        if (reduce) return;
+        // measure from where the button rests, not where it has been pulled to, or it chases its own offset
+        var r = m.getBoundingClientRect(), t = new DOMMatrixReadOnly(getComputedStyle(m).transform);
+        var cx = r.left + r.width / 2 - t.m41, cy = r.top + r.height / 2 - t.m42;
+        m.style.transform = 'translate(' + ((e.clientX - cx) * .22).toFixed(1) + 'px,' + ((e.clientY - cy) * .35).toFixed(1) + 'px)';
       });
       m.addEventListener('mouseleave', function () { m.style.transform = ''; });
     });
@@ -1231,7 +1356,8 @@
     var url = CONFIG.bookingUrl;
     if (!url) return;                                              // no calendar set up: the buttons stay normal links
     var box = document.createElement('div'), opener = null, loaded = false, timer = 0, isOpen = false;
-    box.className = 'book'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
+    box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar
+    box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
     box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
       '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
       '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
@@ -1257,8 +1383,7 @@
         timer = setTimeout(function () { if (!loaded) { loading.hidden = true; fallback.hidden = false; } }, 15000);
       }
       if (location.hash !== '#book') history.replaceState(null, '', location.pathname + location.search + '#book');
-      if (lenis) lenis.stop();
-      root.style.overflow = 'hidden';
+      hold('book', true);
       covered.forEach(function (el) { if (el) el.inert = true; });
       box.classList.add('on');
       shut.focus({ preventScroll: true });
@@ -1268,8 +1393,7 @@
       isOpen = false;
       box.classList.remove('on');
       covered.forEach(function (el) { if (el) el.inert = false; });
-      root.style.overflow = '';
-      if (lenis && !root.classList.contains('is-loading')) lenis.start();
+      hold('book', false);
       if (!keepUrl) history.replaceState(null, '', location.pathname + location.search.replace(/([?&])book=1&?/, '$1').replace(/[?&]$/, ''));
       if (opener && opener.isConnected) opener.focus({ preventScroll: true });
     }
@@ -1312,8 +1436,11 @@
     lbImg.alt = small.alt;
     if (full && full !== lbImg.getAttribute('src')) {
       var hi = new Image();
-      hi.onload = function () { if (lbSet[lbAt] === el && lb.classList.contains('on')) lbImg.src = full; };
       hi.src = full;
+      // decoded off the main thread before the swap, so the big image doesn't hitch the zoom
+      (hi.decode ? hi.decode() : new Promise(function (ok) { hi.onload = ok; })).then(function () {
+        if (lbSet[lbAt] === el && lb.classList.contains('on')) lbImg.src = full;
+      }, function () {});
     }
     var name = $('figcaption b', el), kind = $('figcaption .mono', el);
     if (name) $('.lb__title').textContent = name.textContent + (kind && kind.textContent ? ' — ' + kind.textContent : '');
@@ -1325,7 +1452,16 @@
     var w = Math.min(s.width, s.height * r.width / r.height);
     return 'translate(' + (r.left + r.width / 2 - s.left - s.width / 2).toFixed(1) + 'px,' + (r.top + r.height / 2 - s.top - s.height / 2).toFixed(1) + 'px) scale(' + (r.width / w).toFixed(4) + ')';
   }
+  // Where the piece on screen now lives on the page: the tile it was opened from, or (in a gallery,
+  // after prev/next) the shot it belongs to. Only if that spot is in view; otherwise it just fades.
+  function lbHome() {
+    var el = lbSet[lbAt], t = lbFrom && lbFrom._source === el ? lbFrom : el && el.classList.contains('shot') ? $('img', el) : null;
+    if (!t || !t.isConnected) return null;
+    var r = t.getBoundingClientRect();
+    return r.width && r.bottom > 0 && r.top < innerHeight ? t : null;
+  }
   function lbToggle(open, from) {
+    var home;
     if (open) {
       lbFrom = from || null;
       if (lbFrom && !reduce) {                      // grow out of the clicked tile
@@ -1335,13 +1471,13 @@
         lbImg.style.transition = 'transform .9s var(--ease-out)';
         lbImg.style.transform = '';
       }
-    } else if (lbFrom && lbFrom.isConnected && lbFrom._source === lbSet[lbAt] && !reduce) {
+    } else if (!reduce && (home = lbHome())) {
       lbImg.style.transition = 'transform .6s var(--ease-in-out)';   // shrink back into its tile
-      lbImg.style.transform = lbOver(lbFrom);
+      lbImg.style.transform = lbOver(home);
     }
     lb.classList.toggle('on', open);
     lb.setAttribute('aria-hidden', String(!open));
-    if (lenis) open ? lenis.stop() : lenis.start();
+    hold('lb', open);
     if (open) $('[data-lb="close"]', lb).focus();
     else setTimeout(function () { if (!lb.classList.contains('on')) { lbImg.removeAttribute('src'); lbImg.style.transition = 'none'; lbImg.style.transform = ''; } }, 650);
   }
@@ -1351,7 +1487,7 @@
       lbSet = $$('.shot', shot.closest('.gallery'));
       $('.lb__title').textContent = shot.closest('.view').dataset.title.split(' — ')[0];
       lbShow(lbSet.indexOf(shot));
-      lbToggle(true);
+      lbToggle(true, $('img', shot));
       return;
     }
     var act = e.target.closest('[data-lb]');
@@ -1372,7 +1508,11 @@
     vz._bound = true;
     var stage = $('.vz__canvas', vz), src = $$('.vz__src .visual', vz);
     if (!src.length) return;
-    var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, drag = null, travelled = 0, touched = 0, lastT = 0, relayout = 0, laid = '';
+    var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, wx = 0, wy = 0, drift = 0, drag = null, travelled = 0, touched = 0;
+    var lastT = 0, running = false, seen = false, dirty = false, relayout = 0, laid = '';
+    // One feel for every way of moving it: a fling coasts and slows like the page scroll settles,
+    // wheel steps are eased in rather than jumped, and the idle drift fades in and out.
+    var FRICTION = .94, WHEEL = .16, DRIFT = .28, KEY = 26;
     function mod(a, n) { return ((a % n) + n) % n; }
     function rnd(a, b) { var x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }   // repeatable scatter
 
@@ -1382,7 +1522,7 @@
       // small pieces with wide, uneven gaps so the canvas feels open
       CW = vw < 761 ? vw * .34 : Math.max(130, Math.min(230, vw * .12));
       G = vw < 761 ? vw * .14 : Math.max(90, vw * .085);
-      if (!vw || !vh) return;                       // the view is hidden; tick() lays out once it shows
+      if (!vw || !vh) return;                       // the view is hidden; the ResizeObserver lays out once it shows
       laid = vw + 'x' + vh;
       var n = Math.ceil((vw + CW + G) / (CW + G)) + 1;
       PW = n * (CW + G);
@@ -1426,38 +1566,56 @@
         });
       });
     }
+    // The frame loop only runs while the canvas is on screen, and under reduced motion only while something moves.
+    function wake() { if (!running && seen) { running = true; lastT = 0; requestAnimationFrame(tick); } }
+    vz._wake = wake;
     function tick(now) {
+      if (!seen) { running = false; return; }
+      var dt = lastT ? Math.min(50, Math.max(0, now - lastT)) / 16.7 : 1, moved = dirty;
+      lastT = now; dirty = false;
+      if (!drag) {
+        if (Math.abs(wx) > .1 || Math.abs(wy) > .1) {
+          var k = 1 - Math.pow(1 - WHEEL, dt);
+          ox += wx * k; oy += wy * k; wx -= wx * k; wy -= wy * k; moved = true;
+        } else wx = wy = 0;
+        if (Math.abs(vx) > .05 || Math.abs(vy) > .05) {
+          var f = Math.pow(FRICTION, dt);
+          ox += vx * dt; oy += vy * dt; vx *= f; vy *= f; moved = true;
+        } else vx = vy = 0;
+      }
+      var idle = !reduce && !drag && !moved && now - touched > 2600 && !lb.classList.contains('on');
+      drift += ((idle ? DRIFT : 0) - drift) * (1 - Math.pow(.97, dt));   // slow idle drift, eased in and out
+      if (drift > .004) { oy -= drift * dt; moved = true; } else drift = 0;
+      if (moved) draw();
+      if (reduce && !moved && !drag) { running = false; return; }
       requestAnimationFrame(tick);
-      if (!vz.offsetParent) { lastT = now; return; }
-      if (laid !== vz.clientWidth + 'x' + vz.clientHeight) layout();
-      var dt = Math.min(50, now - (lastT || now)) / 16.7;
-      lastT = now;
-      if (drag) return;
-      var coasting = Math.abs(vx) > .05 || Math.abs(vy) > .05;
-      if (coasting) { ox += vx * dt; oy += vy * dt; vx *= Math.pow(.94, dt); vy *= Math.pow(.94, dt); }
-      else if (!reduce && now - touched > 2600 && !lb.classList.contains('on')) oy -= .28 * dt;   // slow idle drift
-      else return;
-      draw();
     }
+    function stir() { touched = performance.now(); drift = 0; wake(); }
     vz.addEventListener('pointerdown', function (e) {
       if (e.button) return;
-      drag = { x: e.clientX, y: e.clientY, ox: ox, oy: oy, px: e.clientX, py: e.clientY };
-      travelled = 0; vx = vy = 0; touched = performance.now();
+      drag = { x: e.clientX, y: e.clientY, ox: ox, oy: oy, px: e.clientX, py: e.clientY, t: e.timeStamp, vx: 0, vy: 0 };
+      travelled = 0; vx = vy = wx = wy = 0; stir();
       vz.setPointerCapture(e.pointerId);
       vz.classList.add('is-drag');
     });
     vz.addEventListener('pointermove', function (e) {
       if (!drag) return;
+      var dx = e.clientX - drag.px, dy = e.clientY - drag.py, k = 16.7 / Math.max(1, e.timeStamp - drag.t);
       ox = drag.ox + e.clientX - drag.x; oy = drag.oy + e.clientY - drag.y;
-      vx = e.clientX - drag.px; vy = e.clientY - drag.py;
-      travelled += Math.abs(vx) + Math.abs(vy);
-      drag.px = e.clientX; drag.py = e.clientY; touched = performance.now();
-      draw();
+      // velocity in px per 60Hz frame, smoothed, so the fling is the same on any pointer rate
+      drag.vx = drag.vx * .25 + dx * k * .75; drag.vy = drag.vy * .25 + dy * k * .75;
+      travelled += Math.abs(dx) + Math.abs(dy);
+      drag.px = e.clientX; drag.py = e.clientY; drag.t = e.timeStamp;
+      dirty = true; stir();                         // drawn on the next frame, once, however many events arrive
     });
     function release(e) {
       if (!drag) return;
+      var d = drag, held = e.timeStamp - d.t > 80;  // stopped before letting go: no fling
       drag = null;
       vz.classList.remove('is-drag');
+      vx = reduce || held ? 0 : Math.max(-80, Math.min(80, d.vx));
+      vy = reduce || held ? 0 : Math.max(-80, Math.min(80, d.vy));
+      stir();
       if (travelled > 6 || e.type !== 'pointerup') return;
       vx = vy = 0;
       var hit = document.elementFromPoint(e.clientX, e.clientY), tile = hit && hit.closest('.vz__canvas .visual');
@@ -1470,23 +1628,41 @@
     vz.addEventListener('pointercancel', release);
     vz.addEventListener('wheel', function (e) {
       e.preventDefault();
-      ox -= e.deltaX; oy -= e.deltaY; vx = vy = 0; touched = performance.now();
-      draw();
+      var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vz.clientHeight : 1;
+      vx = vy = 0;
+      if (reduce) { ox -= e.deltaX * unit; oy -= e.deltaY * unit; dirty = true; }
+      else { wx -= e.deltaX * unit; wy -= e.deltaY * unit; }
+      stir();
     }, { passive: false });
     addEventListener('keydown', function (e) {
-      if (!vz.offsetParent || lb.classList.contains('on')) return;
+      if (!seen || lb.classList.contains('on')) return;
       var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
       if (!k) return;
       e.preventDefault();
-      vx = k[0] * 26; vy = k[1] * 26; touched = performance.now();
+      if (reduce) { ox += k[0] * KEY / (1 - FRICTION); oy += k[1] * KEY / (1 - FRICTION); dirty = true; }   // same distance, no glide
+      else { vx = k[0] * KEY; vy = k[1] * KEY; }
+      stir();
     });
+    // size changes (and the view being shown) re-lay out from here, instead of reading the size every frame
+    new ResizeObserver(function () { if (vz.clientWidth && laid !== vz.clientWidth + 'x' + vz.clientHeight) layout(); }).observe(vz);
+    new IntersectionObserver(function (en) { seen = en[en.length - 1].isIntersecting; if (seen) { touched = performance.now(); wake(); } }).observe(vz);
     layout();
-    requestAnimationFrame(tick);
   }
 
   /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
   function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
   initView(document);
+
+  /* ---------- reduced motion can be switched on or off while the page is open ---------- */
+  if (motionPref.addEventListener) motionPref.addEventListener('change', function (e) {
+    reduce = e.matches;
+    smooth(!reduce);                               // Lenis off (or back on); the water loop tears itself down on its next frame
+    if (reduce) $$('[data-magnetic]').forEach(function (m) { m.style.transform = ''; });
+    else bindWater(document);
+    $$('video[data-autoplay]').forEach(function (v) { if (v._seen) { videoIO.unobserve(v); videoIO.observe(v); } });   // re-check: pause or resume
+    $$('.vz').forEach(function (v) { if (v._wake) v._wake(); });
+    update();
+  });
 </script>
 </body>
 </html>

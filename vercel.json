@@ -42,12 +42,12 @@
     },
     {
       "source": "/projects",
-      "destination": "/",
+      "destination": "/work",
       "permanent": false
     },
     {
       "source": "/projects/(.*)",
-      "destination": "/",
+      "destination": "/work",
       "permanent": false
     }
   ],
