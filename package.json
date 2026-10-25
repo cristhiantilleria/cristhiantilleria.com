@@ -1,7 +1,24 @@
 {
   "name": "cristhiantilleria.com",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.3.0"
+  },
   "scripts": {
-    "build": "node build.js"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.14",
+    "@astrojs/react": "^4.4.2",
+    "@keystatic/astro": "^6.0.0",
+    "@keystatic/core": "^0.6.9",
+    "astro": "^5.18.2",
+    "lenis": "1.1.14",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }
