@@ -1,19 +1,19 @@
 url: https://www.cristhiantilleria.com
-description: Brand & web designer for startups in New York. Post-raise homepage sprints for pre-seed and seed founders, so buyers get what you do in seconds. Book a call.
+description: Brand & Web Designer for Startups in New York. Post-raise brand and site sprints for pre-seed and seed founders. Book a call.
 email: hello@cristhiantilleria.com
 bookingUrl: https://cal.com/cristhiantilleria/project-intro-call
 status: Taking new projects
-intro: Hey, I'm Cristhian. You raised the round, now your site should look like it. I design and build startup homepages buyers get in seconds.
-statement: I help early-stage founders turn a pre-product site into a homepage that explains what they do, fast. One person from first sketch to final deploy, so nothing gets lost between design and code.
+intro: You raised. The product got serious. The site still looks like a draft.
+statement: Customers, investors, and hires all see the gap. Close it before the next raise.
 portrait: /media/about/portrait.jpg
 ticker:
   - Taking new projects
-  - Homepage sprints for startups
+  - Brand & site sprints for startups
   - New York → Worldwide
   - No pitch, just a chat
 services:
-  - title: Homepage sprint
-    description: A sharp, clear homepage that tells buyers and investors what you do in seconds. Live in days, not months.
+  - title: Site sprint
+    description: A clear, sharp site that tells customers, investors, and hires what you do in seconds. Live in days, not months.
   - title: Brand refresh
     description: A light-touch identity, type and color system so your startup looks as serious as the round you just raised.
   - title: Motion & interaction
@@ -21,7 +21,7 @@ services:
 steps:
   - tag: 30 min
     title: Discovery call
-    description: A 30-minute call about your startup, your buyers and what the site needs to say. No pitch, no pressure.
+    description: A 30-minute call about your startup, who you sell to, and what the site needs to say. No pitch, no pressure.
   - tag: Within days
     title: Proposal
     description: You get a clear scope and a quote before anything starts. If you don't love the design, you don't pay.
