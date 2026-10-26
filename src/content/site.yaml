@@ -1,36 +1,36 @@
 url: https://www.cristhiantilleria.com
-description: Brand & Web Designer for Startups in New York. Post-raise brand and site sprints for pre-seed and seed founders. Book a call.
+description: Brand & Web Designer for Startups in New York. Book a call.
 email: hello@cristhiantilleria.com
 bookingUrl: https://cal.com/cristhiantilleria/project-intro-call
 status: Taking new projects
 intro: You raised. The product got serious. The site still looks like a draft.
-statement: Customers, investors, and hires all see the gap. Close it before the next raise.
+statement: Customers, investors, and hires all see the gap.
 portrait: /media/about/portrait.jpg
 ticker:
   - Taking new projects
-  - Brand & site sprints for startups
+  - Site sprints for startups
   - New York → Worldwide
   - No pitch, just a chat
 services:
   - title: Site sprint
-    description: A clear, sharp site that tells customers, investors, and hires what you do in seconds. Live in days, not months.
+    description: Clear site for customers, investors, and hires. Live in days.
   - title: Brand refresh
-    description: A light-touch identity, type and color system so your startup looks as serious as the round you just raised.
+    description: Type, color, and identity that match the round.
   - title: Motion & interaction
-    description: Motion that serves the story, so your product clicks faster and your site feels alive.
+    description: Motion that serves the story.
 steps:
   - tag: 30 min
     title: Discovery call
-    description: A 30-minute call about your startup, who you sell to, and what the site needs to say. No pitch, no pressure.
+    description: 30 minutes on the startup and the site. No pitch.
   - tag: Within days
     title: Proposal
-    description: You get a clear scope and a quote before anything starts. If you don't love the design, you don't pay.
+    description: Scope and quote first. Don’t love the design, don’t pay.
   - tag: In the open
     title: Design & build
-    description: Regular check-ins and live previews, so there are no surprises at the end.
+    description: Check-ins and live previews. No surprises.
   - tag: And after
     title: Launch & care
-    description: I ship it, test it on real devices and stay around for tweaks after launch.
+    description: Ship, test on real devices, stay for tweaks.
 socials:
   - label: Instagram
     url: https://www.instagram.com/cristhiantilleria_/
