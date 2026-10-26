@@ -7,12 +7,12 @@ import { getSite, pad } from '../lib/content';
 const site = await getSite();
 const ticker = [...site.ticker, ...site.ticker];
 ---
-<Base view="index" title="Freelance Web Developer & Designer in NYC — Cristhian Tilleria" description={site.description}>
+<Base view="index" title="Brand & Web Designer for Startups in NYC — Cristhian Tilleria" description={site.description}>
   <section class="hero">
     <div class="grid">
       <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block">{site.intro}</span></p>
       <div class="hero__role" data-reveal data-wait="1750">
-        <p class="role fade">Freelance frontend developer &amp; web designer<br>Based in New York, US</p>
+        <p class="role fade">Brand &amp; web designer for startups<br>Based in New York, US</p>
         <Btn class="fade" style="--d:120" href="/contact">Book a call</Btn>
       </div>
       <dl class="hero__meta mono fade" data-reveal data-wait="2000">
@@ -56,7 +56,7 @@ const ticker = [...site.ticker, ...site.ticker];
         <span class="sq" data-text="how it looks." style="--l:2"><span>how it looks.</span></span>
       </h2>
       <div class="manifesto__copy" data-reveal>
-        <p class="fade">Clean interfaces, sharp typography and motion with a reason to be there. I design it and I build it, so what you approve is what ships.</p>
+        <p class="fade">For founders who need their site to catch up with their product. Clear messaging, sharp typography and motion with a reason to be there. I design it and I build it, so what you approve is what ships.</p>
         <a class="link mono fade" href="/about" data-sweep style="--d:150">More about me</a>
       </div>
     </section>
