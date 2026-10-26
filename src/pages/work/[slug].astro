@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Btn from '../../components/Btn.astro';
+import ResponsiveImage from '../../components/ResponsiveImage.astro';
+import { getProjects, img, pad, letter, bodyOf, type Project } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((p, i) => ({ params: { slug: p.slug }, props: { p, i, projects } }));
+}
+interface Props { p: Project; i: number; projects: Project[] }
+const { p, i, projects } = Astro.props;
+const next = projects[(i + 1) % projects.length];
+const facts = ([['Role', p.role], ['Type', p.type], ['Year', p.year]] as const).filter((f) => f[1]);
+const SHOT = ['shot--full', '', '', 'shot--mid', 'shot--wide', 'shot--narrow'];
+const Body = p.hasBody ? bodyOf(p.slug) : null;
+---
+<Base view={`work/${p.slug}`} title={`${p.title} — ${p.type || 'Project'} by Cristhian Tilleria`} description={`${p.title}: ${p.summary || ''}`} image={p.cover} project={p}>
+  <section class="cs__first">
+    <p class="mono" data-reveal><span data-type>Project {letter(i)} — {pad(i + 1, 2)}/{pad(projects.length, 2)}</span></p>
+    <h1 class="h2 cs__title" style={`--chars:${p.title.length}`} data-reveal data-wait="350"><span class="sq" data-text={p.title}><span>{p.title}</span></span></h1>
+    <div class="bar" data-reveal data-wait="700"><span class="bullet">{letter(i)}</span><h2>{p.type}</h2><span class="mono">{p.year}</span><span class="bar__a" aria-hidden="true">↓</span></div>
+    {p.video
+      ? <div class="cs__cover" data-reveal data-wait="900"><div class="media"><video src={encodeURI(p.video)} poster={p.cover ? img(p.cover, 2400) : undefined} muted loop playsinline preload="metadata" data-autoplay></video></div></div>
+      : p.cover && <div class="cs__cover" data-reveal data-wait="900"><div class="media"><ResponsiveImage src={p.cover} alt={`${p.title} cover`} sizes="100vw" priority /></div></div>}
+  </section>
+  <section class="cs__intro grid">
+    {p.summary && <p class="cs__lead fade" data-reveal>{p.summary}</p>}
+    <div class="cs__side" data-reveal>
+      {p.approach && <><p class="mono muted fade">Approach</p><p class="fade" style="--d:100">{p.approach}</p></>}
+      {facts.length > 0 && <dl class="cs__facts mono fade" style="--d:200">{facts.map((f) => <div><dt class="muted">{f[0]}</dt><dd>{f[1]}</dd></div>)}</dl>}
+      {p.disclaimer && <p class="mono muted fade" style="--d:250">{p.disclaimer}</p>}
+      {p.link && <Btn class="fade" style="--d:300" href={p.link} target="_blank" rel="noopener">Visit the live site</Btn>}
+    </div>
+    {Body && <div class="case__body fade" data-reveal><Body /></div>}
+  </section>
+  {p.gallery.length > 0 && (
+    <section class="gallery grid">
+      <div class="bar" data-reveal><span class="bullet">{p.gallery.length}</span><h2>Gallery</h2><span class="mono">Click any frame to enlarge</span><span class="bar__a" aria-hidden="true">↓</span></div>
+      {p.gallery.map((g, n) => (
+        <figure class:list={['shot', SHOT[n % SHOT.length], 'fade']} data-reveal data-full={img(g, 2400)}>
+          <ResponsiveImage src={g} alt={`${p.title}, image ${n + 1}`} sizes={n % SHOT.length === 0 ? '100vw' : '(max-width: 700px) 100vw, 60vw'} maxW={n % SHOT.length === 0 ? 2400 : 1600} />
+          <figcaption class="mono"><span>{p.initials} — {pad(n + 1, 2)}/{pad(p.gallery.length, 2)}</span><span aria-hidden="true">+</span></figcaption>
+        </figure>
+      ))}
+    </section>
+  )}
+  <section class="cs__end">
+    {next && next !== p && (
+      <a class="nextlink" href={`/work/${next.slug}`} style={`--chars:${next.title.length}`} data-reveal data-cursor="Next project">
+        <span class="mono fade"><span>Next stop — Project {letter(projects.indexOf(next))}</span><span>{next.type}</span></span>
+        <b class="fade" style="--d:120">{next.title} →</b>
+      </a>
+    )}
+    <div class="cta-row fade" data-reveal>
+      <Btn href="/contact">Want something like this?</Btn>
+      <a class="link mono" href="/work" data-sweep>All work</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import { getProjects, pad } from '../../lib/content';
+
+const projects = await getProjects();
+const description = `Selected work by Cristhian Tilleria: ${projects.map((p) => p.title).join(', ')}. Websites, brands and Shopify stores, designed and built in New York.`;
+---
+<Base view="work" title="Selected Work — Websites & Brands by Cristhian Tilleria" description={description}>
+  <section class="works page grid" id="works">
+    <p class="page__kicker mono" data-reveal><span data-type>Selected work — {pad(projects.length)} projects</span></p>
+    <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="Work"><span>Work</span></span></h1>
+    {projects.map((p, i) => <WorkCard project={p} index={i} />)}
+  </section>
+</Base>

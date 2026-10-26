@@ -1,0 +1,90 @@
+---
+// Page shell shared by every route. Each page renders exactly one `.view`; the site script fetches
+// other pages and swaps their view in behind the curtain transition.
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getSite, getProjects, shareOf, short, graph, type Project } from '../lib/content';
+
+interface Props {
+  view: string;
+  title: string;
+  description?: string | null;
+  image?: string | null;
+  project?: Project;
+}
+const { view, title, description, image: pageImage, project } = Astro.props;
+const site = await getSite();
+const projects = await getProjects();
+const firstCover = projects.find((p) => p.cover)?.cover || site.portrait || '';
+const is404 = view === '404';
+const url = site.url + (view === 'index' ? '/' : '/' + view);
+const imagePath = is404 ? '' : shareOf(view, pageImage ?? firstCover);
+const image = imagePath ? site.url + encodeURI(imagePath) : '';
+const desc = short(description);
+const config = JSON.stringify({ email: site.email || '', bookingUrl: site.bookingUrl || '' });
+const ld = is404 ? '' : graph(site, { url, title, image, project, firstCover });
+---
+<!DOCTYPE html>
+<html lang="en" class="is-loading">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<meta name="description" content={desc}>
+{is404 ? <meta name="robots" content="noindex"> : <link rel="canonical" href={url}>}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cristhian Tilleria">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={desc}>
+<meta property="og:url" content={url}>
+{image && <meta property="og:image" content={image}>}
+<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'}>
+<meta property="og:locale" content="en_US">
+{ld && <script type="application/ld+json" set:html={ld} />}
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#f4f2ec">
+<meta name="author" content="Cristhian Tilleria">
+<meta name="geo.region" content="US-NY">
+<meta name="geo.placename" content="New York">
+<link rel="preload" href="/fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body data-view={view}>
+
+  <div class="loader" aria-hidden="true">
+    <div class="loader__text">
+      <span class="loader__line"><span>Cristhian Tilleria</span></span>
+      <span class="loader__line"><span>© Folio 2026</span></span>
+    </div>
+  </div>
+
+  <div class="guides grid" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <div class="cursor-tag mono" aria-hidden="true"></div>
+
+  <div class="lb mono" role="dialog" aria-modal="true" aria-label="Image viewer" aria-hidden="true">
+    <div class="lb__row"><span class="lb__title"></span><button type="button" data-lb="close">Close ✕</button></div>
+    <div class="lb__stage" data-lb="close"><img alt=""></div>
+    <div class="lb__row"><button type="button" data-lb="prev">← Prev</button><span class="lb__count"></span><button type="button" data-lb="next">Next →</button></div>
+  </div>
+
+  <Header />
+
+  <main>
+    <div class="view" data-view={view} data-title={title} tabindex="-1">
+      <slot />
+    </div>
+  </main>
+
+  <Footer site={site} />
+
+  <script type="application/json" id="site-config" set:html={config} />
+  <script src="../scripts/site.js"></script>
+</body>
+</html>

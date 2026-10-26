@@ -1,0 +1,38 @@
+url: https://www.cristhiantilleria.com
+description: Freelance web developer and designer in New York City. Branding, web development, Shopify and motion for startups and small businesses. Book a call.
+email: hello@cristhiantilleria.com
+bookingUrl: https://cal.com/cristhiantilleria/project-intro-call
+status: Taking new projects
+intro: Hey, I'm Cristhian. I design and build websites that book you more customers.
+statement: I design and build websites that are fast, clear and a little bit memorable. One person from first sketch to final deploy, so nothing gets lost between design and code.
+portrait: /media/about/portrait.jpg
+ticker:
+  - Taking new projects
+  - Let's build something good
+  - New York → Worldwide
+  - No pitch, just a chat
+services:
+  - title: Branding
+    description: Logos, identity systems and guidelines that give a business a clear, memorable look.
+  - title: Web development
+    description: Responsive, accessible, fast-loading websites built in clean HTML, CSS and JavaScript.
+  - title: Motion & interaction
+    description: Page transitions, scroll effects and micro-interactions that make a site feel alive.
+steps:
+  - tag: 30 min
+    title: Discovery call
+    description: A 30-minute call about what you're building. No pitch, no pressure.
+  - tag: Within days
+    title: Proposal
+    description: You get a clear scope and a quote before anything starts.
+  - tag: In the open
+    title: Design & build
+    description: Regular check-ins and live previews, so there are no surprises at the end.
+  - tag: And after
+    title: Launch & care
+    description: I ship it, test it on real devices and stay around for tweaks after launch.
+socials:
+  - label: Instagram
+    url: https://www.instagram.com/cristhiantilleria_/
+  - label: LinkedIn
+    url: https://www.linkedin.com/in/cristhiantilleria/?isSelfProfile=true

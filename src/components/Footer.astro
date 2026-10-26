@@ -1,0 +1,22 @@
+---
+import Social from './Social.astro';
+const { site } = Astro.props;
+const socials: { label: string; url: string | null }[] = site.socials || [];
+const half = Math.ceil(socials.length / 2);
+---
+<footer class="footer grid" data-dark>
+  <div class="footer__top mono" data-reveal><span data-type>Last stop — Got a project?</span><span class="avail"><span class="dot"></span>{site.status}</span></div>
+  <a class="touch" href="/contact" aria-label="Let's talk" data-text="Let's talk" data-cursor="Book a call"></a>
+
+  <div class="footer__cta" data-reveal>
+    <p class="fade">A 30-minute call.<br>No pitch.</p>
+    <a class="btn mono fade" style="--d:120" href="/contact" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
+  </div>
+  <ul class="footer__col footer__col--a mono">{socials.slice(0, half).map((s) => <Social {...s} />)}</ul>
+  <ul class="footer__col footer__col--b mono">{socials.slice(half).map((s) => <Social {...s} />)}</ul>
+  <div class="footer__meta mono muted">
+    <p>Cristhian Tilleria — Freelance web developer &amp; designer in New York City</p>
+    <p>40.7128° N, 74.0060° W</p>
+    <p>©2026 — All rights reserved</p>
+  </div>
+</footer>

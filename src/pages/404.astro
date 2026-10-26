@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+---
+<Base view="404" title="Page not found — Cristhian Tilleria" description="Page not found.">
+  <section class="page grid">
+    <p class="page__kicker mono" data-reveal><span data-type>Error 404 — Wrong stop</span></p>
+    <h1 class="h2 visuals__title" data-reveal data-wait="350"><span class="sq" data-text="404"><span>404</span></span></h1>
+    <p class="case__lead fade" data-reveal>This page doesn't exist, or it moved.</p>
+    <div class="cta-row fade" data-reveal><Btn href="/work">Back to the work</Btn></div>
+  </section>
+</Base>

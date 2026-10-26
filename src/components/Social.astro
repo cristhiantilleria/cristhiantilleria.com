@@ -1,0 +1,6 @@
+---
+interface Props { label: string; url?: string | null }
+const { label, url } = Astro.props;
+const external = !!url && url !== '#';
+---
+<li><a class="ext" href={url || '#'} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined} data-sweep>{label}</a></li>

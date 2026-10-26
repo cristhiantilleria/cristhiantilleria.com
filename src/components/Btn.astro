@@ -1,0 +1,7 @@
+---
+// The ink button with the swapping arrow; magnetic by default.
+interface Props { href?: string; type?: 'submit' | 'button'; style?: string; class?: string; magnetic?: boolean; [k: string]: any }
+const { href, type, class: cls = '', magnetic = true, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+<Tag class:list={['btn mono', cls]} href={href} type={type} data-magnetic={magnetic ? '' : undefined} {...rest}><span data-sweep><slot /></span><span class="btn__arrow" aria-hidden="true"></span></Tag>

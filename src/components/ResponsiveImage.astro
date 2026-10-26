@@ -1,0 +1,31 @@
+---
+// <img> with Vercel image-optimiser srcset (plain src elsewhere), intrinsic size for layout stability, and loading hints.
+import { img, srcset, dimensions } from '../lib/content';
+interface Props {
+  src: string;
+  alt: string;
+  sizes?: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
+  class?: string;
+  maxW?: number;
+}
+const { src, alt, sizes = '100vw', priority = false, class: cls, maxW = 2400 } = Astro.props;
+const dim = Astro.props.width && Astro.props.height ? {} : await dimensions(src);
+const width = Astro.props.width ?? dim.width;
+const height = Astro.props.height ?? dim.height;
+const set = srcset(src, maxW);
+---
+<img
+  src={img(src, maxW)}
+  srcset={set || undefined}
+  sizes={set ? sizes : undefined}
+  alt={alt}
+  width={width}
+  height={height}
+  class={cls}
+  loading={priority ? 'eager' : 'lazy'}
+  decoding="async"
+  fetchpriority={priority ? 'high' : undefined}
+/>

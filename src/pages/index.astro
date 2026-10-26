@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import Btn from '../components/Btn.astro';
+import Social from '../components/Social.astro';
+import { getSite, pad } from '../lib/content';
+
+const site = await getSite();
+const ticker = [...site.ticker, ...site.ticker];
+---
+<Base view="index" title="Freelance Web Developer & Designer in NYC — Cristhian Tilleria" description={site.description}>
+  <section class="hero">
+    <div class="grid">
+      <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block">{site.intro}</span></p>
+      <div class="hero__role" data-reveal data-wait="1750">
+        <p class="role fade">Freelance frontend developer &amp; web designer<br>Based in New York, US</p>
+        <Btn class="fade" style="--d:120" href="/contact">Book a call</Btn>
+      </div>
+      <dl class="hero__meta mono fade" data-reveal data-wait="2000">
+        <div><dt class="muted">Lat / Long</dt><dd data-type>40.7128° N, 74.0060° W</dd></div>
+        <div><dt class="muted">NYC time</dt><dd class="clock"></dd></div>
+        <div><dt class="muted">Status</dt><dd class="avail"><span class="dot"></span><span data-type>{site.status}</span></dd></div>
+        <div><dt class="muted">Folio</dt><dd data-type>20/26</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero__foot mono" data-reveal data-wait="900">
+      <a class="hero__scroll mono" href="/work" data-sweep>↗ See the selected work</a>
+      <ul class="hero__social">
+        {site.socials.slice(0, 3).map((s) => <Social {...s} />)}
+      </ul>
+    </div>
+    <h1 class="name play" aria-label="Cristhian Tilleria">
+      <span class="name__line" aria-hidden="true">Cristhian</span>
+      <span class="name__line" aria-hidden="true">Tilleria</span>
+    </h1>
+  </section>
+
+  <section class="section grid" id="services">
+    <header class="bar" data-reveal><span class="bullet">1</span><h2>What I can do for you</h2><span class="mono" data-type>{pad(site.services.length)} services</span><span class="bar__a" aria-hidden="true">↓</span></header>
+    <ul class="svc-list" data-reveal>
+      {site.services.map((s, i) => (
+        <li><a class="svc fade" href="/contact" style={`--d:${i * 90}`}><span class="bullet">{i + 1}</span><h3 class="svc__t">{s.title}</h3><span class="svc__d">{s.description}</span><span class="svc__a" aria-hidden="true">↗</span></a></li>
+      ))}
+    </ul>
+  </section>
+
+  <div class="screen">
+    <a class="ticker" href="/contact" aria-label={site.status} data-cursor="Book a call">
+      <span class="ticker__track" aria-hidden="true">{ticker.map((t) => <span>{t}</span>)}</span>
+    </a>
+
+    <section class="section grid">
+      <h2 class="h2 manifesto__t" data-reveal>
+        <span class="sq" data-text="A designer who codes."><span>A designer who codes.</span></span>
+        <span class="sq" data-text="A developer who cares" style="--l:1"><span>A developer who cares</span></span>
+        <span class="sq" data-text="how it looks." style="--l:2"><span>how it looks.</span></span>
+      </h2>
+      <div class="manifesto__copy" data-reveal>
+        <p class="fade">Clean interfaces, sharp typography and motion with a reason to be there. I design it and I build it, so what you approve is what ships.</p>
+        <a class="link mono fade" href="/about" data-sweep style="--d:150">More about me</a>
+      </div>
+    </section>
+  </div>
+
+  <section class="section grid" id="process">
+    <header class="bar" data-reveal><span class="bullet">2</span><h2>How we'd work together</h2><span class="mono" data-type>{pad(site.steps.length)} stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
+    <ol class="steps" data-reveal>
+      {site.steps.map((s, i) => (
+        <li class:list={['step', { 'step--hot': i === 0 }]} style={`--s:${i}`}><span class="mono">{s.tag}</span><span class="step__n">{pad(i + 1, 2)}</span><h3>{s.title}</h3><p>{s.description}</p></li>
+      ))}
+    </ol>
+    <div class="cta-row fade" data-reveal>
+      <Btn href="/contact">Start at stop 01</Btn>
+      <span class="mono muted">Replies within one business day</span>
+    </div>
+  </section>
+</Base>
