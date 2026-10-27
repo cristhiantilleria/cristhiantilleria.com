@@ -87,6 +87,7 @@ export default config({
         link: fields.url({ label: 'Live site URL' }),
         summary: fields.text({ label: 'Summary (one or two sentences)', multiline: true }),
         approach: fields.text({ label: 'Approach (short paragraph)', multiline: true }),
+        label: fields.text({ label: 'Card label (e.g. Concept identity, 2023)' }),
         disclaimer: fields.text({ label: 'Disclaimer (optional, e.g. unofficial concept)' }),
         gallery: fields.array(fields.image({ label: 'Image', ...media('projects'), validation: { isRequired: true } }), {
           label: 'Gallery',

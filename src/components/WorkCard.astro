@@ -16,7 +16,8 @@ const still = p.cover ? img(p.cover, 1080) : '';
   }</div></div>
   <div class="work__info">
     <h3 class="work__title">{p.title}</h3>
-    {p.type && <span class="work__type mono">{p.type}</span>}
+    {p.label && <span class="work__type mono">{p.label}</span>}
+    {p.disclaimer && <span class="work__type mono">Not affiliated with GameStop.</span>}
     <span class="work__more mono">View more<i aria-hidden="true">↗</i></span>
   </div>
 </a>

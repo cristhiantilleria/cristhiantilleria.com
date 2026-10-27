@@ -22,7 +22,7 @@ steps:
   - tag: 30 min
     title: Discovery call
     description: A 30-minute call about what you're building. No pitch, no pressure.
-  - tag: Within days
+  - tag: Tailored to you
     title: Proposal
     description: You get a clear scope and a quote before anything starts.
   - tag: In the open
