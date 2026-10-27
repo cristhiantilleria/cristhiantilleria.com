@@ -10,8 +10,8 @@ const half = Math.ceil(socials.length / 2);
 
   <div class="footer__cta" data-reveal>
     <p class="fade">A 30-minute call.<br>No pitch.</p>
-    <p class="mono muted fade" style="--d:60">Don’t love the design? Don’t pay. You decide within 7 days of delivery, with 2 revision rounds included.</p>
-    <a class="btn mono fade" style="--d:120" href="https://cal.com/cristhiantilleria/project-intro-call" data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
+    <p class="mono muted fade" style="--d:60">Don’t love the design? Don’t pay. You decide within 7 days of delivery; 2 revision rounds are included before it applies.</p>
+    <a class="btn mono fade" style="--d:120" href="https://cal.com/cristhiantilleria/project-intro-call" data-book-open data-magnetic><span data-sweep>Book a call</span><span class="btn__arrow" aria-hidden="true"></span></a>
   </div>
   <ul class="footer__col footer__col--a mono">{socials.slice(0, half).map((s) => <Social {...s} />)}</ul>
   <ul class="footer__col footer__col--b mono">{socials.slice(half).map((s) => <Social {...s} />)}</ul>
