@@ -11,6 +11,9 @@ const isDev = process.argv.includes('dev');
 export default defineConfig({
   site: 'https://www.cristhiantilleria.com',
   output: 'static',
+  // Astro 7 defaults this to 'jsx', which drops spaces between inline elements.
+  // Keep the previous HTML whitespace rules so the existing layout does not collapse.
+  compressHTML: true,
   trailingSlash: 'ignore',
   build: { format: 'directory', inlineStylesheets: 'always' },
   devToolbar: { enabled: false },
