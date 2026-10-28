@@ -1,6 +1,7 @@
 // Site behaviour, ported from the legacy src/template.html: smooth scroll, page transitions, reveals,
 // water typography, cursor tag, magnetic buttons, contact form, booking overlay, image viewer, Lab canvas.
 import Lenis from 'lenis';
+import { track } from '@vercel/analytics';
 import { mountCal } from './cal.js';
 
 window.Lenis = Lenis;
@@ -170,6 +171,7 @@ function activate(name) {
   $$('[data-nav]').forEach(function (a) {
     a.dataset.nav === name ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
   });
+  if (name === 'contact') track('Book a Call', { action: 'Viewed page', page: '/contact' });
 }
 // Each page change bumps seq, so timers left over from an earlier change can tell they're stale.
 var seq = 0;
@@ -594,6 +596,26 @@ function bindContact(scope) {
   });
 }
 
+/* ---------- clicks on buttons, recorded with the label and where on the page they sit ---------- */
+function buttonPlace(el) {
+  if (el.closest('.header')) return 'header';
+  if (el.closest('.footer')) return 'footer';
+  if (el.closest('.hero')) return 'hero';
+  if (el.closest('.contact__aside')) return 'contact';
+  if (el.closest('form')) return 'form';
+  return 'page';
+}
+document.addEventListener('click', function (e) {
+  if (e.button || !e.target.closest) return;
+  var el = e.target.closest('a.btn, button.btn, a.pill, a.touch, button[data-copy]');
+  if (!el || el.closest('.book, .lb')) return;                     // viewer and calendar chrome, not a call to action
+  var named = el.querySelector('[data-copy-label]');
+  // textContent keeps the authored words. innerText would follow the uppercase button style.
+  var label = (named ? named.textContent : (el.getAttribute('aria-label') || el.textContent) || '').replace(/\s+/g, ' ').trim();
+  if (!label) return;
+  track('Button Click', { label: label, page: location.pathname, place: buttonPlace(el) });
+}, true);
+
 /* ---------- booking overlay: one dialog, built once and appended to <body>; the calendar loads on first open ---------- */
 (function () {
   var url = CONFIG.bookingUrl;
@@ -616,6 +638,7 @@ function bindContact(scope) {
   function open() {
     if (isOpen) return;
     isOpen = true; opener = document.activeElement;
+    track('Book a Call', { action: 'Opened calendar', page: location.pathname });
     if (!timer) {
       mount();
       timer = setTimeout(function () { if (!loaded) { loading.hidden = true; fallback.hidden = false; } }, 15000);
