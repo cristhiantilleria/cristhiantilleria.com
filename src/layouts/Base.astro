@@ -85,6 +85,13 @@ const ld = is404 ? '' : graph(site, { url, title, image, project, firstCover });
   <Footer site={site} />
 
   <script type="application/json" id="site-config" set:html={config} />
+  <script>
+    import { inject } from '@vercel/analytics';
+
+    // Page changes update the URL with pushState. History tracking records those
+    // URL changes along with the first load.
+    inject({ framework: 'astro' });
+  </script>
   <script src="../scripts/site.js"></script>
 </body>
 </html>
