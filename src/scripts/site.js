@@ -2,7 +2,12 @@
 // water typography, cursor tag, magnetic buttons, contact form, booking overlay, image viewer, Lab canvas.
 import Lenis from 'lenis';
 import { track } from '@vercel/analytics';
+import gsap from 'gsap';
+import { SplitText } from 'gsap/SplitText';
 import { mountCal } from './cal.js';
+
+gsap.registerPlugin(SplitText);
+gsap.defaults({ ease: 'power4.out', duration: 0.72 });
 
 window.Lenis = Lenis;
 var CONFIG = JSON.parse(document.getElementById('site-config').textContent || '{}');
@@ -44,23 +49,109 @@ function scrollToY(target, instant) {
 }
 function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 
-/* ---------- hero name: chars rise one by one ---------- */
-function splitName(scope) {
-  var ci = 0;
-  $$('.name__line', scope).forEach(function (line) {
-    if (line.children.length) return;
-    var text = line.textContent.trim();
-    line.textContent = '';
-    Array.from(text).forEach(function (ch) {
-      var c = document.createElement('span');
-      c.className = 'char';
-      c.style.setProperty('--i', ci++);
-      c.textContent = ch;
-      line.appendChild(c);
-    });
+$$('.guides i').forEach(function (g, n) { g.style.setProperty('--n', n); });
+
+/* ---------- kinetic type (GSAP SplitText) ----------
+   Lines and the hero name are split only after layout is real (a hidden view measures as 0).
+   Masks clip the rise; glyphs themselves are never scaled. aria: "auto" keeps one label for
+   assistive tech. Reduced motion never splits — the copy stays in the DOM as authored. */
+function nameDelay(name) {
+  var raw = getComputedStyle(name).getPropertyValue('--t-title').trim() || '0.35s';
+  var n = parseFloat(raw);
+  if (isNaN(n)) return 0.35;
+  return /ms$/i.test(raw) ? n / 1000 : n;
+}
+function killSplit(el) {
+  if (el._split) { el._split.revert(); el._split = null; }
+  el._reveal = null;
+}
+function prepareName(name) {
+  if (reduce || !name || name._split) return;
+  name._split = SplitText.create(name, {
+    type: 'chars',
+    charsClass: 'char',
+    mask: 'chars',
+    aria: 'auto',
+    tag: 'span',
+    smartWrap: true,
+    onSplit: function (self) {
+      var tween = gsap.from(self.chars, {
+        yPercent: 130,
+        duration: 0.7,
+        ease: 'power4.out',
+        stagger: 0.02,
+        paused: true,
+        immediateRender: true
+      });
+      name._reveal = tween;
+      return tween;
+    }
   });
 }
-$$('.guides i').forEach(function (g, n) { g.style.setProperty('--n', n); });
+function playName(name) {
+  if (!name || reduce) return;
+  if (!name._split) prepareName(name);
+  if (!name._reveal) return;
+  name.classList.add('play');
+  name._reveal.delay(nameDelay(name)).invalidate().restart(true);
+}
+function lineKey(el) {
+  return el.clientWidth + '/' + getComputedStyle(el).fontSize + '/' + (document.fonts ? document.fonts.status : '');
+}
+function prepareLines(el) {
+  if (reduce || !el || !el.clientWidth) return;
+  var key = lineKey(el);
+  if (el._split && el._splitKey === key) return;
+  var held = el._reveal ? el._reveal.progress() : (el.classList.contains('in') ? 1 : 0);
+  if (el._split) killSplit(el);
+  el._splitKey = key;
+  el._split = SplitText.create(el, {
+    type: 'lines',
+    linesClass: 'split-line',
+    mask: 'lines',
+    aria: 'auto',
+    tag: 'span',
+    autoSplit: false,
+    reduceWhiteSpace: true,
+    onSplit: function (self) {
+      var tween = gsap.from(self.lines, {
+        yPercent: 120,
+        duration: 0.72,
+        ease: 'power4.out',
+        stagger: 0.08,
+        paused: true,
+        immediateRender: true
+      });
+      el._reveal = tween;
+      if (held) tween.progress(held);
+      return tween;
+    }
+  });
+}
+function sqSpan(sq) { return sq && sq.querySelector(':scope > .sq__mask > span'); }
+function prepareSq(sq) {
+  if (reduce || !sq || sq._set) return;
+  var span = sq.querySelector(':scope > span');
+  if (!span) return;
+  var mask = document.createElement('span');
+  mask.className = 'sq__mask';
+  sq.insertBefore(mask, span);
+  mask.appendChild(span);
+  gsap.set(span, { yPercent: 120 });
+  sq._set = true;
+}
+function playSq(root) {
+  var spans = $$('.sq__mask > span', root);
+  if (!spans.length || reduce) return;
+  gsap.to(spans, { yPercent: 0, duration: 0.7, ease: 'power4.out', stagger: 0.08, overwrite: 'auto' });
+}
+function resetSq(scope) {
+  $$('.sq', scope).forEach(function (sq) {
+    if (!sq._set) prepareSq(sq);
+    var span = sqSpan(sq);
+    if (span) gsap.set(span, { yPercent: 120 });
+  });
+}
 
 /* ---------- typed / swept mono text ---------- */
 // sweep=false: text types in behind a block cursor. sweep=true: a block runs across text that stays visible.
@@ -91,30 +182,12 @@ function bindSweep(scope) {
   });
 }
 
-/* ---------- auto line splitting for the big statement ---------- */
-function splitLines(el) {
-  // Phones fire resize while the address bar slides; the lines only change with the width or type size.
-  var key = el.clientWidth + '/' + getComputedStyle(el).fontSize + '/' + (document.fonts ? document.fonts.status : '');
-  if (key === el._split) return;
-  el._split = key;
-  var text = el.dataset.src || (el.dataset.src = el.textContent.trim().replace(/\s+/g, ' '));
-  el.setAttribute('aria-label', text);
-  el.innerHTML = text.split(' ').map(function (w) { return '<span style="display:inline-block">' + esc(w) + '</span>'; }).join(' ');
-  var lines = [], top = null;
-  $$('span', el).forEach(function (w) {
-    if (w.offsetTop !== top) { top = w.offsetTop; lines.push([]); }
-    lines[lines.length - 1].push(w.textContent);
-  });
-  el.innerHTML = lines.map(function (l, n) {
-    var t = esc(l.join(' ')).replace(/"/g, '&quot;');
-    return '<span class="ln" aria-hidden="true" style="--l:' + n + '"><span>' + t + '</span></span>';
-  }).join('');
-}
-
 /* ---------- reveal on scroll ---------- */
 function show(el) {
   el.classList.add('in');
   ripple(el, .2);
+  if (el._reveal) el._reveal.invalidate().restart();
+  playSq(el);
   var typed = $$('[data-type]', el);
   if (el.matches('[data-type]')) typed.unshift(el);
   typed.forEach(function (t, n) { setTimeout(function () { type(t, false); }, n * 140); });
@@ -129,7 +202,7 @@ var io = new IntersectionObserver(function (entries) {
 }, { threshold: .12 });
 
 function arm(scope) {
-  $$('[data-lines]', scope).forEach(splitLines);
+  $$('[data-lines]', scope).forEach(prepareLines);
   $$('[data-reveal]', scope).forEach(function (el) {
     el.classList.remove('in');
     $$('[data-type]', el).forEach(function (t) { clearInterval(t._ti); t.classList.remove('typed'); });
@@ -181,7 +254,13 @@ function enter(name, delay) {
 }
 // Lines are measured and masked in the same task the view is shown, so the statement never paints as plain text.
 // Always rebuilt: lines kept from an earlier visit would carry the leave transform and sweep through view.
-function splitNow(name) { $$('[data-lines]', views[name]).forEach(function (el) { el._split = null; splitLines(el); }); }
+function splitNow(name) {
+  var scope = views[name];
+  if (!scope) return;
+  $$('.name', scope).forEach(prepareName);
+  $$('[data-lines]', scope).forEach(function (el) { el._splitKey = ''; prepareLines(el); });
+  resetSq(scope);
+}
 // The browser putting back an old scroll position on Back would fight the transition; the page scrolls itself.
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 function go(name) {
@@ -213,7 +292,7 @@ function go(name) {
     if (lenis) lenis.resize();
     $$('[data-reveal]', views[target]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
     var heroName = $('.name', views[target]);
-    if (heroName) { heroName.classList.remove('play'); heroName.style.setProperty('--t-title', '.35s'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
+    if (heroName) { heroName.style.setProperty('--t-title', '.35s'); playName(heroName); setTimeout(function () { kick(heroName._water, .18); }, 700); }
     body.classList.remove('is-leaving');
     splitNow(target);
     body.classList.add('is-entering');
@@ -256,6 +335,7 @@ function startIntro() {
   introStarted = true;
   root.classList.add('is-ready');
   splitNow(current);
+  playName($('.name', views[current]));
   setTimeout(unlock, 4000);
   enter(current, reduce ? 600 : 2500);
   setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
@@ -332,13 +412,16 @@ function queue() { if (!queued) { queued = true; requestAnimationFrame(update); 
 addEventListener('scroll', function () { if (!lenis) queue(); }, { passive: true });   // with Lenis, its scroll event calls update()
 addEventListener('resize', function () {
   queue();
-  clearTimeout(splitLines._t);
-  splitLines._t = setTimeout(function () { $$('[data-lines]', views[current]).forEach(splitLines); }, 200);
+  clearTimeout(prepareLines._t);
+  prepareLines._t = setTimeout(function () { if (current && views[current]) $$('[data-lines]', views[current]).forEach(prepareLines); }, 200);
 });
 update();
 smooth(!reduce);
 // The intro stops waiting for fonts after 1.5s; lines measured in the fallback face are measured again once the real one is in.
-if (document.fonts) document.fonts.ready.then(function () { if (current) $$('[data-lines]', views[current]).forEach(splitLines); });
+if (document.fonts) document.fonts.ready.then(function () {
+  if (!current || !views[current]) return;
+  $$('[data-lines]', views[current]).forEach(function (el) { el._splitKey = ''; prepareLines(el); });
+});
 
 /* ---------- water typography ----------
    Big type sits behind one SVG displacement filter per headline. Three things feed it:
@@ -911,15 +994,18 @@ function bindCanvas(scope) {
 }
 
 /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
+function initView(scope) { bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
 initView(document);
 
 /* ---------- reduced motion can be switched on or off while the page is open ---------- */
 if (motionPref.addEventListener) motionPref.addEventListener('change', function (e) {
   reduce = e.matches;
   smooth(!reduce);                               // Lenis off (or back on); the water loop tears itself down on its next frame
-  if (reduce) $$('[data-magnetic]').forEach(function (m) { m.style.transform = ''; });
-  else bindWater(document);
+  if (reduce) {
+    $$('[data-magnetic]').forEach(function (m) { m.style.transform = ''; });
+    $$('.name, [data-lines]').forEach(killSplit);
+    $$('.sq__mask > span').forEach(function (span) { gsap.set(span, { clearProps: 'transform' }); });
+  } else bindWater(document);
   $$('video[data-autoplay]').forEach(function (v) { if (v._seen) { videoIO.unobserve(v); videoIO.observe(v); } });   // re-check: pause or resume
   $$('.vz').forEach(function (v) { if (v._wake) v._wake(); });
   update();
