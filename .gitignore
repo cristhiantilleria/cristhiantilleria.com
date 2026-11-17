@@ -6,3 +6,7 @@ dist
 .vercel
 .claude
 .astro
+
+# local audit output
+reports-*/
+shots-*/

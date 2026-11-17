@@ -42,7 +42,7 @@ What lives where:
 - `src/lib/content.ts` — reads Keystatic content with its reader at build time.
 - `keystatic.config.ts` — the content schema.
 - `public/` — favicon, manifest and media, copied as-is.
-- `archive/legacy/` — the previous `build.js` + `template.html` build, for reference only.
+- `brand/` — logo files for decks and print. Not used by the site build.
 
 Pages are real HTML files; the site script fetches the next page and swaps its `.view` in behind the transition.
 
