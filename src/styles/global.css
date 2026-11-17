@@ -384,6 +384,11 @@ main, footer { position: relative; z-index: 1; }
 .footer__col--b { grid-column: 10 / -1; }
 .footer__meta { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; padding-top: 10px; border-top: var(--bw) solid var(--ink); }
 body[data-view="contact"] .touch, body[data-view="contact"] .footer__cta { display: none; }
+/* Contact: the page itself is the call to action, so the footer closes quietly: socials on the outer edges, lined up with the meta row */
+body[data-view="contact"] .footer__top { display: none; }
+body[data-view="contact"] .footer { padding-top: var(--sp-4); row-gap: var(--sp-2); }
+body[data-view="contact"] .footer__col--a { grid-column: 1 / 7; }
+body[data-view="contact"] .footer__col--b { grid-column: 7 / -1; align-items: flex-end; }
 
 /* ---------- case study pages ---------- */
 .case__lead { grid-column: 1 / 8; font-weight: 700; font-size: var(--fs-md); line-height: 1.04; letter-spacing: -.045em; }
