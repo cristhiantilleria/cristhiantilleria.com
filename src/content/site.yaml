@@ -10,7 +10,7 @@ services:
   - title: Branding
     description: Logos, identity systems and guidelines that give a business a clear, memorable look.
   - title: Web development
-    description: Responsive, accessible, fast-loading websites built in clean HTML, CSS and JavaScript.
+    description: Responsive, accessible, fast-loading websites that look sharp on every screen.
   - title: Motion & interaction
     description: Page transitions, scroll effects and micro-interactions that make a site feel alive.
 steps:
