@@ -125,7 +125,6 @@ button { cursor: pointer; }
 .is-arriving .view, .is-arriving .footer { opacity: 0; translate: 0 32px; transition: none; }
 /* content already on screen when a page arrives (or on a repeat visit) is simply there */
 .snap, .snap *, .snap::before, .snap::after, .snap *::before, .snap *::after { transition: none !important; }
-.snap .sq::after, .snap.sq::after { animation: none !important; }
 .name.is-set .char, .is-ready .name.play.is-set .char { animation: none; transform: none; }
 .name { transform-origin: 50% 100%; }
 
@@ -151,14 +150,11 @@ main, footer { position: relative; z-index: 1; }
 .fade { opacity: 0; translate: 0 16px; transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms); }
 .in.fade, .in .fade { opacity: 1; translate: none; }
 
-.sq { display: block; position: relative; }
-.sq > span { display: block; transform: scaleY(0); transform-origin: 50% 84%; transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 180ms); }
+/* headline lines rise one after another from behind a mask, the same motion as the hero name */
+.sq { display: block; overflow: hidden; padding: .08em .04em .17em; margin: -.08em -.04em -.17em; }
+.sq > span { display: block; transform: translateY(112%); transition: transform var(--t-rise) var(--ease-out); transition-delay: calc(var(--l, 0) * 120ms); }
 .in .sq > span { transform: none; }
-.sq::after { content: attr(data-text); position: absolute; left: 0; right: 0; top: 84%; transform: scaleY(-.3); transform-origin: 50% 0; opacity: 0; pointer-events: none; }
-.in .sq::after { animation: ghost var(--t-rise) var(--ease-out) both; animation-delay: calc(var(--l, 0) * 180ms); }   /* the reflection settles with the line it mirrors */
 .still .sq > span { transform: none; transition: none; }   /* page headlines outside home sit still */
-.still .sq::after { display: none; }
-@keyframes ghost { 0% { opacity: 1; transform: scaleY(-.34); } 60% { opacity: .9; } 100% { opacity: 0; transform: scaleY(-.02); } }
 
 /* long statements: each line rises out of its own mask, one after another */
 .ln { display: block; overflow: hidden; padding: .08em .04em .17em; margin: -.08em -.04em -.17em; }
@@ -545,6 +541,6 @@ body[data-view="contact"] .header .pill { background: var(--ink); color: var(--b
   .ln > span, .sq > span, .fade, .media, .art, .portrait img, .cs__cover img, .cs__cover video, .vz__canvas, .bar > *, .bar::before, .bar::after, .step, .guides i, .hero__foot::before, .hero__foot > * { transition: none !important; animation: none !important; transform: none !important; opacity: 1; clip-path: none; translate: none !important; }
   .work:hover .art, .chip:hover span, .btn, .pill, .svc .bullet, .svc__t, .svc__d, .vz__canvas .visual img, .lb__row { transform: none !important; }
   .cursor-tag { scale: none; transition: opacity .2s; }
-  .sq::after, .dot::after { display: none; }
+  .dot::after { display: none; }
   @keyframes loader-fade { to { opacity: 0; visibility: hidden; } }
 }
