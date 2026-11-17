@@ -6,9 +6,9 @@ import { getSite, img } from '../lib/content';
 
 const site = await getSite();
 ---
-<Base view="about" title="About Cristhian Tilleria — Web Developer & Designer in New York" description={site.statement} image={site.portrait}>
+<Base view="about" title="About Cristhian Tilleria — Independent Web Designer in New York" description={site.statement} image={site.portrait}>
   <section class:list={['page grid', { 'has-portrait': site.portrait }]}>
-    <p class="page__kicker mono" data-reveal><span data-type>About — Frontend developer &amp; web designer, New York</span></p>
+    <p class="page__kicker mono" data-reveal><span data-type>About — Independent web designer, New York</span></p>
     <h1 class="statement still">{site.statement}</h1>
     {site.portrait && (
       <figure class="portrait" data-reveal data-wait="500">

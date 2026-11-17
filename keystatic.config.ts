@@ -24,7 +24,6 @@ export default config({
         intro: fields.text({ label: 'Hero intro line', multiline: true }),
         statement: fields.text({ label: 'About statement', multiline: true }),
         portrait: fields.image({ label: 'About portrait', ...media('about') }),
-        ticker: fields.array(fields.text({ label: 'Phrase' }), { label: 'Ticker phrases', itemLabel: (p) => p.value }),
         services: fields.array(
           fields.object({
             title: fields.text({ label: 'Title' }),

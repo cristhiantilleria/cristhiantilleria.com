@@ -86,10 +86,10 @@ export function graph(site: Site, opts: { url: string; title: string; image?: st
   const sameAs = site.socials.map((s) => s.url).filter((u): u is string => /^https?:/.test(u || ''));
   const g: Record<string, unknown>[] = [
     { '@type': 'WebSite', '@id': origin + '/#website', url: origin + '/', name: 'Cristhian Tilleria', inLanguage: 'en-US', publisher: { '@id': origin + '/#person' } },
-    { '@type': 'Person', '@id': origin + '/#person', name: 'Cristhian Tilleria', url: origin + '/', jobTitle: 'Freelance Web Developer & Designer',
+    { '@type': 'Person', '@id': origin + '/#person', name: 'Cristhian Tilleria', url: origin + '/', jobTitle: 'Independent Web Designer',
       description: site.description, image: abs(site.portrait), email: site.email ? 'mailto:' + site.email : undefined, address: NYC,
       sameAs: sameAs.length ? sameAs : undefined, knowsAbout: [...site.services.map((s) => s.title), 'Web design', 'Frontend development', 'Shopify', 'Brand identity'] },
-    { '@type': 'ProfessionalService', '@id': origin + '/#business', name: 'Cristhian Tilleria — Web Development & Design', url: origin + '/',
+    { '@type': 'ProfessionalService', '@id': origin + '/#business', name: 'Cristhian Tilleria — Independent Web Design', url: origin + '/',
       description: site.description, image: abs(shareOf('index', opts.firstCover)), email: site.email || undefined, founder: { '@id': origin + '/#person' },
       address: NYC, geo: { '@type': 'GeoCoordinates', latitude: 40.7128, longitude: -74.006 },
       areaServed: [{ '@type': 'City', name: 'New York' }, { '@type': 'Country', name: 'United States' }],

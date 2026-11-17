@@ -5,14 +5,13 @@ import Social from '../components/Social.astro';
 import { getSite, pad } from '../lib/content';
 
 const site = await getSite();
-const ticker = [...site.ticker, ...site.ticker];
 ---
-<Base view="index" title="Freelance Web Developer & Designer in NYC — Cristhian Tilleria" description={site.description}>
+<Base view="index" title="Independent Web Designer in NYC — Cristhian Tilleria" description={site.description}>
   <section class="hero">
     <div class="grid">
       <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block">{site.intro}</span></p>
       <div class="hero__role" data-reveal data-wait="1750">
-        <p class="role fade">Freelance frontend developer &amp; web designer<br>Based in New York, US</p>
+        <p class="role fade">Independent web designer<br>Based in New York, US</p>
         <Btn class="fade" style="--d:120" href="/contact">Book a call</Btn>
       </div>
       <dl class="hero__meta mono fade" data-reveal data-wait="2000">
@@ -45,10 +44,6 @@ const ticker = [...site.ticker, ...site.ticker];
   </section>
 
   <div class="screen">
-    <a class="ticker" href="/contact" aria-label={site.status} data-cursor="Book a call">
-      <span class="ticker__track" aria-hidden="true">{ticker.map((t) => <span>{t}</span>)}</span>
-    </a>
-
     <section class="section grid">
       <h2 class="h2 manifesto__t" data-reveal>
         <span class="sq" data-text="A designer who codes."><span>A designer who codes.</span></span>
