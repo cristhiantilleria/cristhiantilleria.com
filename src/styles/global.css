@@ -439,6 +439,7 @@ body[data-view="contact"] .touch, body[data-view="contact"] .footer__cta { displ
 .vz__canvas .visual { position: absolute; left: 0; top: 0; margin: 0; border: 0; background: none; overflow: hidden; will-change: transform; }
 .vz__canvas .visual figcaption { display: none; }
 .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out); }
+.vz__canvas .visual:hover { z-index: 2; }
 .vz__canvas .visual:hover img { transform: scale(1.04); }
 .vz.is-drag .visual img { transform: none; }
 /* Lab caption: ink type on a soft fade into the page, no slab */

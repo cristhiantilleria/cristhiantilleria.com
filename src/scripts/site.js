@@ -769,39 +769,41 @@ function bindCanvas(scope) {
   vz._bound = true;
   var stage = $('.vz__canvas', vz), src = $$('.vz__src .visual', vz);
   if (!src.length) return;
-  var cols = [], PW = 0, CW = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, wx = 0, wy = 0, drift = 0, drag = null, travelled = 0, touched = 0;
+  var cols = [], PW = 0, CW = 0, SL = 0, G = 0, ox = 0, oy = 0, vx = 0, vy = 0, wx = 0, wy = 0, drift = 0, drag = null, travelled = 0, touched = 0;
   var lastT = 0, running = false, seen = false, dirty = false, relayout = 0, laid = '';
   // One feel for every way of moving it: a fling coasts and slows like the page scroll settles,
   // wheel steps are eased in rather than jumped, and the idle drift fades in and out.
   var FRICTION = .94, WHEEL = .16, DRIFT = .28, KEY = 26;
   function mod(a, n) { return ((a % n) + n) % n; }
+  var SIZES = [.7, 1, 1.35, 1.75];               // each photo keeps one size wherever it repeats
   function rnd(a, b) { var x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }   // repeatable scatter
 
   // Columns of tiles repeat the pieces; each column is tall enough to wrap without a visible gap.
   function layout() {
     var vw = vz.clientWidth, vh = vz.clientHeight;
-    // small pieces with wide, uneven gaps so the canvas feels open
-    CW = vw < 761 ? vw * .34 : Math.max(130, Math.min(230, vw * .12));
-    G = vw < 761 ? vw * .14 : Math.max(90, vw * .085);
+    // pieces at mixed sizes with wide, uneven gaps so the canvas feels open and has depth
+    CW = vw < 761 ? vw * .22 : Math.max(120, Math.min(210, vw * .11));
+    SL = CW * SIZES[SIZES.length - 1];            // each column is as wide as the largest piece
+    G = vw < 761 ? vw * .1 : Math.max(70, vw * .06);
     if (!vw || !vh) return;                       // the view is hidden; the ResizeObserver lays out once it shows
     laid = vw + 'x' + vh;
-    var n = Math.ceil((vw + CW + G) / (CW + G)) + 1;
-    PW = n * (CW + G);
+    var n = Math.ceil((vw + SL + G) / (SL + G)) + 1;
+    PW = n * (SL + G);
     stage.textContent = '';
     cols = [];
     var cap = 0;                                   // tiles are the image alone
     for (var c = 0; c < n; c++) {
-      var col = { x: c * (CW + G), off: rnd(c, 99) * vh, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
+      var col = { x: c * (SL + G), off: rnd(c, 99) * vh, items: [], h: 0 }, y = 0, k = c * 5, tallest = 0;
       while (y < vh + tallest + G || col.items.length < 3) {
-        var s = src[k++ % src.length], h = CW * (s._ratio || 1.5) + cap;
+        var si = k++ % src.length, s = src[si], w = CW * SIZES[Math.floor(rnd(si, 7) * SIZES.length)], h = w * (s._ratio || 1.5) + cap;
         var el = s.cloneNode(true);
         el._source = s;
-        el.style.width = CW + 'px';
+        el.style.width = w + 'px';
         var im = $('img', el);
         im.loading = 'eager';
         im.addEventListener('load', measured);
         stage.appendChild(el);
-        col.items.push({ el: el, y: y, h: h, jx: (rnd(c, k) - .5) * G * .6 });
+        col.items.push({ el: el, y: y, h: h, jx: (SL - w) * rnd(c, k) });   // smaller pieces sit anywhere across the column
         tallest = Math.max(tallest, h);
         y += h + G * (.7 + rnd(k, c) * .9);
       }
@@ -820,7 +822,7 @@ function bindCanvas(scope) {
   }
   function draw() {
     cols.forEach(function (col) {
-      var x = mod(col.x + ox + CW + G, PW) - CW - G;
+      var x = mod(col.x + ox + SL + G, PW) - SL - G;
       col.items.forEach(function (it) {
         var y = mod(it.y + oy + col.off + it.h, col.h) - it.h;
         it.el.style.transform = 'translate3d(' + (x + it.jx).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
