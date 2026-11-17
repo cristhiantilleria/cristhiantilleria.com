@@ -214,7 +214,7 @@ function go(name) {
   hold('leave', true);                             // the page stays where it was while it fades
   body.classList.remove('is-entering');
   body.classList.add('is-swapping');
-  var leaving = new Promise(function (done) { setTimeout(done, 500); });
+  var leaving = new Promise(function (done) { setTimeout(done, 700); });
   Promise.all([load(name), leaving]).then(function () {
     var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
     return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
