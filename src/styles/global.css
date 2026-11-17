@@ -455,6 +455,7 @@ body[data-view="visuals"] .footer { display: none; }
 /* over the canvas the header gets a solid strip so it stays readable on top of photos;
    on contact the headline and form scroll up under it, so it gets the same strip */
 body[data-view="visuals"] .header, body[data-view="contact"] .header { mix-blend-mode: normal; color: var(--ink); background: var(--bg); border-bottom: var(--bw) solid var(--ink); --blk-ink: var(--bg); }
+body[data-view="visuals"] .header { border-bottom: 0; }   /* Lab: the photos run up to the header with no rule */
 body[data-view="visuals"] .header .pill,
 body[data-view="contact"] .header .pill { background: var(--ink); color: var(--bg); --blk-ink: var(--ink); }
 .visual { border: var(--bw) solid var(--ink); background: var(--bg); }
