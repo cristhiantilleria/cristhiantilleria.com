@@ -441,9 +441,16 @@ body[data-view="contact"] .touch, body[data-view="contact"] .footer__cta { displ
 .vz__canvas .visual img { pointer-events: none; -webkit-user-drag: none; transition: transform 1.2s var(--ease-out); }
 .vz__canvas .visual:hover img { transform: scale(1.04); }
 .vz.is-drag .visual img { transform: none; }
-.vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: clamp(10px, 1.2vw, 20px); z-index: 5; pointer-events: none; box-shadow: 0 0 0 var(--bw) var(--bg); }
-.vz__bar .mono { margin-left: 0; }
-.vz__bar .vz__intro { margin-left: auto; opacity: .7; }
+/* Lab caption: ink type on a soft fade into the page, no slab */
+.vz__bar { position: absolute; left: var(--pad); right: var(--pad); bottom: 0; z-index: 5; pointer-events: none; color: var(--ink); align-items: baseline; padding: clamp(60px, 8vw, 140px) 0 clamp(16px, 1.8vw, 30px); }
+.vz__bar::before { display: none; }
+.vz__bar::after, .vz__bar.in::after { inset: 0 calc(var(--pad) * -1); transform: none; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--bg) 85%, transparent) 55%, var(--bg)); opacity: 0; transition: opacity 1.2s var(--ease-out); }
+.vz__bar.in::after { opacity: 1; }
+.vz__bar .bullet { background: none; color: var(--ink); width: auto; height: auto; font-family: var(--mono); font-size: 12px; font-weight: 500; opacity: .5; }
+.vz__bar h1 { font-size: clamp(22px, 2.2vw, 40px); }
+.vz__bar .mono { margin-left: 0; font-size: 11px; }
+.vz__bar .vz__intro { margin-left: auto; opacity: .55; }
+.vz__bar .bar__a { font-size: 14px; opacity: .55; }
 body[data-view="visuals"] .footer { display: none; }
 /* over the canvas the header gets a solid strip so it stays readable on top of photos;
    on contact the headline and form scroll up under it, so it gets the same strip */
