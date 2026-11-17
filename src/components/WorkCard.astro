@@ -1,5 +1,5 @@
 ---
-// One gallery tile per project on /work: a large image with a quiet caption underneath. Without a cover it falls back to an abstract placeholder.
+// One gallery tile per project on /work: an image on the offset wall with a one-line caption underneath. Without a cover it falls back to an abstract placeholder.
 import ResponsiveImage from './ResponsiveImage.astro';
 import { img, type Project } from '../lib/content';
 interface Props { project: Project; index: number }
@@ -15,7 +15,7 @@ const still = p.cover ? img(p.cover, 1080) : '';
         : <div class={`art art-${(i % 3) + 1}`}></div>
   }</div></div>
   <div class="work__info">
-    <span class="bullet">{i + 1}</span>
+    <span class="work__n mono muted">{String(i + 1).padStart(2, '0')}</span>
     <h3 class="work__title">{p.title}<i aria-hidden="true">↗</i></h3>
     <span class="work__type mono muted">{[p.type, p.year].filter(Boolean).join(' — ')}</span>
   </div>
