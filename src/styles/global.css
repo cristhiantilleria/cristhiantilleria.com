@@ -282,7 +282,7 @@ main, footer { position: relative; z-index: 1; }
   border-bottom: var(--bw) solid var(--ink);
   transition: opacity var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), translate var(--t-rise) var(--ease-out) calc(var(--d, 0) * 1ms), color .4s;
 }
-.svc::before { content: ""; position: absolute; inset: 0 calc(var(--pad) * -1); background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease-out); z-index: -1; }
+.svc::before { content: ""; position: absolute; inset: 0; background: var(--ink); transform: scaleY(0); transform-origin: 50% 100%; transition: transform .7s var(--ease-out); z-index: -1; }
 .svc:hover { color: var(--bg); }
 /* the row nudges right on hover; each column moves as far as a 1.2vw left padding would have pushed it, without re-laying out the row */
 .svc .bullet, .svc__t, .svc__d { transition: transform .8s var(--ease-out), background-color .4s, color .4s; }
