@@ -1,31 +1,31 @@
 url: https://www.cristhiantilleria.com
-description: Independent web designer in New York City. Websites, branding, Shopify and motion for startups and small businesses. Book a call.
+description: Independent web designer in New York City. Modern websites and brands that show your vision, for startups and small businesses. Book a call.
 email: hello@cristhiantilleria.com
 bookingUrl: https://cal.com/cristhiantilleria/project-intro-call
 status: Taking new projects
 intro: Hey, I'm Cristhian. I design websites that show your vision and make your business feel modern.
-statement: I design and build websites that are fast, clear and a little bit memorable. One person from first sketch to final deploy, so nothing gets lost between design and code.
+statement: I help businesses show their vision with websites that are clear, fast and a little bit memorable. One person from first sketch to launch, so nothing gets lost along the way.
 portrait: /media/about/portrait.jpg
 services:
+  - title: Web design
+    description: Modern websites that show what your business stands for. Responsive, accessible and fast on every screen.
   - title: Branding
-    description: Logos, identity systems and guidelines that give a business a clear, memorable look.
-  - title: Web development
-    description: Responsive, accessible, fast-loading websites that look sharp on every screen.
+    description: Logos, identity systems and guidelines that give your business a clear, memorable look.
   - title: Motion & interaction
-    description: Page transitions, scroll effects and micro-interactions that make a site feel alive.
+    description: Page transitions, scroll effects and small interactions that make your site feel alive.
 steps:
   - tag: 30 min
     title: Discovery call
     description: A 30-minute call about what you're building. No pitch, no pressure.
   - tag: Within days
     title: Proposal
-    description: You get a clear scope and a quote before anything starts.
+    description: A clear scope, timeline and quote before any work starts.
   - tag: In the open
     title: Design & build
-    description: Regular check-ins and live previews, so there are no surprises at the end.
+    description: Regular check-ins and live previews, so nothing at the end is a surprise.
   - tag: And after
     title: Launch & care
-    description: I ship it, test it on real devices and stay around for tweaks after launch.
+    description: I launch it, test it on real devices and stay around for changes afterwards.
 socials:
   - label: Instagram
     url: https://www.instagram.com/cristhiantilleria_/

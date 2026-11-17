@@ -4,7 +4,7 @@ import Btn from '../components/Btn.astro';
 import { getSite } from '../lib/content';
 
 const site = await getSite();
-const needs = ['Branding', 'Web development', 'Motion & interaction', 'Shopify store', 'Something else'];
+const needs = [...site.services.map((s) => s.title), 'Shopify store', 'Something else'];
 const budgets = [['Under $1k', '< $1k'], ['$1k–$2.5k', '$1–2.5k'], ['$2.5k–$5k', '$2.5–5k'], ['$5k+', '$5k+'], ['Not sure yet', 'Not sure yet']];
 ---
 <Base view="contact" title="Hire an Independent Web Designer in NYC — Cristhian Tilleria" description="Tell me about your project and book a call with Cristhian Tilleria, independent web designer in New York.">
@@ -19,7 +19,7 @@ const budgets = [['Under $1k', '< $1k'], ['$1k–$2.5k', '$1–2.5k'], ['$2.5k�
       <ul class="checks mono fade" style="--d:120">
         <li><span class="bullet">1</span>No commitment, no sales pitch</li>
         <li><span class="bullet">2</span>Clear next steps and a quote</li>
-        <li><span class="bullet">3</span>Reply within one business day</li>
+        <li><span class="bullet">3</span>Replies within one business day</li>
       </ul>
       <Btn class="fade" style="--d:240" href={site.bookingUrl || 'https://cal.com/cristhiantilleria/project-intro-call'} target="_blank" rel="noopener" data-book-open="">Pick a time on my calendar</Btn>
       <button class="copy mono muted fade" style="--d:360" type="button" data-copy><span data-copy-label>Or email me — click to copy</span><b data-email></b></button>
@@ -31,7 +31,7 @@ const budgets = [['Under $1k', '< $1k'], ['$1k–$2.5k', '$1–2.5k'], ['$2.5k�
       <fieldset class="fade" style="--d:160">
         <legend class="mono">03 — What do you need?</legend>
         <div class="chips mono">
-          {needs.map((n) => <label class="chip"><input type="radio" name="need" value={n} checked={n === 'Web development'}><span>{n}</span></label>)}
+          {needs.map((n) => <label class="chip"><input type="radio" name="need" value={n} checked={n === needs[0]}><span>{n}</span></label>)}
         </div>
       </fieldset>
       <fieldset class="fade" style="--d:240">

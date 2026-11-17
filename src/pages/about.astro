@@ -18,7 +18,7 @@ const site = await getSite();
     )}
     <dl class="facts" data-reveal>
       <div class="fade" style="--d:0"><dt class="mono">Based in</dt><dd>New York, US<br>Working worldwide</dd></div>
-      <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>Branding<br>Web development<br>Motion &amp; interaction</dd></div>
+      <div class="fade" style="--d:120"><dt class="mono">Services</dt><dd>{site.services.map((s, i) => <>{i > 0 && <br />}{s.title}</>)}</dd></div>
       <div class="fade" style="--d:240"><dt class="mono">Status</dt><dd><span class="avail"><span class="dot"></span>{site.status}</span></dd></div>
     </dl>
     <div class="cta-row fade" data-reveal>
