@@ -112,18 +112,28 @@ function splitLines(el) {
 }
 
 /* ---------- reveal on scroll ---------- */
+// While a page is arriving, whatever is already on screen shows in its final state: no rise, no typing, no ripple.
+// Things further down still reveal as they scroll in.
+var instantUntil = 0;
+function instant() { return performance.now() < instantUntil; }
 function show(el) {
-  el.classList.add('in');
-  ripple(el, .2);
   var typed = $$('[data-type]', el);
   if (el.matches('[data-type]')) typed.unshift(el);
+  if (instant()) {
+    el.classList.add('snap', 'in');
+    typed.forEach(function (t) { clearInterval(t._ti); t.textContent = t.dataset.t || (t.dataset.t = t.textContent); t.classList.add('typed'); });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('snap'); }); });
+    return;
+  }
+  el.classList.add('in');
+  ripple(el, .2);
   typed.forEach(function (t, n) { setTimeout(function () { type(t, false); }, n * 140); });
 }
 var io = new IntersectionObserver(function (entries) {
   entries.forEach(function (en) {
     if (!en.isIntersecting) return;
     io.unobserve(en.target);
-    var wait = +en.target.dataset.wait || 0;
+    var wait = instant() ? 0 : +en.target.dataset.wait || 0;
     wait ? setTimeout(show, wait, en.target) : show(en.target);
   });
 }, { threshold: .12 });
@@ -147,9 +157,11 @@ var current = null, busy = false;
 
 function nameOf(path) { return path.replace(/index\.html$/, '').replace(/^\/+|\/+$/g, '') || 'index'; }
 function pathOf(name) { return name === 'index' ? '/' : '/' + name; }
+var pending = {};
 function load(name) {
   if (views[name]) return Promise.resolve(views[name]);
-  return fetch(pathOf(name), { headers: { Accept: 'text/html' } }).then(function (r) {
+  if (pending[name]) return pending[name];
+  return pending[name] = fetch(pathOf(name), { headers: { Accept: 'text/html' } }).then(function (r) {
     if (!r.ok) throw new Error(r.status);
     return r.text();
   }).then(function (html) {
@@ -161,7 +173,7 @@ function load(name) {
     views[name] = v;
     initView(v);
     return v;
-  });
+  }).finally(function () { delete pending[name]; });
 }
 function activate(name) {
   Object.keys(views).forEach(function (k) { views[k].hidden = k !== name; });
@@ -187,7 +199,7 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 function go(name) {
   if (name === current || busy) return;
   busy = true;
-  var run = ++seq;
+  ++seq;                                           // timers left from the previous page can tell they're stale
   function hard(n) { location.href = pathOf(n); }   // unknown page or offline: let the browser handle it
   if (lb.classList.contains('on')) lbToggle(false);
   tag.classList.remove('on');
@@ -199,10 +211,10 @@ function go(name) {
     }, function () { hard(name); });
     return;
   }
-  hold('leave', true);                             // the page stays where it was while it leaves
+  hold('leave', true);                             // the page stays where it was while it fades
   body.classList.remove('is-entering');
-  body.classList.add('is-leaving');
-  var leaving = new Promise(function (done) { setTimeout(done, 750); });
+  body.classList.add('is-swapping');
+  var leaving = new Promise(function (done) { setTimeout(done, 200); });
   Promise.all([load(name), leaving]).then(function () {
     var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
     return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
@@ -211,22 +223,27 @@ function go(name) {
     scrollToY(0, true);
     hold('leave', false);
     if (lenis) lenis.resize();
-    $$('[data-reveal]', views[target]).concat($$('[data-reveal]', footer)).forEach(function (el) { el.classList.remove('in'); });
     var heroName = $('.name', views[target]);
-    if (heroName) { heroName.classList.remove('play'); heroName.style.setProperty('--t-title', '.35s'); void heroName.offsetWidth; heroName.classList.add('play'); setTimeout(function () { kick(heroName._water, .18); }, 600); }
-    body.classList.remove('is-leaving');
+    if (heroName) heroName.classList.add('is-set');   // the name rises once, on the first visit only
     splitNow(target);
-    body.classList.add('is-entering');
     update();
-    enter(target, 350);
+    instantUntil = performance.now() + 700;
+    enter(target, 0);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { body.classList.remove('is-swapping'); }); });
     views[target].focus({ preventScroll: true });
-    busy = false;                                  // the next click can start leaving straight away
-    setTimeout(function () { if (run === seq) body.classList.remove('is-entering'); }, 2100);
+    busy = false;                                  // the next click can start straight away
   }, function (err) { if (err !== 0) hard(name); });
 }
 addEventListener('popstate', function () {
   if (lb.classList.contains('on')) lbToggle(false);   // Back closes the viewer and lets go of its scroll hold
   go(nameOf(location.pathname));
+});
+function inSite(a) { return a && !a.target && a.origin === location.origin && !/\.[a-z0-9]{2,5}$/i.test(a.pathname) && !/^\/keystatic/.test(a.pathname); }
+['pointerover', 'touchstart', 'focusin'].forEach(function (ev) {
+  document.addEventListener(ev, function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (inSite(a)) load(nameOf(a.pathname)).catch(function () {});
+  }, { passive: true });
 });
 document.addEventListener('click', function (e) {
   var s = e.target.closest('[data-scroll]');
@@ -250,10 +267,22 @@ loader.addEventListener('animationend', function (e) { if (e.target === loader) 
 // The intro clock starts only when the loader is really on screen: fonts in and a frame painted.
 // On slow phones the page can take seconds to appear, and a clock that started earlier would
 // have the curtain lifting before anyone saw it.
-var introStarted = false;
+var introStarted = false, introSeen = root.classList.contains('no-intro');
+try { sessionStorage.setItem('ct-intro', '1'); } catch (e) {}
 function startIntro() {
   if (introStarted) return;
   introStarted = true;
+  if (introSeen) {                                 // already saw the curtain this visit: open straight onto the page
+    var nm = $('.name', views[current]);
+    if (nm) nm.classList.add('is-set');
+    root.classList.add('is-ready');
+    loader.remove(); unlock(); waterGo();
+    splitNow(current);
+    header.classList.add('in');
+    instantUntil = performance.now() + 700;
+    enter(current, 0);
+    return;
+  }
   root.classList.add('is-ready');
   splitNow(current);
   setTimeout(unlock, 2400);
@@ -267,6 +296,12 @@ function startIntro() {
 Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), new Promise(function (r) { setTimeout(r, 1500); })])
   .then(function () { requestAnimationFrame(function () { requestAnimationFrame(startIntro); }); });
 setTimeout(startIntro, 3200);          // in case frames are not being produced (background tab)
+
+/* ---------- web app: installable, and pages already seen still open offline ---------- */
+// Only on the live site: a worker on localhost would keep serving yesterday's preview.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
+  addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+}
 
 /* ---------- New York clock ---------- */
 var fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZoneName: 'short' });

@@ -29,7 +29,8 @@ const ld = is404 ? '' : graph(site, { url, title, image, project, firstCover });
 <html lang="en" class="is-loading">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script is:inline>try{if(sessionStorage.getItem("ct-intro"))document.documentElement.classList.add("no-intro")}catch(e){}</script>
 <title>{title}</title>
 <meta name="description" content={desc}>
 {is404 ? <meta name="robots" content="noindex"> : <link rel="canonical" href={url}>}
@@ -47,6 +48,10 @@ const ld = is404 ? '' : graph(site, { url, title, image, project, firstCover });
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <meta name="theme-color" content="#f4f2ec">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cristhian">
 <meta name="author" content="Cristhian Tilleria">
 <meta name="geo.region" content="US-NY">
 <meta name="geo.placename" content="New York">
