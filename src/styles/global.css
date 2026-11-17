@@ -121,7 +121,7 @@ button { cursor: pointer; }
 @keyframes guide-in { from { transform: scaleY(0); } }
 /* page change: the old page lifts away, the new one settles in from below */
 .view, .footer { transition: opacity .9s var(--ease-out), translate .9s var(--ease-out); }
-.is-swapping .view, .is-swapping .footer { opacity: 0; translate: 0 -24px; transition-duration: .35s; transition-timing-function: var(--ease-in-out); }
+.is-swapping .view, .is-swapping .footer { opacity: 0; translate: 0 -24px; transition-duration: .5s; transition-timing-function: var(--ease-in-out); }
 .is-arriving .view, .is-arriving .footer { opacity: 0; translate: 0 32px; transition: none; }
 /* content already on screen when a page arrives (or on a repeat visit) is simply there */
 .snap, .snap *, .snap::before, .snap::after, .snap *::before, .snap *::after { transition: none !important; }
