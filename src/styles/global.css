@@ -119,13 +119,14 @@ button { cursor: pointer; }
 /* ---------- page transition ---------- */
 .is-entering .guides i { animation: guide-in 1.6s var(--ease-out) both; animation-delay: calc(var(--n) * 60ms); }
 @keyframes guide-in { from { transform: scaleY(0); } }
-.view, .footer { transition: opacity .45s var(--ease-out); }
-.is-swapping .view, .is-swapping .footer { opacity: 0; transition-duration: .2s; }   /* page change: a short crossfade, nothing replays */
+/* page change: the old page lifts away, the new one settles in from below */
+.view, .footer { transition: opacity .9s var(--ease-out), translate .9s var(--ease-out); }
+.is-swapping .view, .is-swapping .footer { opacity: 0; translate: 0 -24px; transition-duration: .35s; transition-timing-function: var(--ease-in-out); }
+.is-arriving .view, .is-arriving .footer { opacity: 0; translate: 0 32px; transition: none; }
 /* content already on screen when a page arrives (or on a repeat visit) is simply there */
 .snap, .snap *, .snap::before, .snap::after, .snap *::before, .snap *::after { transition: none !important; }
 .snap .sq::after, .snap.sq::after { animation: none !important; }
 .name.is-set .char, .is-ready .name.play.is-set .char { animation: none; transform: none; }
-.no-intro .loader { display: none; }
 .name { transform-origin: 50% 100%; }
 
 /* ---------- header ---------- */

@@ -214,7 +214,7 @@ function go(name) {
   hold('leave', true);                             // the page stays where it was while it fades
   body.classList.remove('is-entering');
   body.classList.add('is-swapping');
-  var leaving = new Promise(function (done) { setTimeout(done, 200); });
+  var leaving = new Promise(function (done) { setTimeout(done, 350); });
   Promise.all([load(name), leaving]).then(function () {
     var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
     return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
@@ -229,7 +229,9 @@ function go(name) {
     update();
     instantUntil = performance.now() + 700;
     enter(target, 0);
-    requestAnimationFrame(function () { requestAnimationFrame(function () { body.classList.remove('is-swapping'); }); });
+    body.classList.remove('is-swapping');
+    body.classList.add('is-arriving');           // start just below, then settle into place
+    requestAnimationFrame(function () { requestAnimationFrame(function () { body.classList.remove('is-arriving'); }); });
     views[target].focus({ preventScroll: true });
     busy = false;                                  // the next click can start straight away
   }, function (err) { if (err !== 0) hard(name); });
@@ -267,22 +269,10 @@ loader.addEventListener('animationend', function (e) { if (e.target === loader) 
 // The intro clock starts only when the loader is really on screen: fonts in and a frame painted.
 // On slow phones the page can take seconds to appear, and a clock that started earlier would
 // have the curtain lifting before anyone saw it.
-var introStarted = false, introSeen = root.classList.contains('no-intro');
-try { sessionStorage.setItem('ct-intro', '1'); } catch (e) {}
+var introStarted = false;
 function startIntro() {
   if (introStarted) return;
   introStarted = true;
-  if (introSeen) {                                 // already saw the curtain this visit: open straight onto the page
-    var nm = $('.name', views[current]);
-    if (nm) nm.classList.add('is-set');
-    root.classList.add('is-ready');
-    loader.remove(); unlock(); waterGo();
-    splitNow(current);
-    header.classList.add('in');
-    instantUntil = performance.now() + 700;
-    enter(current, 0);
-    return;
-  }
   root.classList.add('is-ready');
   splitNow(current);
   setTimeout(unlock, 2400);

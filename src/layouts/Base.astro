@@ -30,7 +30,6 @@ const ld = is404 ? '' : graph(site, { url, title, image, project, firstCover });
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script is:inline>try{if(sessionStorage.getItem("ct-intro"))document.documentElement.classList.add("no-intro")}catch(e){}</script>
 <title>{title}</title>
 <meta name="description" content={desc}>
 {is404 ? <meta name="robots" content="noindex"> : <link rel="canonical" href={url}>}
