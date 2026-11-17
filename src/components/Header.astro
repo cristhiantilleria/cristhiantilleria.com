@@ -8,11 +8,11 @@ const nav = [
 ];
 ---
 <header class="header mono fade">
-  <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span data-sweep>New York</span><span class="clock clock--head"></span></a>
+  <a class="header__id" href="/" aria-label="Cristhian Tilleria — home"><span>New York</span><span class="clock clock--head"></span></a>
   <nav aria-label="Primary">
     <ul>
       {nav.map((n) => <li><a href={n.href} data-nav={n.name}>{n.label}</a></li>)}
-      <li><a class="pill" href="/contact" data-nav="contact" data-sweep data-magnetic>Book a call</a></li>
+      <li><a class="pill" href="/contact" data-nav="contact" data-magnetic>Book a call</a></li>
     </ul>
   </nav>
 </header>

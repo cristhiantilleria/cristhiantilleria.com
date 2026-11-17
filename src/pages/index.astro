@@ -15,15 +15,15 @@ const site = await getSite();
         <Btn class="fade" style="--d:120" href="/contact">Book a call</Btn>
       </div>
       <dl class="hero__meta mono fade" data-reveal data-wait="1200">
-        <div><dt class="muted">Lat / Long</dt><dd data-type>40.7128° N, 74.0060° W</dd></div>
+        <div><dt class="muted">Lat / Long</dt><dd>40.7128° N, 74.0060° W</dd></div>
         <div><dt class="muted">NYC time</dt><dd class="clock"></dd></div>
-        <div><dt class="muted">Status</dt><dd class="avail"><span class="dot"></span><span data-type>{site.status}</span></dd></div>
-        <div><dt class="muted">Folio</dt><dd data-type>20/26</dd></div>
+        <div><dt class="muted">Status</dt><dd class="avail"><span class="dot"></span><span>{site.status}</span></dd></div>
+        <div><dt class="muted">Folio</dt><dd>20/26</dd></div>
       </dl>
     </div>
 
     <div class="hero__foot mono" data-reveal data-wait="600">
-      <a class="hero__scroll mono" href="/work" data-sweep>↗ See the selected work</a>
+      <a class="hero__scroll mono" href="/work">↗ See the selected work</a>
       <ul class="hero__social">
         {site.socials.slice(0, 3).map((s) => <Social {...s} />)}
       </ul>
@@ -35,7 +35,7 @@ const site = await getSite();
   </section>
 
   <section class="section grid" id="services">
-    <header class="bar" data-reveal><span class="bullet">1</span><h2>What I can do for you</h2><span class="mono" data-type>{pad(site.services.length)} services</span><span class="bar__a" aria-hidden="true">↓</span></header>
+    <header class="bar" data-reveal><span class="bullet">1</span><h2>What I can do for you</h2><span class="mono">{pad(site.services.length)} services</span><span class="bar__a" aria-hidden="true">↓</span></header>
     <ul class="svc-list" data-reveal>
       {site.services.map((s, i) => (
         <li><a class="svc fade" href="/contact" style={`--d:${i * 90}`}><span class="bullet">{i + 1}</span><h3 class="svc__t">{s.title}</h3><span class="svc__d">{s.description}</span><span class="svc__a" aria-hidden="true">↗</span></a></li>
@@ -52,13 +52,13 @@ const site = await getSite();
       </h2>
       <div class="manifesto__copy" data-reveal>
         <p class="fade">Clean interfaces, sharp typography and motion with a reason to be there. I design your site and I build it, so what you approve is exactly what goes live.</p>
-        <a class="link mono fade" href="/about" data-sweep style="--d:150">More about me</a>
+        <a class="link mono fade" href="/about" style="--d:150">More about me</a>
       </div>
     </section>
   </div>
 
   <section class="section grid" id="process">
-    <header class="bar" data-reveal><span class="bullet">2</span><h2>How we'd work together</h2><span class="mono" data-type>{pad(site.steps.length)} stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
+    <header class="bar" data-reveal><span class="bullet">2</span><h2>How we'd work together</h2><span class="mono">{pad(site.steps.length)} stops</span><span class="bar__a" aria-hidden="true">↓</span></header>
     <ol class="steps" data-reveal>
       {site.steps.map((s, i) => (
         <li class:list={['step', { 'step--hot': i === 0 }]} style={`--s:${i}`}><span class="mono">{s.tag}</span><span class="step__n">{pad(i + 1, 2)}</span><h3>{s.title}</h3><p>{s.description}</p></li>

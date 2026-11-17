@@ -62,35 +62,6 @@ function splitName(scope) {
 }
 $$('.guides i').forEach(function (g, n) { g.style.setProperty('--n', n); });
 
-/* ---------- typed / swept mono text ---------- */
-// sweep=false: text types in behind a block cursor. sweep=true: a block runs across text that stays visible.
-function type(el, sweep) {
-  var text = el.dataset.t || (el.dataset.t = el.textContent);
-  clearInterval(el._ti);
-  el.classList.add('typed');
-  if (reduce) { el.textContent = text; return; }
-  var n = text.length, i = 0, step = Math.max(1, Math.ceil(n / 34));
-  function frame() {
-    i = Math.min(n, i + step);
-    if (i >= n) { clearInterval(el._ti); el.textContent = text; return; }
-    var rest = esc(text.slice(i + 2));
-    el.innerHTML = esc(text.slice(0, i)) + '<span class="blk"><b>' + esc(text.slice(i, i + 2)) + '</b></span>' +
-      (sweep ? rest : '<span style="visibility:hidden">' + rest + '</span>');
-  }
-  if (!sweep) el.innerHTML = '<span style="visibility:hidden">' + esc(text) + '</span>';
-  el._ti = setInterval(frame, 38);
-}
-function bindSweep(scope) {
-  $$('[data-sweep]', scope).forEach(function (el) {
-    if (el._sweep) return;
-    el._sweep = true;
-    (el.closest('a, button') || el).addEventListener('mouseenter', function () {
-      if (el.matches('[data-type]:not(.typed)')) return;
-      type(el, true);
-    });
-  });
-}
-
 /* ---------- auto line splitting for the big statement ---------- */
 function splitLines(el) {
   // Phones fire resize while the address bar slides; the lines only change with the width or type size.
@@ -117,17 +88,13 @@ function splitLines(el) {
 var instantUntil = 0;
 function instant() { return performance.now() < instantUntil; }
 function show(el) {
-  var typed = $$('[data-type]', el);
-  if (el.matches('[data-type]')) typed.unshift(el);
   if (instant()) {
     el.classList.add('snap', 'in');
-    typed.forEach(function (t) { clearInterval(t._ti); t.textContent = t.dataset.t || (t.dataset.t = t.textContent); t.classList.add('typed'); });
     requestAnimationFrame(function () { requestAnimationFrame(function () { el.classList.remove('snap'); }); });
     return;
   }
   el.classList.add('in');
   ripple(el, .2);
-  typed.forEach(function (t, n) { setTimeout(function () { type(t, false); }, n * 140); });
 }
 var io = new IntersectionObserver(function (entries) {
   entries.forEach(function (en) {
@@ -142,7 +109,6 @@ function arm(scope) {
   $$('[data-lines]', scope).forEach(splitLines);
   $$('[data-reveal]', scope).forEach(function (el) {
     el.classList.remove('in');
-    $$('[data-type]', el).forEach(function (t) { clearInterval(t._ti); t.classList.remove('typed'); });
     io.observe(el);
   });
 }
@@ -585,7 +551,7 @@ function bindContact(scope) {
   var status = $('[data-status]', scope), label = $('[data-copy-label]', scope);
   $('[data-email]', scope).textContent = CONFIG.email;
   $('[data-copy]', scope).addEventListener('click', function () {
-    function done(msg) { label.dataset.t = msg; type(label, false); }
+    function done(msg) { label.textContent = msg; }
     if (navigator.clipboard) navigator.clipboard.writeText(CONFIG.email).then(function () { done('Copied to clipboard'); }, function () { done('Copy failed — select it below'); });
     else done('Copy failed — select it below');
   });
@@ -595,7 +561,7 @@ function bindContact(scope) {
     e.preventDefault();
     if (sending) return;
     var d = new FormData(form), name = (d.get('name') || '').trim(), email = (d.get('email') || '').trim();
-    function say(msg) { status.dataset.t = msg; type(status, false); }
+    function say(msg) { status.textContent = msg; }
     if (!name) { say('Please add your name'); form.elements.name.focus(); return; }
     if (!/^\S+@\S+\.\S+$/.test(email)) { say('Please add a valid email'); form.elements.email.focus(); return; }
     if (d.get('_honey')) return;                                   // bots fill the hidden field
@@ -649,9 +615,9 @@ document.addEventListener('click', function (e) {
   box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar
   box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
   box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
-    '<button class="btn mono" type="button"><span data-sweep>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
+    '<button class="btn mono" type="button"><span>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
     '<div class="book__body"><p class="book__load mono">Loading calendar…</p>' +
-    '<p class="book__load mono" hidden>Calendar didn\'t load. <a class="link" target="_blank" rel="noopener" data-sweep>Open it on cal.com</a></p>' +
+    '<p class="book__load mono" hidden>Calendar didn\'t load. <a class="link" target="_blank" rel="noopener">Open it on cal.com</a></p>' +
     '<div class="book__cal"></div></div>';
   body.appendChild(box);
   var cal = $('.book__cal', box), loading = $('.book__load', box), fallback = $('.book__load[hidden]', box), shut = $('button', box);
@@ -699,7 +665,6 @@ document.addEventListener('click', function (e) {
   }, true);
   function sync() { location.hash === '#book' || /[?&]book=1(&|$)/.test(location.search) ? open() : close(true); }
   addEventListener('popstate', sync); addEventListener('hashchange', sync);
-  bindSweep(box);
   // A /contact#book link opens the calendar once the intro has unlocked the page, not behind the curtain.
   if (!root.classList.contains('is-loading')) sync();
   else new MutationObserver(function (m, o) { if (!root.classList.contains('is-loading')) { o.disconnect(); sync(); } }).observe(root, { attributes: true, attributeFilter: ['class'] });
@@ -938,7 +903,7 @@ function bindCanvas(scope) {
 }
 
 /* ---------- wire up whatever is on the page now; fetched views call this again ---------- */
-function initView(scope) { splitName(scope); bindSweep(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
+function initView(scope) { splitName(scope); bindWater(scope); bindMagnetic(scope); bindContact(scope); bindVideos(scope); bindCanvas(scope); }
 initView(document);
 
 /* ---------- reduced motion can be switched on or off while the page is open ---------- */

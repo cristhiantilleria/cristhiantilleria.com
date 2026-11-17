@@ -17,7 +17,7 @@ const Body = p.hasBody ? bodyOf(p.slug) : null;
 ---
 <Base view={`work/${p.slug}`} title={`${p.title} — ${p.type || 'Project'} by Cristhian Tilleria`} description={`${p.title}: ${p.summary || ''}`} image={p.cover} project={p}>
   <section class="cs__first">
-    <p class="mono" data-reveal><span data-type>Project {letter(i)} — {pad(i + 1, 2)}/{pad(projects.length, 2)}</span></p>
+    <p class="mono" data-reveal><span>Project {letter(i)} — {pad(i + 1, 2)}/{pad(projects.length, 2)}</span></p>
     <h1 class="h2 cs__title still" style={`--chars:${p.title.length}`}><span class="sq"><span>{p.title}</span></span></h1>
     <div class="bar" data-reveal data-wait="700"><span class="bullet">{letter(i)}</span><h2>{p.type}</h2><span class="mono">{p.year}</span><span class="bar__a" aria-hidden="true">↓</span></div>
     {p.video
@@ -54,7 +54,7 @@ const Body = p.hasBody ? bodyOf(p.slug) : null;
     )}
     <div class="cta-row fade" data-reveal>
       <Btn href="/contact">Want something like this?</Btn>
-      <a class="link mono" href="/work" data-sweep>All work</a>
+      <a class="link mono" href="/work">All work</a>
     </div>
   </section>
 </Base>

@@ -8,7 +8,7 @@ const site = await getSite();
 ---
 <Base view="about" title="About Cristhian Tilleria — Independent Web Designer in New York" description={site.statement} image={site.portrait}>
   <section class:list={['page grid', { 'has-portrait': site.portrait }]}>
-    <p class="page__kicker mono" data-reveal><span data-type>About — Cristhian Tilleria</span></p>
+    <p class="page__kicker mono" data-reveal><span>About — Cristhian Tilleria</span></p>
     <h1 class="statement still">{site.statement}</h1>
     {site.portrait && (
       <figure class="portrait" data-reveal data-wait="500">
@@ -23,7 +23,7 @@ const site = await getSite();
     </dl>
     <div class="cta-row fade" data-reveal>
       <Btn href="/contact">Book a call</Btn>
-      <a class="link mono" href="/work" data-sweep>See the work</a>
+      <a class="link mono" href="/work">See the work</a>
     </div>
   </section>
 </Base>
