@@ -22,7 +22,7 @@ var $$ = function (s, c) { return Array.prototype.slice.call((c || document).que
 var lenis = null, holds = {};
 function smooth(on) {
   if (on && !lenis && window.Lenis) {
-    var l = lenis = new Lenis({ lerp: .06, wheelMultiplier: .9 });
+    var l = lenis = new Lenis({ lerp: .085, wheelMultiplier: .9 });
     l.on('scroll', function () { update(); });
     if (Object.keys(holds).length) l.stop();
     requestAnimationFrame(function raf(t) { if (lenis !== l) return; l.raf(t); requestAnimationFrame(raf); });
@@ -202,7 +202,7 @@ function go(name) {
   hold('leave', true);                             // the page stays where it was while it leaves
   body.classList.remove('is-entering');
   body.classList.add('is-leaving');
-  var leaving = new Promise(function (done) { setTimeout(done, 1100); });
+  var leaving = new Promise(function (done) { setTimeout(done, 750); });
   Promise.all([load(name), leaving]).then(function () {
     var target = nameOf(location.pathname);        // a click or Back during the leave changes where we land
     return target === name ? target : load(target).then(function () { return target; }, function () { hard(target); throw 0; });
@@ -218,7 +218,7 @@ function go(name) {
     splitNow(target);
     body.classList.add('is-entering');
     update();
-    enter(target, 550);
+    enter(target, 350);
     views[target].focus({ preventScroll: true });
     busy = false;                                  // the next click can start leaving straight away
     setTimeout(function () { if (run === seq) body.classList.remove('is-entering'); }, 2100);
@@ -256,13 +256,13 @@ function startIntro() {
   introStarted = true;
   root.classList.add('is-ready');
   splitNow(current);
-  setTimeout(unlock, 4000);
-  enter(current, reduce ? 600 : 2500);
-  setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 4700);
+  setTimeout(unlock, 2400);
+  enter(current, reduce ? 600 : 1600);
+  setTimeout(function () { header.classList.add('in'); }, reduce ? 600 : 2300);
   if (reduce) return;
-  setTimeout(function () { if (!seq) body.classList.add('is-entering'); }, 2150);
-  setTimeout(function () { if (!seq) body.classList.remove('is-entering'); }, 5200);
-  if (current === 'index') setTimeout(function () { if (!seq) ripple(views.index.querySelector('.hero'), .18); }, 2850);
+  setTimeout(function () { if (!seq) body.classList.add('is-entering'); }, 1350);
+  setTimeout(function () { if (!seq) body.classList.remove('is-entering'); }, 3900);
+  if (current === 'index') setTimeout(function () { if (!seq) ripple(views.index.querySelector('.hero'), .12); }, 1950);
 }
 Promise.race([(document.fonts && document.fonts.ready) || Promise.resolve(), new Promise(function (r) { setTimeout(r, 1500); })])
   .then(function () { requestAnimationFrame(function () { requestAnimationFrame(startIntro); }); });
@@ -319,13 +319,13 @@ function update() {
   }));
   var remaining = root.scrollHeight - (scrollY + vh);
   var t = Math.min(1, Math.max(0, remaining / (vh * .8)));
-  sliceScroll = reduce || !touch.offsetParent ? 0 : t * t * .7;
+  sliceScroll = reduce || !touch.offsetParent ? 0 : t * t * .35;
   slice();
   var w = touch._water;
   if (!w) return;
   // the swell only runs while the headline is on screen; off screen it kept the water loop going for nothing
   var r = touch.getBoundingClientRect();
-  w.floor = r.bottom > 0 && r.top < vh ? sliceScroll * size(w) * .16 : 0;
+  w.floor = r.bottom > 0 && r.top < vh ? sliceScroll * size(w) * .1 : 0;
   if (w.floor > .5) startWater();
 }
 function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
@@ -426,10 +426,10 @@ function addWater(el) {
     if (reduce || !waterReady) return;
     var p = at(e), fs = size(w);
     w.px = p[0]; w.py = p[1];
-    w.lens = Math.min(.8, w.lens + .04 + Math.hypot(e.movementX, e.movementY) * .02);
+    w.lens = Math.min(.5, w.lens + .03 + Math.hypot(e.movementX, e.movementY) * .012);
     // leave a spreading ring behind every stretch of pointer travel
-    if (w.lx === null || Math.hypot(p[0] - w.lx, p[1] - w.ly) > fs * .3) {
-      drop(w, p[0], p[1], fs * .12, fs * 1.05, 1500, .45);
+    if (w.lx === null || Math.hypot(p[0] - w.lx, p[1] - w.ly) > fs * .5) {
+      drop(w, p[0], p[1], fs * .12, fs * 1.05, 1800, .25);
       w.lx = p[0]; w.ly = p[1];
     }
     startWater();
@@ -438,7 +438,7 @@ function addWater(el) {
   el.addEventListener('pointerdown', function (e) {
     if (reduce || !waterReady) return;
     var p = at(e), fs = size(w);
-    drop(w, p[0], p[1], fs * .2, fs * 3, 2600, .85);
+    drop(w, p[0], p[1], fs * .2, fs * 2, 2600, .45);
     kick(w, .05);
   });
   return w;
@@ -546,7 +546,7 @@ function bindMagnetic(scope) {
       // measure from where the button rests, not where it has been pulled to, or it chases its own offset
       var r = m.getBoundingClientRect(), t = new DOMMatrixReadOnly(getComputedStyle(m).transform);
       var cx = r.left + r.width / 2 - t.m41, cy = r.top + r.height / 2 - t.m42;
-      m.style.transform = 'translate(' + ((e.clientX - cx) * .22).toFixed(1) + 'px,' + ((e.clientY - cy) * .35).toFixed(1) + 'px)';
+      m.style.transform = 'translate(' + ((e.clientX - cx) * .12).toFixed(1) + 'px,' + ((e.clientY - cy) * .18).toFixed(1) + 'px)';
     });
     m.addEventListener('mouseleave', function () { m.style.transform = ''; });
   });

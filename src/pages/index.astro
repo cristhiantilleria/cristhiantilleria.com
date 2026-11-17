@@ -9,12 +9,12 @@ const site = await getSite();
 <Base view="index" title="Independent Web Designer in NYC — Cristhian Tilleria" description={site.description}>
   <section class="hero">
     <div class="grid">
-      <p class="hero__hey" data-reveal data-wait="1500"><span class="fade" style="display:block">{site.intro}</span></p>
-      <div class="hero__role" data-reveal data-wait="1750">
+      <p class="hero__hey" data-reveal data-wait="900"><span class="fade" style="display:block">{site.intro}</span></p>
+      <div class="hero__role" data-reveal data-wait="1050">
         <p class="role fade">Independent web designer<br>Based in New York, US</p>
         <Btn class="fade" style="--d:120" href="/contact">Book a call</Btn>
       </div>
-      <dl class="hero__meta mono fade" data-reveal data-wait="2000">
+      <dl class="hero__meta mono fade" data-reveal data-wait="1200">
         <div><dt class="muted">Lat / Long</dt><dd data-type>40.7128° N, 74.0060° W</dd></div>
         <div><dt class="muted">NYC time</dt><dd class="clock"></dd></div>
         <div><dt class="muted">Status</dt><dd class="avail"><span class="dot"></span><span data-type>{site.status}</span></dd></div>
@@ -22,7 +22,7 @@ const site = await getSite();
       </dl>
     </div>
 
-    <div class="hero__foot mono" data-reveal data-wait="900">
+    <div class="hero__foot mono" data-reveal data-wait="600">
       <a class="hero__scroll mono" href="/work" data-sweep>↗ See the selected work</a>
       <ul class="hero__social">
         {site.socials.slice(0, 3).map((s) => <Social {...s} />)}
