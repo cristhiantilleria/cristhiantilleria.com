@@ -18,7 +18,7 @@ const Body = p.hasBody ? bodyOf(p.slug) : null;
 <Base view={`work/${p.slug}`} title={`${p.title} — ${p.type || 'Project'} by Cristhian Tilleria`} description={`${p.title}: ${p.summary || ''}`} image={p.cover} project={p}>
   <section class="cs__first">
     <p class="mono" data-reveal><span data-type>Project {letter(i)} — {pad(i + 1, 2)}/{pad(projects.length, 2)}</span></p>
-    <h1 class="h2 cs__title" style={`--chars:${p.title.length}`} data-reveal data-wait="350"><span class="sq" data-text={p.title}><span>{p.title}</span></span></h1>
+    <h1 class="h2 cs__title still" style={`--chars:${p.title.length}`}><span class="sq" data-text={p.title}><span>{p.title}</span></span></h1>
     <div class="bar" data-reveal data-wait="700"><span class="bullet">{letter(i)}</span><h2>{p.type}</h2><span class="mono">{p.year}</span><span class="bar__a" aria-hidden="true">↓</span></div>
     {p.video
       ? <div class="cs__cover" data-reveal data-wait="900"><div class="media"><video src={encodeURI(p.video)} poster={p.cover ? img(p.cover, 2400) : undefined} muted loop playsinline preload="metadata" data-autoplay></video></div></div>

@@ -136,6 +136,8 @@ main, footer { position: relative; z-index: 1; }
 .in .sq > span { transform: none; }
 .sq::after { content: attr(data-text); position: absolute; left: 0; right: 0; top: 84%; transform: scaleY(-.3); transform-origin: 50% 0; opacity: 0; pointer-events: none; }
 .in .sq::after { animation: ghost var(--t-rise) var(--ease-out) both; animation-delay: calc(var(--l, 0) * 180ms); }   /* the reflection settles with the line it mirrors */
+.still .sq > span, .is-leaving .still .sq > span { transform: none; transition: none; }   /* page headlines outside home sit still */
+.still .sq::after { display: none; }
 @keyframes ghost { 0% { opacity: 1; transform: scaleY(-.34); } 60% { opacity: .9; } 100% { opacity: 0; transform: scaleY(-.02); } }
 
 /* long statements: each line rises out of its own mask, one after another */

@@ -506,11 +506,11 @@ function flow(now) {
   waterOn = active;
   if (active) requestAnimationFrame(flow);
 }
-function bindWater(scope) { if (!reduce) $$('.name, .h2, .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
+function bindWater(scope) { if (!reduce) $$('.name, .h2:not(.still), .touch', scope).forEach(function (el) { if (!el._water) addWater(el); }); }
 bindWater(document);
 addEventListener('resize', function () { waters.forEach(function (w) { w.fs = 0; }); });
 function ripple(scope, strength) {
-  $$('.name, .h2', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
+  $$('.name, .h2:not(.still)', scope).concat(scope._water ? [scope] : []).forEach(function (el) { kick(el._water, strength); });
 }
 
 /* ---------- pointer micro-interactions ---------- */
