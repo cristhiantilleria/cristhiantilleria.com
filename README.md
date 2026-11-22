@@ -9,7 +9,7 @@ npm run build    # static site into dist/
 npm run preview  # serve dist/ locally
 ```
 
-Requires Node 20.3 or newer.
+Requires Node 22.23.4 or newer.
 
 ## Editing content with Keystatic
 
