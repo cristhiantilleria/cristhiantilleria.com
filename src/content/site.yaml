@@ -8,11 +8,11 @@ statement: I'm Cristhian, an independent web designer in New York. I turn your v
 portrait: /media/about/portrait.jpg
 services:
   - title: Web design
-    description: Modern websites that show what your business stands for. Responsive, accessible and fast on every screen.
+    description: Modern websites that show what your business stands for, designed around your vision and your customers.
+  - title: Web development
+    description: Responsive, accessible, fast-loading sites that look sharp on every screen and are easy to keep up to date.
   - title: Branding
     description: Logos, identity systems and guidelines that give your business a clear, memorable look.
-  - title: Motion & interaction
-    description: Page transitions, scroll effects and small interactions that make your site feel alive.
 steps:
   - tag: 30 min
     title: Discovery call
