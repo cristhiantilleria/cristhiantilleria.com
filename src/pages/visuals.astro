@@ -7,7 +7,7 @@ import { getVisuals, img } from '../lib/content';
 const { intro, items } = await getVisuals();
 ---
 <Base view="visuals" title="Lab — Photography & Experiments by Cristhian Tilleria" description={intro} image={items[0]?.image}>
-  <section class="vz" data-lenis-prevent data-reveal data-wait="300" data-cursor="Drag · click to open">
+  <section class="vz" data-reveal data-wait="300" data-cursor="Drag · click to open">
     <div class="vz__canvas"></div>
     <div class="vz__src" hidden>
       {items.map((v, i) => (

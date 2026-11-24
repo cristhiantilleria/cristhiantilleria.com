@@ -1,10 +1,8 @@
-// Site behaviour, ported from the legacy src/template.html: smooth scroll, page transitions, reveals,
+// Site behaviour, ported from the legacy src/template.html: page transitions, reveals,
 // water typography, cursor tag, magnetic buttons, contact form, booking overlay, image viewer, Lab canvas.
-import Lenis from 'lenis';
 import { track } from '@vercel/analytics';
 import { mountCal } from './cal.js';
 
-window.Lenis = Lenis;
 var CONFIG = JSON.parse(document.getElementById('site-config').textContent || '{}');
 
 
@@ -16,30 +14,17 @@ var motionPref = matchMedia('(prefers-reduced-motion: reduce)'), reduce = motion
 var $ = function (s, c) { return (c || document).querySelector(s); };
 var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
-/* ---------- smooth scroll (falls back to native if the library is unavailable) ----------
-   Lenis gets its own frame loop. Anything that depends on the scroll position listens to its scroll
-   event, which fires inside that loop, so it lands in the same frame as the scroll instead of the next. */
-var lenis = null, holds = {};
-function smooth(on) {
-  if (on && !lenis && window.Lenis) {
-    var l = lenis = new Lenis({ lerp: .085, wheelMultiplier: .9 });
-    l.on('scroll', function () { update(); });
-    if (Object.keys(holds).length) l.stop();
-    requestAnimationFrame(function raf(t) { if (lenis !== l) return; l.raf(t); requestAnimationFrame(raf); });
-  } else if (!on && lenis) { lenis.destroy(); lenis = null; }
-}
-// The intro and the overlays each hold the page still; scrolling comes back once nothing holds it.
+/* ---------- scrolling ----------
+   Native browser scrolling: it runs off the main thread, so the page always stays under your finger.
+   The intro and the overlays each hold the page still; scrolling comes back once nothing holds it. */
+var holds = {};
 function hold(why, on) {
   if (on) holds[why] = true; else delete holds[why];
-  var held = Object.keys(holds).length > 0;
-  root.style.overflow = held ? 'hidden' : '';
-  if (lenis) held ? lenis.stop() : lenis.start();
+  root.style.overflow = Object.keys(holds).length ? 'hidden' : '';
 }
 hold('intro', true);
-function easeInOut(t) { return t < .5 ? 8 * t * t * t * t : 1 - Math.pow(2 - 2 * t, 4) / 2; }   // close to --ease-in-out
 function scrollToY(target, instant) {
-  if (lenis) lenis.scrollTo(target, { immediate: !!instant, force: true, duration: 2, easing: easeInOut });
-  else if (typeof target === 'number') scrollTo({ top: target, behavior: instant || reduce ? 'auto' : 'smooth' });
+  if (typeof target === 'number') scrollTo({ top: target, behavior: instant || reduce ? 'auto' : 'smooth' });
   else target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
 }
 function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -188,7 +173,6 @@ function go(name) {
     activate(target);
     scrollToY(0, true);
     hold('leave', false);
-    if (lenis) lenis.resize();
     var heroName = $('.name', views[target]);
     if (heroName) heroName.classList.add('is-set');   // the name rises once, on the first visit only
     splitNow(target);
@@ -312,22 +296,15 @@ function update() {
   var t = Math.min(1, Math.max(0, remaining / (vh * .8)));
   sliceScroll = reduce || !touch.offsetParent ? 0 : t * t * .35;
   slice();
-  var w = touch._water;
-  if (!w) return;
-  // the swell only runs while the headline is on screen; off screen it kept the water loop going for nothing
-  var r = touch.getBoundingClientRect();
-  w.floor = r.bottom > 0 && r.top < vh ? sliceScroll * size(w) * .1 : 0;
-  if (w.floor > .5) startWater();
 }
 function queue() { if (!queued) { queued = true; requestAnimationFrame(update); } }
-addEventListener('scroll', function () { if (!lenis) queue(); }, { passive: true });   // with Lenis, its scroll event calls update()
+addEventListener('scroll', queue, { passive: true });
 addEventListener('resize', function () {
   queue();
   clearTimeout(splitLines._t);
   splitLines._t = setTimeout(function () { $$('[data-lines]', views[current]).forEach(splitLines); }, 200);
 });
 update();
-smooth(!reduce);
 // The intro stops waiting for fonts after 1.5s; lines measured in the fallback face are measured again once the real one is in.
 if (document.fonts) document.fonts.ready.then(function () { if (current) $$('[data-lines]', views[current]).forEach(splitLines); });
 
@@ -405,7 +382,7 @@ function addWater(el) {
   var f = wsvg.lastElementChild, imgs = $$('feImage', f), fa = $$('feFuncA', f);
   var w = {
     el: el, id: id, disp: $('feDisplacementMap', f), swellA: fa[0], imgs: imgs.slice(1), fa: fa.slice(1),
-    drops: [], next: 1, e: 0, pend: 0, floor: 0, lens: 0, px: 0, py: 0, lx: null, ly: 0, fs: 0, on: false, t: waters.length * 1.7
+    drops: [], next: 1, e: 0, pend: 0, lens: 0, px: 0, py: 0, lx: null, ly: 0, fs: 0, on: false, t: waters.length * 1.7
   };
   for (n = 0; n < SLOTS; n++) w.drops.push({ life: 0 });
   waters.push(w);
@@ -470,7 +447,7 @@ function flow(now) {
   var active = false, ms = Math.max(0, Math.min(100, now - waterLast)), dt = ms / 16.7;
   waterLast = now;
   waters.forEach(function (w) {
-    var amp = Math.max(w.e, w.floor), fs = size(w);
+    var amp = w.e, fs = size(w);
     w.e *= Math.pow(.965, dt);
     w.lens *= Math.pow(.94, dt);
     w.t += .05 * dt;
@@ -612,7 +589,7 @@ document.addEventListener('click', function (e) {
   var url = CONFIG.bookingUrl;
   if (!url) return;                                              // no calendar set up: the buttons stay normal links
   var box = document.createElement('div'), opener = null, loaded = false, timer = 0, isOpen = false;
-  box.className = 'book'; box.setAttribute('data-lenis-prevent', ''); box.setAttribute('role', 'dialog');   // a stopped Lenis would otherwise swallow wheel scrolling inside the calendar
+  box.className = 'book'; box.setAttribute('role', 'dialog');
   box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'book-title');
   box.innerHTML = '<div class="book__bar"><h2 id="book-title">Book a 30-minute call</h2>' +
     '<button class="btn mono" type="button"><span>Close</span><span class="btn__arrow" aria-hidden="true"></span></button></div>' +
@@ -909,7 +886,6 @@ initView(document);
 /* ---------- reduced motion can be switched on or off while the page is open ---------- */
 if (motionPref.addEventListener) motionPref.addEventListener('change', function (e) {
   reduce = e.matches;
-  smooth(!reduce);                               // Lenis off (or back on); the water loop tears itself down on its next frame
   if (reduce) $$('[data-magnetic]').forEach(function (m) { m.style.transform = ''; });
   else bindWater(document);
   $$('video[data-autoplay]').forEach(function (v) { if (v._seen) { videoIO.unobserve(v); videoIO.observe(v); } });   // re-check: pause or resume

@@ -46,8 +46,6 @@ body.is-dark { --bg: #0a0a0a; --ink: #f4f2ec; --muted: #8b8983; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html.is-loading { overflow: hidden; }
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-stopped { overflow: hidden; }
 [hidden] { display: none !important; }
 ::selection { background: var(--ink); color: var(--bg); }
 
